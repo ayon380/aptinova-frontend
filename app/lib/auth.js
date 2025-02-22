@@ -1,7 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
 
-
-
 export const handleAuth = async (formData, type) => {
   try {
     const response = await fetch(`/api/auth/${type}`, {
@@ -20,7 +18,7 @@ export const handleAuth = async (formData, type) => {
     if (!response.ok) throw new Error(data.message || 'Authentication failed');
 
     // Store the token
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('authToken', data.token);
     return data;
   } catch (error) {
     throw error;
@@ -28,7 +26,7 @@ export const handleAuth = async (formData, type) => {
 };
 
 export const isAuthenticated = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken');
   if (!token) return false;
 
   try {
@@ -40,5 +38,5 @@ export const isAuthenticated = () => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem('authToken');
 };
