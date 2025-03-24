@@ -2,10 +2,247 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@layer base {
+  :root {
+    --color-primary-50: 240, 249, 255;
+    --color-primary-100: 224, 242, 254;
+    --color-primary-200: 186, 230, 253;
+    --color-primary-300: 125, 211, 252;
+    --color-primary-400: 56, 189, 248;
+    --color-primary-500: 14, 165, 233;
+    --color-primary-600: 2, 132, 199;
+    --color-primary-700: 3, 105, 161;
+    --color-primary-800: 7, 89, 133;
+    --color-primary-900: 12, 74, 110;
+
+    /* Additional custom colors can be added here */
+  }
+
+  /* Animation classes */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
+
+
+.light {
+  --md-sys-color-primary: rgb(143 76 56);
+  --md-sys-color-surface-tint: rgb(143 76 56);
+  --md-sys-color-on-primary: rgb(255 255 255);
+  --md-sys-color-primary-container: rgb(255 219 209);
+  --md-sys-color-on-primary-container: rgb(114 53 35);
+  --md-sys-color-secondary: rgb(119 87 78);
+  --md-sys-color-on-secondary: rgb(255 255 255);
+  --md-sys-color-secondary-container: rgb(255 219 209);
+  --md-sys-color-on-secondary-container: rgb(93 64 55);
+  --md-sys-color-tertiary: rgb(108 93 47);
+  --md-sys-color-on-tertiary: rgb(255 255 255);
+  --md-sys-color-tertiary-container: rgb(245 225 167);
+  --md-sys-color-on-tertiary-container: rgb(83 70 25);
+  --md-sys-color-error: rgb(186 26 26);
+  --md-sys-color-on-error: rgb(255 255 255);
+  --md-sys-color-error-container: rgb(255 218 214);
+  --md-sys-color-on-error-container: rgb(147 0 10);
+  --md-sys-color-background: rgb(255 248 246);
+  --md-sys-color-on-background: rgb(35 25 23);
+  --md-sys-color-surface: rgb(255 248 246);
+  --md-sys-color-on-surface: rgb(35 25 23);
+  --md-sys-color-surface-variant: rgb(245 222 216);
+  --md-sys-color-on-surface-variant: rgb(83 67 63);
+  --md-sys-color-outline: rgb(133 115 110);
+  --md-sys-color-outline-variant: rgb(216 194 188);
+  --md-sys-color-shadow: rgb(0 0 0);
+  --md-sys-color-scrim: rgb(0 0 0);
+  --md-sys-color-inverse-surface: rgb(57 46 43);
+  --md-sys-color-inverse-on-surface: rgb(255 237 232);
+  --md-sys-color-inverse-primary: rgb(255 181 160);
+  --md-sys-color-primary-fixed: rgb(255 219 209);
+  --md-sys-color-on-primary-fixed: rgb(58 11 1);
+  --md-sys-color-primary-fixed-dim: rgb(255 181 160);
+  --md-sys-color-on-primary-fixed-variant: rgb(114 53 35);
+  --md-sys-color-secondary-fixed: rgb(255 219 209);
+  --md-sys-color-on-secondary-fixed: rgb(44 21 15);
+  --md-sys-color-secondary-fixed-dim: rgb(231 189 178);
+  --md-sys-color-on-secondary-fixed-variant: rgb(93 64 55);
+  --md-sys-color-tertiary-fixed: rgb(245 225 167);
+  --md-sys-color-on-tertiary-fixed: rgb(35 27 0);
+  --md-sys-color-tertiary-fixed-dim: rgb(216 197 141);
+  --md-sys-color-on-tertiary-fixed-variant: rgb(83 70 25);
+  --md-sys-color-surface-dim: rgb(232 214 210);
+  --md-sys-color-surface-bright: rgb(255 248 246);
+  --md-sys-color-surface-container-lowest: rgb(255 255 255);
+  --md-sys-color-surface-container-low: rgb(255 241 237);
+  --md-sys-color-surface-container: rgb(252 234 229);
+  --md-sys-color-surface-container-high: rgb(247 228 224);
+  --md-sys-color-surface-container-highest: rgb(241 223 218);
+}
+
+.dark {
+  --md-sys-color-primary: rgb(255 181 160);
+  /* Main theme color for prominent UI elements */
+  --md-sys-color-surface-tint: rgb(255 181 160);
+  /* Tint color for elevated surfaces or hover effects */
+  --md-sys-color-on-primary: rgb(86 31 15);
+  /* Text or icons displayed on primary-colored elements */
+  --md-sys-color-primary-container: rgb(114 53 35);
+  /* Background for components related to primary color */
+  --md-sys-color-on-primary-container: rgb(255 219 209);
+  /* Text/icons displayed on primary container background */
+
+  --md-sys-color-secondary: rgb(231 189 178);
+  /* Secondary theme color for less prominent UI elements */
+  --md-sys-color-on-secondary: rgb(68 42 34);
+  /* Text or icons displayed on secondary-colored elements */
+  --md-sys-color-secondary-container: rgb(93 64 55);
+  /* Background for secondary-related components */
+  --md-sys-color-on-secondary-container: rgb(255 219 209);
+  /* Text/icons displayed on secondary container background */
+
+  --md-sys-color-tertiary: rgb(216 197 141);
+  /* Optional accent or complementary color for highlights */
+  --md-sys-color-on-tertiary: rgb(59 47 5);
+  /* Text or icons displayed on tertiary-colored elements */
+  --md-sys-color-tertiary-container: rgb(83 70 25);
+  /* Background for tertiary-related components */
+  --md-sys-color-on-tertiary-container: rgb(245 225 167);
+  /* Text/icons displayed on tertiary container background */
+
+  --md-sys-color-error: rgb(255 180 171);
+  /* Color for error states like alerts or validation messages */
+  --md-sys-color-on-error: rgb(105 0 5);
+  /* Text/icons displayed on error-colored elements */
+  --md-sys-color-error-container: rgb(147 0 10);
+  /* Background for error-related components */
+  --md-sys-color-on-error-container: rgb(255 218 214);
+  /* Text/icons displayed on error container background */
+
+  --md-sys-color-background: rgb(26 17 15);
+  /* Default background color for the application */
+  --md-sys-color-on-background: rgb(241 223 218);
+  /* Text/icons displayed on the background */
+
+  --md-sys-color-surface: rgb(26 17 15);
+  /* Background color for cards, modals, and other surfaces */
+  --md-sys-color-on-surface: rgb(241 223 218);
+  /* Text/icons displayed on surface-colored elements */
+  --md-sys-color-surface-variant: rgb(83 67 63);
+  /* Secondary surface background color for layered components */
+  --md-sys-color-on-surface-variant: rgb(216 194 188);
+  /* Text/icons displayed on surface-variant backgrounds */
+
+  --md-sys-color-outline: rgb(160 140 135);
+  /* Borders or outlines for components */
+  --md-sys-color-outline-variant: rgb(83 67 63);
+  /* Less prominent borders or dividers */
+
+  --md-sys-color-shadow: rgb(0 0 0);
+  /* Shadow color for elevation effects */
+  --md-sys-color-scrim: rgb(0 0 0);
+  /* Overlay color for modals or dialogs */
+
+  --md-sys-color-inverse-surface: rgb(241 223 218);
+  /* Background for elements in contrasting themes */
+  --md-sys-color-inverse-on-surface: rgb(57 46 43);
+  /* Text/icons displayed on inverse-surface background */
+  --md-sys-color-inverse-primary: rgb(143 76 56);
+  /* Primary color in contrasting themes */
+
+  --md-sys-color-primary-fixed: rgb(255 219 209);
+  /* Fixed primary background for consistent styling */
+  --md-sys-color-on-primary-fixed: rgb(58 11 1);
+  /* Text/icons displayed on fixed primary background */
+  --md-sys-color-primary-fixed-dim: rgb(255 181 160);
+  /* Dimmed version of the fixed primary color */
+  --md-sys-color-on-primary-fixed-variant: rgb(114 53 35);
+  /* Variant for text/icons on dimmed primary fixed color */
+
+  --md-sys-color-secondary-fixed: rgb(255 219 209);
+  /* Fixed secondary background for consistent styling */
+  --md-sys-color-on-secondary-fixed: rgb(44 21 15);
+  /* Text/icons displayed on fixed secondary background */
+  --md-sys-color-secondary-fixed-dim: rgb(231 189 178);
+  /* Dimmed version of the fixed secondary color */
+  --md-sys-color-on-secondary-fixed-variant: rgb(93 64 55);
+  /* Variant for text/icons on dimmed secondary fixed color */
+
+  --md-sys-color-tertiary-fixed: rgb(245 225 167);
+  /* Fixed tertiary background for consistent styling */
+  --md-sys-color-on-tertiary-fixed: rgb(35 27 0);
+  /* Text/icons displayed on fixed tertiary background */
+  --md-sys-color-tertiary-fixed-dim: rgb(216 197 141);
+  /* Dimmed version of the fixed tertiary color */
+  --md-sys-color-on-tertiary-fixed-variant: rgb(83 70 25);
+  /* Variant for text/icons on dimmed tertiary fixed color */
+
+  --md-sys-color-surface-dim: rgb(26 17 15);
+  /* Dimmed surface background for subtle depth */
+  --md-sys-color-surface-bright: rgb(66 55 52);
+  /* Bright surface background for elevated layers */
+  --md-sys-color-surface-container-lowest: rgb(20 12 10);
+  /* Background for the lowest surface layer */
+  --md-sys-color-surface-container-low: rgb(35 25 23);
+  /* Background for low surface layers */
+  --md-sys-color-surface-container: rgb(39 29 27);
+  /* Background for standard surface layers */
+  --md-sys-color-surface-container-high: rgb(50 40 37);
+  /* Background for elevated surface layers */
+  --md-sys-color-surface-container-highest: rgb(61 50 47);
+  /* Background for the highest surface layer */
+
+}
+
+/* HTML: <div class="wavy-line"></div> */
+.wavy-line {
+  --s: 8px;
+  /* size of the wave */
+  --b: 2px;
+  /* thickness of the line */
+  --m: 0.8;
+  /* curvature of the wave [0 2] */
+
+  background: var(--md-sys-color-primary);
+  --R: calc(var(--s)*sqrt(var(--m)*var(--m) + 1) + var(--b)/2);
+  height: calc(2*var(--R));
+  width: 100%;
+  --_g: #0000 calc(99% - var(--b)), #000 calc(101% - var(--b)) 99%, #0000 101%;
+  mask:
+    radial-gradient(var(--R) at left 50% bottom calc(-1*var(--m)*var(--s)), var(--_g)) calc(50% - 2*var(--s)) calc(50% - var(--s)/2 - var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x,
+    radial-gradient(var(--R) at left 50% top calc(-1*var(--m)*var(--s)), var(--_g)) 50% calc(50% + var(--s)/2 + var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x;
+}
+
+
+
+/* 
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 39;
+} */
 
 /* @media (prefers-color-scheme: dark) {
   :root {
@@ -15,7 +252,435 @@
 } */
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--md-sys-color-primary-fixed);
+  color: var(--md-sys-color-on-background);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-neutral-800 rounded-xl shadow-md p-6;
+  }
+
+  .btn {
+    @apply px-4 py-2 font-medium rounded-lg transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white;
+  }
+
+  .btn-outline {
+    @apply border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200;
+  }
+
+  .input {
+    @apply block w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-primary-500 focus:border-primary-500;
+  }
+
+  /* Custom components */
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium;
+  }
+
+  .input-search {
+    @apply pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64;
+  }
+
+  .select-input {
+    @apply px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .table-header {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+
+  .status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .status-applied {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .status-shortlisted {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-assessment {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .status-interview {
+    @apply bg-orange-100 text-orange-800;
+  }
+
+  .status-offer {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-rejected {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-lg p-6 max-w-2xl w-full mx-4;
+  }
+
+  .wmde-markdown-var {
+    @apply bg-white;
+  }
+
+  .w-md-editor-text-pre>code,
+  .w-md-editor-text-input {
+    @apply font-mono !important;
+  }
+
+  .w-md-editor-toolbar {
+    @apply border-b;
+  }
+
+  .w-md-editor-toolbar ul {
+    @apply flex items-center;
+  }
+
+  .w-md-editor-toolbar li.active>button {
+    @apply bg-gray-100;
+  }
+
+  /* Gradient text utility */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600;
+  }
+
+  /* Animation for hover effects */
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(to right, #2563eb, #9333ea);
+    padding: 1px;
+    border-radius: theme('borderRadius.lg');
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    border-radius: inherit;
+    filter: blur(8px);
+    opacity: 0.4;
+    z-index: -1;
+  }
+
+  /* Floating animation */
+  .floating {
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  @keyframes floating {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Additional styles for two-pane auth layouts */
+  /* Responsive container for auth pages */
+  .auth-container {
+    @apply min-h-screen flex flex-col md:flex-row;
+  }
+
+  /* Left pane styles */
+  .auth-left-pane {
+    @apply hidden md:flex md:w-1/2 bg-md-primary p-8 flex-col justify-between;
+  }
+
+  /* Right pane styles */
+  .auth-right-pane {
+    @apply w-full md:w-1/2 flex items-center justify-center p-4 md:p-8;
+  }
+
+  /* Form container */
+  .auth-form-container {
+    @apply w-full max-w-md;
+  }
+
+  /* Form card */
+  .auth-form-card {
+    @apply bg-md-surface-container p-8 rounded-3xl shadow-md;
+  }
+
+  /* Input field wrapper */
+  .floating-input {
+    @apply relative mt-5 first:mt-0;
+  }
+
+  /* Input field */
+  .floating-input-field {
+    @apply block w-full px-6 pt-6 pb-1 rounded-full appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface;
+  }
+
+  /* Input label */
+  .floating-input-label {
+    @apply absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary;
+  }
+
+  /* Primary button */
+  .btn-auth-primary {
+    @apply w-full mt-6 py-2 px-4 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container disabled:opacity-50 transition-colors duration-200;
+  }
+
+  /* Secondary button */
+  .btn-auth-secondary {
+    @apply w-full mt-3 py-2 px-4 rounded-full bg-md-secondary-container text-md-on-secondary-container hover:bg-md-secondary hover:text-md-on-secondary disabled:opacity-50 transition-colors duration-200;
+  }
+
+  /* Social login button */
+  .btn-social {
+    @apply flex items-center justify-center py-2 px-8 bg-md-surface-container rounded-full hover:bg-md-surface-container-high transition-colors duration-200;
+  }
+
+  /* Decorative blob animation */
+  .blob {
+    animation: blob-animation 7s infinite alternate;
+    transition: all 1s ease-in-out;
+  }
+
+  @keyframes blob-animation {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(5px, -5px) scale(1.05);
+    }
+    66% {
+      transform: translate(-5px, 5px) scale(0.95);
+    }
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+  }
+
+  /* Enhanced two-pane layout styles */
+  .two-pane-container {
+    @apply flex min-h-screen flex-col md:flex-row bg-md-background;
+  }
+  
+  .pane-left {
+    @apply hidden md:flex md:w-1/3 bg-md-primary p-8 flex-col justify-between relative overflow-hidden;
+  }
+  
+  .pane-right {
+    @apply w-full md:w-2/3 flex flex-col;
+  }
+  
+  .mobile-header {
+    @apply md:hidden bg-md-surface px-4 py-5 sticky top-0 z-20 shadow-sm border-b border-md-outline-variant;
+  }
+  
+  .form-area {
+    @apply flex-grow overflow-auto p-4 md:p-8 bg-md-background;
+  }
+  
+  /* Form controls */
+  .form-container {
+    @apply max-w-3xl mx-auto mb-24 md:mb-0;
+  }
+  
+  .form-section {
+    @apply bg-md-surface-container p-6 md:p-8 rounded-xl shadow-md space-y-6;
+  }
+  
+  .section-title {
+    @apply text-xl font-semibold text-md-on-surface mb-6;
+  }
+  
+  /* Input styling */
+  .form-field {
+    @apply relative mb-5;
+  }
+  
+  .form-input {
+    @apply block w-full px-4 pt-6 pb-1 rounded-lg appearance-none focus:outline-none peer 
+    border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface;
+  }
+  
+  .form-label {
+    @apply absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-4 
+    peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 
+    peer-focus:scale-75 peer-focus:-translate-y-3 
+    text-md-on-surface-variant peer-focus:text-md-primary;
+  }
+  
+  /* Button styling */
+  .btn-nav {
+    @apply flex justify-between pt-6 sticky bottom-0 bg-md-background p-4 -mx-4 
+    md:static md:bg-transparent md:p-0 md:mx-0 
+    border-t md:border-0 border-md-outline-variant;
+  }
+  
+  .btn-previous {
+    @apply px-6 py-3 rounded-full text-md-on-surface-variant bg-md-surface-variant 
+    hover:bg-md-surface-container-high transition-colors duration-200;
+  }
+  
+  .btn-next {
+    @apply px-6 py-3 rounded-full bg-md-primary text-md-on-primary 
+    hover:bg-md-primary-container hover:text-md-on-primary-container 
+    transition-colors duration-200;
+  }
+  
+  /* Error styling */
+  .form-error {
+    @apply mb-6 p-4 rounded-lg bg-md-error-container text-md-on-error-container;
+  }
+  
+  /* Loading spinner */
+  .loading-spinner {
+    @apply animate-spin h-4 w-4 text-current;
+  }
+  
+  /* Decorative elements */
+  .bg-decoration {
+    @apply absolute inset-0 overflow-hidden;
+  }
+  
+  .bg-circle {
+    @apply absolute rounded-full bg-md-on-primary opacity-5;
+  }
+  
+  .blob-animation {
+    animation: blob-float 7s ease-in-out infinite alternate;
+  }
+  
+  @keyframes blob-float {
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+      transform: translate(10px, -15px) rotate(5deg) scale(1.05);
+    }
+    66% {
+      transform: translate(-10px, 10px) rotate(-5deg) scale(0.95);
+    }
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 45 100% 50%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 210 40% 98%;
+
+    --card: 0 0% 0%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 0 0% 0%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 45 100% 50%;
+  }
 }

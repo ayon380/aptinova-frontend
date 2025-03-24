@@ -61,9 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const userData = await response.json();
         setUser(userData);
-      } catch (err) {
-        localStorage.removeItem("authToken");
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          localStorage.removeItem("authToken");
+          setError(err.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -96,9 +98,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       localStorage.setItem("authToken", data.token);
       return router.push(`/auth/verify?email=${encodeURIComponent(email)}`);
-    } catch (err) {
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        throw err;
+      }
     } finally {
       setLoading(false);
     }
@@ -146,9 +150,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData);
 
       router.push("/dashboard");
-    } catch (err) {
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        throw err;
+      }
     } finally {
       setLoading(false);
     }
@@ -185,9 +191,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const updatedUser = await response.json();
       setUser(updatedUser);
-    } catch (err) {
-      setError(err.message);
-      throw err;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        throw err;
+      }
     } finally {
       setLoading(false);
     }
