@@ -58,7 +58,7 @@ function AuthCallbackContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-dvh flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
           <h1 className="text-2xl font-bold text-red-600 mb-4">
             Authentication Error
@@ -76,7 +76,7 @@ function AuthCallbackContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="h-dvh flex items-center justify-center bg-gray-50">
       <div className="flex flex-col items-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mb-4"></div>
         <h2 className="text-xl font-semibold text-gray-700">

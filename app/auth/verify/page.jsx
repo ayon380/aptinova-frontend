@@ -161,7 +161,7 @@ function VerificationForm() {
   };
 
   return (
-    <div className="flex min-h-screen text-xl bg-md-background">
+    <div className="flex h-dvh text-xl bg-md-background">
       {/* Left pane - Image and brand content */}
       <div className="hidden md:flex md:w-1/2 bg-md-primary p-8 flex-col justify-between relative overflow-hidden">
         <div className="flex items-center gap-3 z-10">

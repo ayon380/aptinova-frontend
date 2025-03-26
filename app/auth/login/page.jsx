@@ -24,6 +24,11 @@ export default function Login() {
         const available =
           await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
         setSupportsPasskeys(available);
+
+        // If passkeys are supported, try to auto-trigger passkey login
+        if (available) {
+          triggerAutoPasskeyLogin();
+        }
       } catch (error) {
         setSupportsPasskeys(false);
       }
@@ -72,6 +77,65 @@ export default function Login() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const triggerAutoPasskeyLogin = async () => {
+    try {
+      // Get authentication options with conditional mediation
+      const optionsRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/passkey/authenticate/options`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const res = await optionsRes.json();
+      const options = res.options;
+      const sessionId = res.sessionId;
+      console.log(options);
+
+      if (!optionsRes.ok) return; // Silently fail for auto-trigger
+
+      try {
+        // Start authentication with conditional mediation
+        const asseResp = await startAuthentication({
+          ...options,
+          mediation: "conditional",
+        });
+
+        // Verify the credential
+        const verifyRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/passkey/authenticate/verify`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              asseResp,
+              sessionId,
+            }),
+          }
+        );
+
+        const verifyResult = await verifyRes.json();
+        if (!verifyRes.ok) throw new Error(verifyResult.error);
+        localStorage.setItem("authToken", verifyResult.token);
+
+        // Handle successful login
+        if (verifyResult.subdomain) {
+          router.push(
+            `https://${verifyResult.subdomain}.${window.location.host}`
+          );
+        } else {
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        // Silent fail for auto-trigger
+        console.log("Auto passkey login failed", error);
+      }
+    } catch (err) {
+      console.log("Error getting passkey options", err);
     }
   };
 
@@ -149,7 +213,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen text-xl bg-md-background">
+    <div className="flex h-dvh text-xl bg-md-background">
       {/* Left pane - Image and brand content */}
       <div className="hidden md:flex md:w-1/2 bg-md-primary p-8 flex-col justify-between">
         <div className="flex items-center gap-3">
@@ -221,6 +285,7 @@ export default function Login() {
                   type="email"
                   id="email"
                   name="email"
+                  autoComplete="username webauthn"
                   required
                   className="block w-full px-6 pt-6 pb-1 rounded-3xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
                   placeholder=" "
@@ -240,6 +305,7 @@ export default function Login() {
                   type="password"
                   id="password"
                   name="password"
+                  autoComplete="current-password"
                   required
                   className="block w-full px-6 pt-6 pb-1 rounded-3xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
                   placeholder=" "
@@ -312,7 +378,7 @@ export default function Login() {
                 {loading ? "Logging in..." : "Sign in with Password"}
               </button>
 
-              {supportsPasskeys && (
+              {/* {supportsPasskeys && (
                 <button
                   type="button"
                   onClick={handlePasskeyLogin}
@@ -323,7 +389,7 @@ export default function Login() {
                     ? "Authenticating..."
                     : "Sign in with Passkey"}
                 </button>
-              )}
+              )} */}
             </form>
 
             <div className="mt-6 text-center">

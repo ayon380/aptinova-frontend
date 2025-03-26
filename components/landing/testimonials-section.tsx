@@ -133,7 +133,7 @@ export default function TestimonialsSection() {
                     </div>
 
                     <blockquote className="text-gray-300 italic text-xl leading-relaxed mb-6">
-                      "{testimonial.quote}"
+                      &#34;{testimonial.quote}&#34;
                     </blockquote>
 
                     <div className="flex">
@@ -188,7 +188,7 @@ export default function TestimonialsSection() {
                 </h3>
                 <p className="text-gray-300 mb-8">
                   Learn how TechGrowth Inc. transformed their recruitment
-                  process and found better candidates faster using HireFlow's
+                  process and found better candidates faster using HireFlow&#34;s
                   AI-powered platform.
                 </p>
                 <div>

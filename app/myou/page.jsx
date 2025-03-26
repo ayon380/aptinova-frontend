@@ -102,7 +102,7 @@ export default function MaterialYouDemo() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="h-dvh flex flex-col"
       style={{
         backgroundColor: currentTheme.background,
         color: currentTheme.onBackground,

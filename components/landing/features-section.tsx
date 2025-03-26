@@ -57,7 +57,7 @@ export default function CtaSection() {
               </h2>
               <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
                 Join elite companies that are saving time and finding better
-                candidates with HireFlow's AI-powered platform.
+                candidates with HireFlow&#39;s AI-powered platform.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 justify-center">

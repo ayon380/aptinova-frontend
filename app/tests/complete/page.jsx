@@ -48,7 +48,7 @@ function TestCompleteContent() {
   }, [testId]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
         <div className="flex justify-end mb-4">
           <ThemeToggle />
@@ -108,7 +108,7 @@ function TestCompleteContent() {
 export default function TestCompletePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg text-center">
           <div className="animate-pulse flex flex-col items-center">
             <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full mb-6"></div>

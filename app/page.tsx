@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <ThemeProvider>
-      <div className="min-h-screen flex flex-col bg-black text-white">
+      <div className="h-dvh flex flex-col bg-black text-white">
         <Navbar />
         <main className="flex-grow">
           <HeroSection />

@@ -449,7 +449,7 @@ export default function TestPage() {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="p-8 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-center">
           <div className="animate-spin h-12 w-12 border-4 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-gray-700 dark:text-gray-300">
@@ -463,7 +463,7 @@ export default function TestPage() {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="p-8 rounded-lg bg-white dark:bg-gray-800 shadow-lg text-center">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
           <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
@@ -484,7 +484,7 @@ export default function TestPage() {
   // Show test start screen
   if (!testStarted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="w-full max-w-2xl p-8 rounded-lg bg-white dark:bg-gray-800 shadow-lg">
           <div className="flex justify-end mb-4">
             <ThemeToggle />
@@ -580,7 +580,7 @@ export default function TestPage() {
 
   // Show actual test UI
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="h-dvh flex flex-col bg-gray-50 dark:bg-gray-900">
       <TestHeader
         testName={test.testName}
         timeLeft={timeFormatted}

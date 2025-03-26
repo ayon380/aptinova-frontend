@@ -115,7 +115,7 @@ export default function HROnboarding() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
       </div>
     );
@@ -123,7 +123,7 @@ export default function HROnboarding() {
 
   if (error && step !== 4) {
     return (
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
+      <div className="h-dvh flex items-center justify-center dark:bg-gray-900">
         <div className="bg-red-50 dark:bg-red-900/30 p-8 rounded-lg text-center max-w-md w-full">
           <h2 className="text-red-700 dark:text-red-400 text-xl font-semibold mb-2">
             Error
@@ -141,7 +141,7 @@ export default function HROnboarding() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="h-dvh flex flex-col bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 lg:px-8 transition-colors">
       {/* Theme Toggle */}
       <div className="fixed top-4 right-4">
         <button

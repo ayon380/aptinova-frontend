@@ -53,7 +53,7 @@ export default function CtaSection() {
                 </span>
               </h2>
               <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
-                Join elite companies that are saving time and finding better candidates with HireFlow's AI-powered
+                Join elite companies that are saving time and finding better candidates with HireFlow&#34;s AI-powered
                 platform.
               </p>
 

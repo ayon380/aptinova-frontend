@@ -250,7 +250,7 @@ const JobBoard = () => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`h-dvh ${
         darkMode ? "dark bg-gray-950 text-gray-100" : "bg-gray-50 text-gray-900"
       }`}
     >
