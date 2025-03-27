@@ -82,13 +82,13 @@ export default function BottomNav() {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", damping: 20 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 bg-md-surface z-50 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]"
+      className="md:hidden fixed bottom-0 left-0 right-0 bg-md-surface z-40 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]"
     >
       <div className="flex justify-around h-20 px-2">
         {navItems.map((item) => {
           const Icon = item.active ? item.activeIcon : item.icon;
           const activeItem = item.active;
-          
+
           return (
             <Link
               key={item.name}
@@ -103,22 +103,28 @@ export default function BottomNav() {
               >
                 {/* Active state shows filled icon and active indicator */}
                 {activeItem && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeBackground"
-                    className="absolute top-1/2 -translate-y-1/2 w-16 h-8 rounded-full bg-md-primary-container"
+                    className="absolute top-1/4 -translate-y-1/2 w-16   h-8 rounded-full bg-md-primary-container"
                     transition={{ type: "spring", bounce: 0.2 }}
                   />
                 )}
-                
+
                 <motion.div
                   className={`relative z-10 flex flex-col items-center justify-center pt-3 ${
-                    activeItem ? "text-md-primary" : "text-md-on-surface-variant"
+                    activeItem
+                      ? "text-md-primary"
+                      : "text-md-on-surface-variant"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 ${activeItem ? 'drop-shadow-sm' : ''}`} />
-                  <span className={`text-xs mt-1 transition-all ${
-                    activeItem ? 'opacity-100 font-medium' : 'opacity-70'
-                  }`}>
+                  <Icon
+                    className={`h-6 w-6 ${activeItem ? "drop-shadow-sm" : ""}`}
+                  />
+                  <span
+                    className={`text-xs mt-1 transition-all ${
+                      activeItem ? "opacity-100 font-medium" : "opacity-70"
+                    }`}
+                  >
                     {item.name}
                   </span>
                 </motion.div>

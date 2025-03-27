@@ -5,9 +5,9 @@ import { startRegistration } from "@simplewebauthn/browser";
 import useStore from "@/app/store";
 import TabView from "@/app/components/TabView";
 import { motion } from "framer-motion";
-
 export default function CandidateProfile() {
   const [isRegistering, setIsRegistering] = useState(false);
+  const { userdata, setUserdata } = useStore();
   const [passkeys, setPasskeys] = useState([]);
   const [profile, setProfile] = useState({
     firstName: "",
@@ -75,7 +75,7 @@ export default function CandidateProfile() {
     try {
       setLoading(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/user`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -84,7 +84,8 @@ export default function CandidateProfile() {
       );
       if (!response.ok) throw new Error("Failed to fetch profile");
       const data = await response.json();
-      setProfile(data);
+      setProfile(data.user);
+      setUserdata(data.user);
       if (data.profilePicture) {
         setPreviewImage(data.profilePicture);
       }
@@ -287,7 +288,7 @@ export default function CandidateProfile() {
       }
 
       if (profilePictureFile) {
-        formData.append("profilePicture", profilePictureFile);
+        formData.append("profileImage", profilePictureFile);
       }
 
       const response = await fetch(
@@ -304,6 +305,7 @@ export default function CandidateProfile() {
       if (!response.ok) throw new Error("Failed to update profile");
 
       toast.success("Profile updated successfully");
+
       fetchProfile(); // Refresh profile data
     } catch (error) {
       toast.error(error.message || "Failed to update profile");
@@ -2572,7 +2574,7 @@ export default function CandidateProfile() {
       <motion.button
         onClick={handleSubmit}
         disabled={saving}
-        className="fixed right-6 bottom-6 z-40 h-14 px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
+        className="fixed right-6 bottom-24 z-40 h-14 px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
       >

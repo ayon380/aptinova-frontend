@@ -5,33 +5,140 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion"; // Add framer-motion import
 import useStore from "../store";
+
+// Modern animated theme toggle component
+const ThemeToggle = ({ activeTheme, onThemeChange }) => {
+  const variants = {
+    light: { x: 0 },
+    dark: { x: "100%" },
+    system: { x: "200%" },
+  };
+
+  const indicators = {
+    light: (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 text-md-primary"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </motion.div>
+    ),
+    dark: (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 text-md-primary"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      </motion.div>
+    ),
+    system: (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4 text-md-primary"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </motion.div>
+    ),
+  };
+
+  return (
+    <div className="relative h-10 w-full bg-md-surface-container-high rounded-full p-1 overflow-hidden">
+      {/* Track */}
+      <div className="relative h-full w-full grid grid-cols-3">
+        {/* Theme positions */}
+        <button
+          onClick={() => onThemeChange("light")}
+          className="relative z-10 flex items-center justify-center"
+          aria-label="Light theme"
+        >
+          {activeTheme !== "light" && indicators.light}
+        </button>
+        <button
+          onClick={() => onThemeChange("dark")}
+          className="relative z-10 flex items-center justify-center"
+          aria-label="Dark theme"
+        >
+          {activeTheme !== "dark" && indicators.dark}
+        </button>
+        <button
+          onClick={() => onThemeChange("system")}
+          className="relative z-10 flex items-center justify-center"
+          aria-label="System theme"
+        >
+          {activeTheme !== "system" && indicators.system}
+        </button>
+
+        {/* Indicator */}
+        <motion.div
+          className="absolute w-1/3 h-full bg-md-primary-container rounded-full"
+          variants={variants}
+          initial={activeTheme}
+          animate={activeTheme}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            mass: 1,
+          }}
+        />
+
+        {/* Current theme indicator */}
+        <motion.div
+          className="absolute w-1/3 h-full flex items-center justify-center"
+          variants={variants}
+          initial={activeTheme}
+          animate={activeTheme}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            mass: 1,
+          }}
+        >
+          {indicators[activeTheme]}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 export default function AppHeader() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const router = useRouter();
-  const { userdata, title, setuserdata } = useStore();
-  console.log("userdata", userdata);
+  const { userdata, title, theme, setTheme } = useStore();
 
-  useEffect(() => {
-    async function fetchProfile() {
-      console.log("fetching profile");
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
-      if (!response.ok) throw new Error("Failed to fetch profile");
-      const data = await response.json();
-      setuserdata(data);
-    }
-    if (Object.keys(userdata).length === 0) {
-      fetchProfile();
-    }
-    console.log("userdata", userdata);
-  }, [userdata, setuserdata]);
   // Subscription tier colors
   const tierColors = {
     free: "bg-md-tertiary-container",
@@ -39,15 +146,47 @@ export default function AppHeader() {
     enterprise: "bg-md-secondary-container",
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const res = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("aptinova-storage");
     router.push("/auth/login");
+  };
+
+  // Enhanced theme changing handler with vibration feedback
+  const handleThemeChange = (newTheme) => {
+    // Only apply vibration if the browser supports it
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(50); // Short 50ms vibration for feedback
+    }
+
+    // Visual animation feedback
+    setTheme(newTheme);
+  };
+
+  // Get current theme name for display
+  const getThemeName = () => {
+    switch (theme) {
+      case "light":
+        return "Light";
+      case "dark":
+        return "Dark";
+      case "system":
+        return "System";
+      default:
+        return "System";
+    }
   };
 
   return (
     <>
-      <header className="bg-md-surface  sticky top-0 z-30 h-16 flex items-center px-4 ">
+      <header className="bg-md-surface sticky top-0 z-30 h-16 flex items-center px-4">
         <h1 className="text-3xl font-medium text-md-on-surface mr-auto">
           {title}
         </h1>
@@ -100,7 +239,7 @@ export default function AppHeader() {
         {showProfileMenu && (
           <>
             <motion.div
-              className="fixed inset-0  bg-black/50 z-40"
+              className="fixed inset-0 bg-black/50 z-40"
               onClick={() => setShowProfileMenu(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -178,6 +317,56 @@ export default function AppHeader() {
 
                 <div className="mt-4 border-t border-md-outline-variant pt-4">
                   <nav className="space-y-2">
+                    {/* Modern Theme selector */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center mb-3">
+                        <motion.div
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.1 }}
+                          className="text-md-on-surface font-medium"
+                        >
+                          Theme
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="ml-auto text-sm text-md-on-surface-variant"
+                        >
+                          {getThemeName()}
+                        </motion.div>
+                      </div>
+
+                      <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.15, type: "spring" }}
+                      >
+                        <ThemeToggle
+                          activeTheme={theme}
+                          onThemeChange={handleThemeChange}
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.25 }}
+                        className="mt-2 grid grid-cols-3 gap-2"
+                      >
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Light
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Dark
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          System
+                        </div>
+                      </motion.div>
+                    </div>
+
                     <Link
                       href="/candidate/profile"
                       className="flex items-center space-x-3 px-4 py-3 rounded-full hover:bg-md-surface-variant text-md-on-surface w-full text-left"
@@ -248,7 +437,7 @@ export default function AppHeader() {
 
             {/* Desktop dropdown */}
             <motion.div
-              className="hidden md:block absolute  z-50 bg-md-surface rounded-xl shadow-lg top-16 right-4 w-80"
+              className="hidden md:block absolute z-50 bg-md-surface rounded-xl shadow-lg top-16 right-4 w-80"
               initial={{
                 opacity: 0,
                 y: -20,
@@ -323,6 +512,56 @@ export default function AppHeader() {
 
                 <div className="mt-4 border-t border-md-outline-variant pt-4">
                   <nav className="space-y-2">
+                    {/* Modern Theme selector - Desktop */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-center mb-3">
+                        <motion.div
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.1 }}
+                          className="text-md-on-surface font-medium"
+                        >
+                          Theme
+                        </motion.div>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="ml-auto text-sm text-md-on-surface-variant"
+                        >
+                          {getThemeName()}
+                        </motion.div>
+                      </div>
+
+                      <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.15, type: "spring" }}
+                      >
+                        <ThemeToggle
+                          activeTheme={theme}
+                          onThemeChange={handleThemeChange}
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.25 }}
+                        className="mt-2 grid grid-cols-3 gap-2"
+                      >
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Light
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Dark
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          System
+                        </div>
+                      </motion.div>
+                    </div>
+
                     <Link
                       href="/candidate/profile"
                       className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-md-surface-variant text-md-on-surface w-full text-left"

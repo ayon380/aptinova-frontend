@@ -46,7 +46,7 @@ function AuthCallbackContent() {
         }
 
         // Token is valid, redirect to dashboard
-        router.push("/dashboard");
+        router.push("/home");
       } catch (err) {
         setError(err.message);
         localStorage.removeItem("authToken");
