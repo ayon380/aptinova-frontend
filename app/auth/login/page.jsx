@@ -128,7 +128,7 @@ export default function Login() {
             `https://${verifyResult.subdomain}.${window.location.host}`
           );
         } else {
-          router.push("/dashboard");
+          router.push("/home");
         }
       } catch (error) {
         // Silent fail for auto-trigger
@@ -203,7 +203,7 @@ export default function Login() {
           `https://${verifyResult.subdomain}.${window.location.host}`
         );
       } else {
-        router.push("/dashboard");
+        router.push("/home");
       }
     } catch (err) {
       setError(err.message);

@@ -5,14 +5,53 @@
     "short_name": "Aptinova",
     "id": "Aptinova",
     "description": "Aptinova - Hiring Platform",
+    "display": "standalone",
+    "scope": "/",
     "shortcuts": [
         {
             "name": "Jobs",
-            "url": "https://aptinova.tech/candidate/jobs",
-            "description": "Jobs"
+            "url": "/candidate/jobs",
+            "description": "Jobs",
+            "icons": [
+                {
+                    "src": "icons/briefcase.png",
+                    "sizes": "96x96",
+                    "type": "image/png"
+                }
+            ]
         }
     ],
     "start_url": "/home",
+    "screenshots": [
+        {
+            "src": "screenshots/desktop1.png",
+            "sizes": "1280x800",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Aptinova Desktop Homepage"
+        },
+        {
+            "src": "screenshots/desktop2.png",
+            "sizes": "1280x800",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Aptinova Desktop Jobs Page"
+        },
+        {
+            "src": "screenshots/mobile1.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Aptinova Mobile Homepage"
+        },
+        {
+            "src": "screenshots/mobile2.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Aptinova Mobile Jobs Page"
+        }
+    ],
     "icons": [
         {
             "src": "windows11/SmallTile.scale-100.png",

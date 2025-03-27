@@ -29,6 +29,7 @@ export default function Dashboard() {
         }
         const userData = await response.json();
         setUser(userData);
+        router.push("/home");
       } catch (err) {
         console.error(err);
         localStorage.removeItem("authToken");
