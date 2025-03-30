@@ -4,10 +4,22 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { motion } from "framer-motion";
 
 export default function AuthCallback() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="h-dvh flex items-center justify-center bg-md-background">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-3xl h-16 w-16 border-t-4 border-b-4 border-md-primary mb-4"></div>
+            <h2 className="text-xl font-semibold text-md-on-surface">
+              Loading...
+            </h2>
+          </div>
+        </div>
+      }
+    >
       <AuthCallbackContent />
     </Suspense>
   );
@@ -54,35 +66,72 @@ function AuthCallbackContent() {
     };
 
     handleCallback();
-  }, [token, router]);
+  }, [token, router, message]);
 
   if (error) {
     return (
-      <div className="h-dvh flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">
-            Authentication Error
-          </h1>
-          <p className="text-gray-700 mb-6">{error}</p>
-          <button
+      <div className="h-dvh flex items-center justify-center bg-md-background">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full p-8 bg-md-surface-container rounded-3xl shadow-lg"
+        >
+          <div className="flex items-center mb-6">
+            <div className="h-12 w-12 rounded-3xl bg-md-error-container flex items-center justify-center mr-4">
+              <svg
+                className="w-6 h-6 text-md-on-error-container"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-md-on-surface">
+              Authentication Error
+            </h1>
+          </div>
+          <p className="text-md-on-surface-variant mb-8 text-lg">{error}</p>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => router.push("/auth/login")}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+            className="w-full bg-md-primary text-md-on-primary py-3 px-4 rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200 font-medium text-lg"
           >
             Return to Login
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="h-dvh flex items-center justify-center bg-gray-50">
-      <div className="flex flex-col items-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-        <h2 className="text-xl font-semibold text-gray-700">
-          Completing authentication...
+    <div className="h-dvh flex items-center justify-center bg-md-background">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center"
+      >
+        <div className="relative h-20 w-20 mb-6">
+          <div className="absolute top-0 left-0 h-full w-full rounded-3xl border-4 border-md-primary-container"></div>
+          <motion.div
+            className="absolute top-0 left-0 h-full w-full rounded-3xl border-4 border-t-md-primary border-r-transparent border-b-transparent border-l-transparent"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          ></motion.div>
+        </div>
+        <h2 className="text-2xl font-semibold text-md-on-surface mb-2">
+          Completing authentication
         </h2>
-      </div>
+        <p className="text-md-on-surface-variant">
+          Please wait while we verify your credentials
+        </p>
+      </motion.div>
     </div>
   );
 }

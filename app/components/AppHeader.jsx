@@ -186,7 +186,7 @@ export default function AppHeader() {
 
   return (
     <>
-      <header className="bg-md-surface sticky top-0 z-30 h-16 flex items-center px-4">
+      <header className="bg-md-surface  top-0 z-30 h-16 flex items-center px-4">
         <h1 className="text-3xl font-medium text-md-on-surface mr-auto">
           {title}
         </h1>
@@ -217,7 +217,7 @@ export default function AppHeader() {
             ) : (
               <div className="w-10 h-10 rounded-full bg-md-surface flex items-center justify-center">
                 <span className="text-md-on-surface text-lg font-medium">
-                  {userdata?.firstName?.charAt(0) ||
+                  {userdata?.firstName?.charAt(0) ||  
                     userdata?.email?.charAt(0)?.toUpperCase() ||
                     "?"}
                 </span>

@@ -1,19 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+// Create a component that uses useSearchParams
+function RoleHandler({ setFormData }) {
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role");
+
+  useEffect(() => {
+    if (role) {
+      console.log("Role found in URL:", role);
+
+      setFormData((prev) => {
+        const updatedFormData = {
+          ...prev,
+          userType: role,
+        };
+        console.log("Updated formData:", updatedFormData); // Debug log
+        return updatedFormData;
+      });
+    }
+  }, [role, setFormData]);
+
+  return null; // This component doesn't render anything
+}
 
 export default function Register() {
   const router = useRouter();
+  
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
-    userType: "candidate",
+    userType: "candidate", // Default value
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,6 +132,11 @@ export default function Register() {
       {/* Right pane - Signup form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-md">
+          {/* Wrap the useSearchParams hook in Suspense */}
+          <Suspense fallback={null}>
+            <RoleHandler setFormData={setFormData} />
+          </Suspense>
+          
           {/* Small logo for mobile only */}
           <div className="flex md:hidden items-center gap-3 mb-8">
             <div className="h-10 w-10 rounded-xl bg-md-primary flex items-center justify-center">

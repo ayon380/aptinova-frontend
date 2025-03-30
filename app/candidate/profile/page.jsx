@@ -481,29 +481,9 @@ export default function CandidateProfile() {
   ];
 
   return (
-    <div className="flex flex-col text-xl h-screen bg-md-background">
+    <div className="flex flex-col ml- text-xl h-full w-full bg-md-background">
       {/* Main content with sidebar for larger screens */}
-      <div className="flex flex-1 h-full overflow-hidden">
-        {/* Left sidebar - only visible on md screens and up */}
-        <div className="hidden md:block w-72 h-full  p-4 overflow-y-auto">
-          <nav className="space-y-2 sticky top-0">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`w-full text-left px-4 py-3 rounded-full flex items-center space-x-3 transition-colors ${
-                  activeTab === tab.id
-                    ? "bg-md-primary-container text-md-on-primary-container font-medium"
-                    : "text-md-on-surface hover:bg-md-surface-variant"
-                }`}
-              >
-                <span className="text-xl">{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-
+      <div className="flex flex-1 md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container h-full overflow-hidden">
         {/* Main content area */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {loading ? (
@@ -1547,8 +1527,30 @@ export default function CandidateProfile() {
                 </TabView>
               </div>
 
+              {/* Desktop TabView */}
+              <div className="hidden md:block mb-4">
+                <div className="px-4">
+                  <div className="flex overflow-x-auto space-x-2 py-2">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center space-x-2 px-6 py-3 whitespace-nowrap rounded-full transition-colors ${
+                          activeTab === tab.id
+                            ? "bg-md-primary-container text-md-on-primary-container font-medium"
+                            : "text-md-on-surface hover:bg-md-surface-variant"
+                        }`}
+                      >
+                        <span className="text-xl">{tab.icon}</span>
+                        <span>{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* Desktop Tabs Content */}
-              <div className="hidden md:block rounded-tl-3xl bg-md-surface-container flex-1 overflow-y-auto px-4 py-4">
+              <div className="hidden md:block  flex-1 overflow-y-auto px-4 py-4">
                 {/* Personal Information */}
                 {activeTab === "personal" && (
                   <div className=" p-6 sm:p-8 rounded-3xl shadow-sm">

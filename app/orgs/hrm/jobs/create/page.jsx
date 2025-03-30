@@ -8,7 +8,13 @@ import { jobService } from "@/services/jobService";
 import ReactMarkdown from "react-markdown";
 
 const steps = ["Job Details", "Job Description", "Requirements", "Review"];
-const JOB_LEVELS = ["Entry-level", "Mid-level", "Senior-level", "Director", "Executive"];
+const JOB_LEVELS = [
+  "Entry-level",
+  "Mid-level",
+  "Senior-level",
+  "Director",
+  "Executive",
+];
 const REMOTE_TYPES = ["On-site", "Remote", "Hybrid"];
 
 export default function CreateJobPage() {
@@ -31,8 +37,6 @@ export default function CreateJobPage() {
     industry: "",
     applicationLink: "",
     remoteEligibility: false,
-    jobLevel: "",
-    languageRequirements: [],
     visaSponsorshipAvailable: false,
     additionalDetails: "",
   });
@@ -132,13 +136,13 @@ export default function CreateJobPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
                 <label
                   htmlFor="job-title"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
-                  Job Title <span className="text-red-500">*</span>
+                  Job Title <span className="text-md-error">*</span>
                 </label>
                 <input
                   id="job-title"
@@ -146,7 +150,7 @@ export default function CreateJobPage() {
                   value={jobData.title}
                   onChange={(e) => handleJobDataChange("title", e.target.value)}
                   placeholder="e.g. Senior Frontend Developer"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all duration-200"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
                   required
                 />
               </div>
@@ -155,9 +159,9 @@ export default function CreateJobPage() {
                 <div>
                   <label
                     htmlFor="department"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                    className="block text-sm font-medium mb-1"
                   >
-                    Department <span className="text-red-500">*</span>
+                    Department <span className="text-md-error">*</span>
                   </label>
                   <select
                     id="department"
@@ -165,7 +169,7 @@ export default function CreateJobPage() {
                     onChange={(e) =>
                       handleJobDataChange("department", e.target.value)
                     }
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white appearance-none bg-white dark:bg-gray-800 transition-all duration-200"
+                    className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
                     required
                   >
                     <option value="">Select Department</option>
@@ -183,9 +187,9 @@ export default function CreateJobPage() {
                 <div>
                   <label
                     htmlFor="employment-type"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                    className="block text-sm font-medium mb-1"
                   >
-                    Employment Type <span className="text-red-500">*</span>
+                    Employment Type <span className="text-md-error">*</span>
                   </label>
                   <select
                     id="employment-type"
@@ -193,7 +197,7 @@ export default function CreateJobPage() {
                     onChange={(e) =>
                       handleJobDataChange("employmentType", e.target.value)
                     }
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white appearance-none bg-white dark:bg-gray-800 transition-all duration-200"
+                    className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
                     required
                   >
                     <option value="">Select Type</option>
@@ -209,7 +213,7 @@ export default function CreateJobPage() {
               <div>
                 <label
                   htmlFor="location"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Location
                 </label>
@@ -221,22 +225,22 @@ export default function CreateJobPage() {
                     handleJobDataChange("location", e.target.value)
                   }
                   placeholder="Enter location or 'Remote'"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all duration-200"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
                 />
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-sm text-md-on-surface-variant">
                   Enter city, country or 'Remote'
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Salary Range (Optional)
+              <div className="p-6 bg-md-surface-container rounded-xl">
+                <h3 className="text-lg font-medium mb-4">
+                  Salary Information (Optional)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <label
                       htmlFor="currency"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                      className="block text-sm font-medium mb-1"
                     >
                       Currency
                     </label>
@@ -246,7 +250,7 @@ export default function CreateJobPage() {
                       onChange={(e) =>
                         handleJobDataChange("salaryCurrency", e.target.value)
                       }
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white appearance-none bg-white dark:bg-gray-800 transition-all duration-200"
+                      className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
                     >
                       <option value="USD">USD</option>
                       <option value="EUR">EUR</option>
@@ -260,7 +264,7 @@ export default function CreateJobPage() {
                   <div>
                     <label
                       htmlFor="amount"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                      className="block text-sm font-medium mb-1"
                     >
                       Amount
                     </label>
@@ -272,7 +276,7 @@ export default function CreateJobPage() {
                         handleJobDataChange("salary", e.target.value)
                       }
                       placeholder="Amount"
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all duration-200"
+                      className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
                     />
                   </div>
                 </div>
@@ -281,7 +285,7 @@ export default function CreateJobPage() {
               <div>
                 <label
                   htmlFor="job-level"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Job Level
                 </label>
@@ -291,7 +295,7 @@ export default function CreateJobPage() {
                   onChange={(e) =>
                     handleJobDataChange("jobLevel", e.target.value)
                   }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white appearance-none bg-white dark:bg-gray-800 transition-all duration-200"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
                 >
                   <option value="">Select Level</option>
                   {JOB_LEVELS.map((level) => (
@@ -305,7 +309,7 @@ export default function CreateJobPage() {
               <div>
                 <label
                   htmlFor="remote-type"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                  className="block text-sm font-medium mb-1"
                 >
                   Remote Type
                 </label>
@@ -315,7 +319,7 @@ export default function CreateJobPage() {
                   onChange={(e) =>
                     handleJobDataChange("jobType", e.target.value)
                   }
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white appearance-none bg-white dark:bg-gray-800 transition-all duration-200"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
                 >
                   <option value="">Select Type</option>
                   {REMOTE_TYPES.map((type) => (
@@ -326,71 +330,45 @@ export default function CreateJobPage() {
                 </select>
               </div>
 
-              <div className="flex items-center">
-                <input
-                  id="visa-sponsorship"
-                  type="checkbox"
-                  checked={jobData.visaSponsorshipAvailable}
-                  onChange={(e) =>
-                    handleJobDataChange(
-                      "visaSponsorshipAvailable",
-                      e.target.checked
-                    )
-                  }
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="visa-sponsorship"
-                  className="ml-2 block text-sm text-gray-900 dark:text-gray-300"
-                >
-                  Visa Sponsorship Available
-                </label>
-              </div>
-
-              <div className="form-row">
-                <label
-                  htmlFor="deadline"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
-                >
-                  Application Deadline
-                </label>
-                <input
-                  type="datetime-local"
-                  id="deadline"
-                  value={jobData.deadline}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => handleJobDataChange("deadline", e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
-                />
-              </div>
-
-              <div className="form-row">
-                <label
-                  htmlFor="salary"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
-                >
-                  Salary
-                </label>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="p-6 bg-md-surface-container rounded-xl">
+                <div className="flex items-center mb-4">
                   <input
-                    type="number"
-                    id="salary"
-                    value={jobData.salary}
-                    onChange={(e) => handleJobDataChange("salary", e.target.value)}
-                    placeholder="Enter salary amount"
-                    min="0"
-                    step="0.01"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+                    id="visa-sponsorship"
+                    type="checkbox"
+                    checked={jobData.visaSponsorshipAvailable}
+                    onChange={(e) =>
+                      handleJobDataChange(
+                        "visaSponsorshipAvailable",
+                        e.target.checked
+                      )
+                    }
+                    className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary"
                   />
-                  <select
-                    value={jobData.salaryCurrency}
-                    onChange={(e) => handleJobDataChange("salaryCurrency", e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+                  <label
+                    htmlFor="visa-sponsorship"
+                    className="ml-2 block text-sm"
                   >
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                  </select>
+                    Visa Sponsorship Available
+                  </label>
+                </div>
+
+                <div className="form-row mb-4">
+                  <label
+                    htmlFor="deadline"
+                    className="block text-sm font-medium mb-1"
+                  >
+                    Application Deadline
+                  </label>
+                  <input
+                    type="datetime-local"
+                    id="deadline"
+                    value={jobData.deadline}
+                    min={new Date().toISOString().split("T")[0]}
+                    onChange={(e) =>
+                      handleJobDataChange("deadline", e.target.value)
+                    }
+                    className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent"
+                  />
                 </div>
               </div>
             </div>
@@ -402,31 +380,43 @@ export default function CreateJobPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="space-y-6"
           >
-            <p className="section-subtitle">
-              Job Description <span className="required">*</span>
+            <p className="text-lg font-medium mb-2 text-md-on-surface">
+              Job Description <span className="text-md-error">*</span>
             </p>
-            <p className="editor-tip">
+            <p className="text-md-on-surface-variant mb-4">
               Write a compelling job description to attract the right
               candidates.
             </p>
-            <MDEditor
-              value={jobData.description}
-              onChange={(value) => handleJobDataChange("description", value)}
-              placeholder="Write a detailed job description using Markdown..."
-              className="enhanced-editor"
-            />
-            <div className="markdown-tips">
-              <p>Markdown Tips:</p>
-              <ul>
-                <li>
-                  <code># Heading 1</code> for sections
+            <div className="bg-md-surface p-1 rounded-xl">
+              <MDEditor
+                value={jobData.description}
+                onChange={(value) => handleJobDataChange("description", value)}
+                placeholder="Write a detailed job description using Markdown..."
+                className="enhanced-editor rounded-xl"
+              />
+            </div>
+            <div className="p-4 bg-md-secondary-container text-md-on-secondary-container rounded-xl mt-4">
+              <p className="font-medium mb-2">Markdown Tips:</p>
+              <ul className="space-y-2 ml-2">
+                <li className="flex items-center">
+                  <code className="bg-md-surface-variant text-md-on-surface-variant px-2 py-1 rounded-md mr-2">
+                    # Heading 1
+                  </code>
+                  <span>for sections</span>
                 </li>
-                <li>
-                  <code>**Bold Text**</code> for emphasis
+                <li className="flex items-center">
+                  <code className="bg-md-surface-variant text-md-on-surface-variant px-2 py-1 rounded-md mr-2">
+                    **Bold Text**
+                  </code>
+                  <span>for emphasis</span>
                 </li>
-                <li>
-                  <code>- Item</code> for bullet lists
+                <li className="flex items-center">
+                  <code className="bg-md-surface-variant text-md-on-surface-variant px-2 py-1 rounded-md mr-2">
+                    - Item
+                  </code>
+                  <span>for bullet lists</span>
                 </li>
               </ul>
             </div>
@@ -435,68 +425,80 @@ export default function CreateJobPage() {
       case 2:
         return (
           <motion.div
-            className="form-grid"
+            className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="form-row full-width">
-              <p className="section-subtitle">
+            <div className="bg-md-surface-container p-6 rounded-xl mb-6">
+              <p className="text-lg font-medium mb-2">
                 Requirements and Qualifications{" "}
-                <span className="required">*</span>
+                <span className="text-md-error">*</span>
               </p>
-              <MDEditor
-                value={jobData.qualifications}
-                onChange={(value) =>
-                  handleJobDataChange("qualifications", value)
-                }
-                placeholder="List job requirements using Markdown..."
-                className="enhanced-editor"
-              />
+              <div className="bg-md-surface p-1 rounded-xl">
+                <MDEditor
+                  value={jobData.qualifications}
+                  onChange={(value) =>
+                    handleJobDataChange("qualifications", value)
+                  }
+                  placeholder="List job requirements using Markdown..."
+                  className="enhanced-editor rounded-xl"
+                />
+              </div>
             </div>
-            <div className="form-row full-width">
-              <p className="section-subtitle">Benefits and Perks</p>
-              <MDEditor
-                value={jobData.benefits}
-                onChange={(value) => handleJobDataChange("benefits", value)}
-                placeholder="Describe benefits using Markdown..."
-                className="enhanced-editor"
-              />
+
+            <div className="bg-md-surface-container p-6 rounded-xl mb-6">
+              <p className="text-lg font-medium mb-2">Benefits and Perks</p>
+              <div className="bg-md-surface p-1 rounded-xl">
+                <MDEditor
+                  value={jobData.benefits}
+                  onChange={(value) => handleJobDataChange("benefits", value)}
+                  placeholder="Describe benefits using Markdown..."
+                  className="enhanced-editor rounded-xl"
+                />
+              </div>
             </div>
-            <div className="form-row full-width">
-              <p className="section-subtitle">Language Requirements</p>
-              <MDEditor
-                value={jobData.languageRequirements}
-                onChange={(value) =>
-                  handleJobDataChange("languageRequirements", value)
-                }
-                placeholder="List language requirements using Markdown..."
-                className="enhanced-editor"
-              />
+
+            <div className="bg-md-surface-container p-6 rounded-xl mb-6">
+              <p className="text-lg font-medium mb-2">Language Requirements</p>
+              <div className="bg-md-surface p-1 rounded-xl">
+                <MDEditor
+                  value={jobData.languageRequirements}
+                  onChange={(value) =>
+                    handleJobDataChange("languageRequirements", value)
+                  }
+                  placeholder="List language requirements using Markdown..."
+                  className="enhanced-editor rounded-xl"
+                />
+              </div>
             </div>
-            <div className="form-row full-width">
-              <p className="section-subtitle">Experience Required</p>
-              <input
-                type="number"
-                value={jobData.experienceRequired}
-                onChange={(e) =>
-                  handleJobDataChange("experienceRequired", e.target.value)
-                }
-                placeholder="Enter years of experience required"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all duration-200"
-              />
-            </div>
-            <div className="form-row full-width">
-              <p className="section-subtitle">Application Link</p>
-              <input
-                type="url"
-                value={jobData.applicationLink}
-                onChange={(e) =>
-                  handleJobDataChange("applicationLink", e.target.value)
-                }
-                placeholder="Enter application link"
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all duration-200"
-              />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-md-surface-container p-6 rounded-xl">
+                <p className="text-lg font-medium mb-2">Experience Required</p>
+                <input
+                  type="number"
+                  value={jobData.experienceRequired}
+                  onChange={(e) =>
+                    handleJobDataChange("experienceRequired", e.target.value)
+                  }
+                  placeholder="Enter years of experience"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface focus:ring-2 focus:ring-md-primary focus:border-transparent"
+                />
+              </div>
+
+              <div className="bg-md-surface-container p-6 rounded-xl">
+                <p className="text-lg font-medium mb-2">Application Link</p>
+                <input
+                  type="url"
+                  value={jobData.applicationLink}
+                  onChange={(e) =>
+                    handleJobDataChange("applicationLink", e.target.value)
+                  }
+                  placeholder="Enter application URL"
+                  className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface focus:ring-2 focus:ring-md-primary focus:border-transparent"
+                />
+              </div>
             </div>
           </motion.div>
         );
@@ -508,74 +510,73 @@ export default function CreateJobPage() {
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Job Posting Review
-              </h2>
+            <div className="bg-md-surface rounded-xl shadow p-6">
+              <h2 className="text-2xl font-bold mb-6">Job Posting Review</h2>
 
               <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-xl font-semibold">
                     {jobData.title || "Job Title"}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                    <span className="px-3 py-1 rounded-full text-sm bg-md-primary-container text-md-on-primary-container">
                       {jobData.department || "Department"}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                    <span className="px-3 py-1 rounded-full text-sm bg-md-secondary-container text-md-on-secondary-container">
                       {jobData.employmentType || "Type"}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100">
+                    <span className="px-3 py-1 rounded-full text-sm bg-md-tertiary-container text-md-on-tertiary-container">
                       {jobData.location || "Location"}
                     </span>
                   </div>
                 </div>
 
                 {(jobData.salary || jobData.salaryCurrency) && (
-                  <div className="salary-display">
-                    <span className="salary-icon">💰</span>
-                    {jobData.salaryCurrency} {jobData.salary}
+                  <div className="flex items-center p-3 bg-md-surface-container rounded-xl">
+                    <span className="mr-2 text-xl">💰</span>
+                    <span className="font-medium">
+                      {jobData.salaryCurrency} {jobData.salary}
+                    </span>
                   </div>
                 )}
 
-                <hr className="divider" />
+                <hr className="border-md-outline" />
 
-                <div className="content-section">
-                  <h3 className="section-heading">
-                    <span className="section-icon">📝</span> Description
+                <div className="p-4 bg-md-surface-container rounded-xl">
+                  <h3 className="flex items-center text-lg font-medium mb-3">
+                    <span className="mr-2">📝</span> Description
                   </h3>
-                  <div className="markdown-preview">
+                  <div className="prose prose-md max-w-none bg-md-surface p-4 rounded-lg">
                     <ReactMarkdown>{jobData.description}</ReactMarkdown>
                   </div>
                 </div>
 
-                <div className="content-section">
-                  <h3 className="section-heading">
-                    <span className="section-icon">✅</span> Requirements
+                <div className="p-4 bg-md-surface-container rounded-xl">
+                  <h3 className="flex items-center text-lg font-medium mb-3">
+                    <span className="mr-2">✅</span> Requirements
                   </h3>
-                  <div className="markdown-preview">
+                  <div className="prose prose-md max-w-none bg-md-surface p-4 rounded-lg">
                     <ReactMarkdown>{jobData.qualifications}</ReactMarkdown>
                   </div>
                 </div>
 
                 {jobData.benefits && (
-                  <div className="content-section">
-                    <h3 className="section-heading">
-                      <span className="section-icon">🎁</span> Benefits
+                  <div className="p-4 bg-md-surface-container rounded-xl">
+                    <h3 className="flex items-center text-lg font-medium mb-3">
+                      <span className="mr-2">🎁</span> Benefits
                     </h3>
-                    <div className="markdown-preview">
+                    <div className="prose prose-md max-w-none bg-md-surface p-4 rounded-lg">
                       <ReactMarkdown>{jobData.benefits}</ReactMarkdown>
                     </div>
                   </div>
                 )}
 
                 {jobData.languageRequirements && (
-                  <div className="content-section">
-                    <h3 className="section-heading">
-                      <span className="section-icon">🌐</span> Language
-                      Requirements
+                  <div className="p-4 bg-md-surface-container rounded-xl">
+                    <h3 className="flex items-center text-lg font-medium mb-3">
+                      <span className="mr-2">🌐</span> Language Requirements
                     </h3>
-                    <div className="markdown-preview">
+                    <div className="prose prose-md max-w-none bg-md-surface p-4 rounded-lg">
                       <ReactMarkdown>
                         {jobData.languageRequirements}
                       </ReactMarkdown>
@@ -584,27 +585,27 @@ export default function CreateJobPage() {
                 )}
 
                 {jobData.experienceRequired && (
-                  <div className="content-section">
-                    <h3 className="section-heading">
-                      <span className="section-icon">📈</span> Experience
-                      Required
+                  <div className="p-4 bg-md-surface-container rounded-xl">
+                    <h3 className="flex items-center text-lg font-medium mb-3">
+                      <span className="mr-2">📈</span> Experience Required
                     </h3>
-                    <div className="markdown-preview">
+                    <div className="bg-md-surface p-4 rounded-lg">
                       {jobData.experienceRequired} years
                     </div>
                   </div>
                 )}
 
                 {jobData.applicationLink && (
-                  <div className="content-section">
-                    <h3 className="section-heading">
-                      <span className="section-icon">🔗</span> Application Link
+                  <div className="p-4 bg-md-surface-container rounded-xl">
+                    <h3 className="flex items-center text-lg font-medium mb-3">
+                      <span className="mr-2">🔗</span> Application Link
                     </h3>
-                    <div className="markdown-preview">
+                    <div className="bg-md-surface p-4 rounded-lg">
                       <a
                         href={jobData.applicationLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="text-md-primary hover:text-md-primary-container transition-colors"
                       >
                         {jobData.applicationLink}
                       </a>
@@ -621,16 +622,14 @@ export default function CreateJobPage() {
   };
 
   return (
-    <div className="h-dvh bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="w-full h-full overflow-y-auto md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+          <div className="mb-4 p-4 bg-md-error-container text-md-on-error-container rounded-xl border border-md-error">
             {error}
           </div>
         )}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Create New Job
-        </h1>
+        <h1 className="text-3xl font-bold mb-8">Create New Job</h1>
 
         <div className="mb-8">
           <div className="flex justify-between items-center">
@@ -640,10 +639,10 @@ export default function CreateJobPage() {
                   className={`flex items-center justify-center w-10 h-10 rounded-full border-2 
                     ${
                       index === activeStep
-                        ? "border-blue-500 bg-blue-500 text-white"
+                        ? "border-md-primary bg-md-primary text-md-on-primary"
                         : index < activeStep
-                        ? "border-green-500 bg-green-500 text-white"
-                        : "border-gray-300 dark:border-gray-600"
+                        ? "border-md-tertiary bg-md-tertiary text-md-on-tertiary"
+                        : "border-md-outline bg-md-surface-container"
                     } transition-all duration-200`}
                   onClick={() => index < activeStep && setActiveStep(index)}
                 >
@@ -665,24 +664,24 @@ export default function CreateJobPage() {
                     <span>{index + 1}</span>
                   )}
                 </div>
-                <div className="hidden md:block ml-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div className="hidden md:block ml-4 text-sm font-medium">
                   {label}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-0.5 mx-4 bg-gray-300 dark:bg-gray-600"></div>
+                  <div className="flex-1 h-0.5 mx-4 bg-md-outline"></div>
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+        <div className="bg-md-surface-container-highest rounded-2xl shadow-md p-8 mb-8">
           {renderStepContent(activeStep)}
         </div>
 
         <div className="flex justify-between items-center">
           <button
-            className="px-6 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            className="px-6 py-2 rounded-full text-md-on-surface-variant hover:bg-md-surface-variant transition-colors duration-200"
             disabled={activeStep === 0}
             onClick={handleBack}
           >
@@ -690,14 +689,15 @@ export default function CreateJobPage() {
           </button>
           <div className="space-x-4">
             <button
-              className="px-6 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              className="px-6 py-2 rounded-full text-md-on-surface-variant hover:bg-md-surface-variant transition-colors duration-200"
               onClick={() => router.push("/orgs/jobs")}
             >
               Cancel
             </button>
             {activeStep === steps.length - 1 ? (
               <button
-                className="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className={`px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container 
+                disabled:opacity-50 disabled:bg-md-surface-variant disabled:text-md-on-surface-variant transition-colors duration-200`}
                 onClick={handleSubmit}
                 disabled={isSubmitting}
               >
@@ -705,7 +705,8 @@ export default function CreateJobPage() {
               </button>
             ) : (
               <button
-                className="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className={`px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container 
+                disabled:opacity-50 disabled:bg-md-surface-variant disabled:text-md-on-surface-variant transition-colors duration-200`}
                 onClick={handleNext}
                 disabled={!isStepValid}
               >

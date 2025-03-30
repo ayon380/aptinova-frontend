@@ -1,17 +1,17 @@
-"use client"
-import React, { useEffect, useState, Suspense } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import axios from "axios"
-import { FormProgress } from "@/app/components/FormProgress"
-import { useRouter, useSearchParams } from "next/navigation"
+"use client";
+import React, { useEffect, useState, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { FormProgress } from "@/app/components/FormProgress";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const orgSteps = [
   "Basic Info",
   "Company Details",
   "Location & Contact",
   "Additional Info",
-  "Subscription Plan"
-]
+  "Subscription Plan",
+];
 
 // Main component wrapper
 export default function OrganizationSignupWrapper() {
@@ -25,12 +25,12 @@ export default function OrganizationSignupWrapper() {
     >
       <OrganizationSignup />
     </Suspense>
-  )
+  );
 }
 
 // Main component logic
 function OrganizationSignup() {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(0);
   const [form, setForm] = useState({
     companyName: "",
     email: "",
@@ -50,100 +50,166 @@ function OrganizationSignup() {
       name: "",
       position: "",
       email: "",
-      phone: ""
+      phone: "",
     },
     description: "",
     benefits: [],
     culture: [],
-    subscriptionPlan: "free"
-  })
-  const router = useRouter()
-  const [user, setUser] = useState({})
-  const searchParams = useSearchParams()
-  const token = searchParams?.get("token") || ""
-  const [subdomainAvailable, setSubdomainAvailable] = useState(null)
-  const [subdomainMessage, setSubdomainMessage] = useState("")
-  const [selectedLogo, setSelectedLogo] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formError, setFormError] = useState(null)
+    subscriptionPlan: "free",
+  });
+  const router = useRouter();
+  const [user, setUser] = useState({});
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token") || "";
+  const [subdomainAvailable, setSubdomainAvailable] = useState(null);
+  const [subdomainMessage, setSubdomainMessage] = useState("");
+  const [selectedLogo, setSelectedLogo] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [payment, setPayment] = useState({
+    status: "pending",
+  });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const checkSubdomainAvailability = async subdomain => {
+  const checkSubdomainAvailability = async (subdomain) => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/domains/check-availability/${subdomain}`
-      )
-      setSubdomainAvailable(response.data.available)
-      setSubdomainMessage(response.data.message)
+      );
+      setSubdomainAvailable(response.data.available);
+      setSubdomainMessage(response.data.message);
     } catch (error) {
-      console.error("Error checking subdomain availability:", error)
-      setSubdomainAvailable(null)
-      setSubdomainMessage("Failed to check subdomain availability.")
+      console.error("Error checking subdomain availability:", error);
+      setSubdomainAvailable(null);
+      setSubdomainMessage("Failed to check subdomain availability.");
     }
-  }
+  };
 
-  const handleLogoChange = e => {
-    const file = e.target.files?.[0]
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
     if (file && file.type === "image/png") {
-      setForm({ ...form, logo: file })
-      setSelectedLogo(file.name)
+      setForm({ ...form, logo: file });
+      setSelectedLogo(file.name);
     } else {
-      alert("Please upload a .png file.")
+      alert("Please upload a .png file.");
     }
-  }
+  };
 
   useEffect(() => {
     if (user.email) {
-      setForm(prev => ({ ...prev, email: user.email }))
+      setForm((prev) => ({ ...prev, email: user.email }));
     }
-  }, [user])
+  }, [user]);
 
   const nextStep = () => {
-    setFormError(null)
+    setFormError(null);
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, orgSteps.length - 1))
-      // Scroll to top when changing steps
-      window.scrollTo(0, 0)
+      setCurrentStep((prev) => Math.min(prev + 1, orgSteps.length - 1));
+      window.scrollTo(0, 0);
     } else {
-      setFormError("Please fill in all required fields to continue")
+      setFormError("Please fill in all required fields to continue");
     }
-  }
+  };
 
   const prevStep = () => {
-    setFormError(null)
-    setCurrentStep(prev => Math.max(prev - 1, 0))
-    // Scroll to top when changing steps
-    window.scrollTo(0, 0)
-  }
+    setFormError(null);
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    window.scrollTo(0, 0);
+  };
 
-  const handleSubmit = async () => {
-    if (isSubmitting) return
-    setIsSubmitting(true)
-    setFormError(null)
+  const initializePayment = async () => {
+    try {
+      setPayment({ status: "processing" });
 
-    const formData = new FormData()
-    formData.append("companyName", form.companyName)
-    formData.append("email", form.email)
-    formData.append("subdomain", form.subdomain)
-    formData.append("website", form.website)
-    formData.append("phone", form.phone)
-    formData.append("industry", form.industry)
-    formData.append("companySize", form.companySize)
-    formData.append("foundedYear", form.foundedYear)
-    formData.append("headquarters", form.headquarters)
-    formData.append("type", form.type)
-    formData.append("address", form.address)
-    formData.append("city", form.city)
-    formData.append("country", form.country)
-    formData.append("zipCode", form.zipCode)
-    formData.append("contactPerson", JSON.stringify(form.contactPerson))
-    formData.append("description", form.description)
-    formData.append("linkedin", form.linkedin || "")
-    formData.append("twitter", form.twitter || "")
-    formData.append("benefits", JSON.stringify(form.benefits))
-    formData.append("culture", JSON.stringify(form.culture))
-    formData.append("subscriptionPlan", form.subscriptionPlan)
+      let planPrice = 0;
+      if (form.subscriptionPlan === "startup") {
+        planPrice = 49;
+      } else if (form.subscriptionPlan === "enterprise") {
+        planPrice = 199;
+      }
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/payments/create-subscription`,
+        {
+          userType: "hrManager",
+          userId: user.id || "021e33f6-87e2-4c5d-bac5-f0227ea7d3e2",
+          tier: form.subscriptionPlan.toUpperCase(),
+          totalCount: 12,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      const subscriptionId = response.data.subscription.id;
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        subscription_id: subscriptionId,
+        name: "Aptinova",
+        description: `${
+          form.subscriptionPlan.charAt(0).toUpperCase() +
+          form.subscriptionPlan.slice(1)
+        } Plan Subscription`,
+        handler: function (response) {
+          setPayment({
+            subscriptionId: subscriptionId,
+            paymentId: response.razorpay_payment_id,
+            signature: response.razorpay_signature,
+            status: "completed",
+          });
+
+          handleSubmitAfterPayment(response.razorpay_payment_id);
+        },
+        prefill: {
+          name: form.companyName,
+          email: form.email,
+          contact: form.phone,
+        },
+        theme: {
+          color: "#7E57C2",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment initialization error:", error);
+      setPayment({
+        status: "failed",
+        error: error.response?.data?.message || "Payment initialization failed",
+      });
+    }
+  };
+
+  const handleSubmitAfterPayment = async (paymentId) => {
+    const formData = new FormData();
+    formData.append("companyName", form.companyName);
+    formData.append("email", form.email);
+    formData.append("subdomain", form.subdomain);
+    formData.append("website", form.website);
+    formData.append("phone", form.phone);
+    formData.append("industry", form.industry);
+    formData.append("companySize", form.companySize);
+    formData.append("foundedYear", form.foundedYear);
+    formData.append("headquarters", form.headquarters);
+    formData.append("type", form.type);
+    formData.append("address", form.address);
+    formData.append("city", form.city);
+    formData.append("country", form.country);
+    formData.append("zipCode", form.zipCode);
+    formData.append("contactPerson", JSON.stringify(form.contactPerson));
+    formData.append("description", form.description);
+    formData.append("linkedin", form.linkedin || "");
+    formData.append("twitter", form.twitter || "");
+    formData.append("benefits", JSON.stringify(form.benefits));
+    formData.append("culture", JSON.stringify(form.culture));
+    formData.append("subscriptionPlan", form.subscriptionPlan);
+    formData.append("paymentId", paymentId);
     if (form.logo) {
-      formData.append("logo", form.logo)
+      formData.append("logo", form.logo);
     }
 
     try {
@@ -153,28 +219,189 @@ function OrganizationSignup() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
-      )
+      );
       if (response.data.success) {
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         setFormError(
           "Failed to create organization: " +
             (response.data.message || "Unknown error")
-        )
+        );
       }
     } catch (error) {
-      console.error("Error creating organization:", error)
+      console.error("Error creating organization:", error);
       setFormError(
         "An error occurred: " +
           (error.response?.data?.message || error.message || "Unknown error")
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setFormError(null);
+
+    if (
+      form.subscriptionPlan !== "free" &&
+      form.subscriptionPlan !== "contact"
+    ) {
+      if (!window.Razorpay) {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
+        script.onload = () => {
+          setShowPaymentModal(true);
+        };
+        document.body.appendChild(script);
+      } else {
+        setShowPaymentModal(true);
+      }
+      setIsSubmitting(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("companyName", form.companyName);
+    formData.append("email", form.email);
+    formData.append("subdomain", form.subdomain);
+    formData.append("website", form.website);
+    formData.append("phone", form.phone);
+    formData.append("industry", form.industry);
+    formData.append("companySize", form.companySize);
+    formData.append("foundedYear", form.foundedYear);
+    formData.append("headquarters", form.headquarters);
+    formData.append("type", form.type);
+    formData.append("address", form.address);
+    formData.append("city", form.city);
+    formData.append("country", form.country);
+    formData.append("zipCode", form.zipCode);
+    formData.append("contactPerson", JSON.stringify(form.contactPerson));
+    formData.append("description", form.description);
+    formData.append("linkedin", form.linkedin || "");
+    formData.append("twitter", form.twitter || "");
+    formData.append("benefits", JSON.stringify(form.benefits));
+    formData.append("culture", JSON.stringify(form.culture));
+    formData.append("subscriptionPlan", form.subscriptionPlan);
+    if (form.logo) {
+      formData.append("logo", form.logo);
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/get-started/organization`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        router.push("/dashboard");
+      } else {
+        setFormError(
+          "Failed to create organization: " +
+            (response.data.message || "Unknown error")
+        );
+      }
+    } catch (error) {
+      console.error("Error creating organization:", error);
+      setFormError(
+        "An error occurred: " +
+          (error.response?.data?.message || error.message || "Unknown error")
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderPaymentModal = () => {
+    if (!showPaymentModal) return null;
+
+    let planName, planPrice;
+    if (form.subscriptionPlan === "startup") {
+      planName = "Startup Plan";
+      planPrice = "$49/month";
+    } else if (form.subscriptionPlan === "enterprise") {
+      planName = "Enterprise Plan";
+      planPrice = "$199/month";
+    }
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div className="bg-md-surface-container p-8 rounded-3xl shadow-lg max-w-md w-full">
+          <h3 className="text-2xl font-semibold text-md-on-surface mb-4">
+            Complete {planName} Subscription
+          </h3>
+
+          <p className="text-md-on-surface-variant mb-6">
+            You&apos;ve selected the {planName}. Click the button below to
+            process your payment of {planPrice}.
+          </p>
+
+          {payment.status === "failed" && (
+            <div className="mb-4 p-4 rounded-lg bg-md-error-container text-md-on-error-container">
+              <p>Payment failed: {payment.error}</p>
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            <button
+              onClick={() => {
+                setShowPaymentModal(false);
+              }}
+              className="px-6 py-3 rounded-3xl text-md-on-surface-variant bg-md-surface-variant hover:bg-md-surface-container-high transition-colors duration-200"
+            >
+              Cancel
+            </button>
+
+            <button
+              onClick={initializePayment}
+              disabled={payment.status === "processing"}
+              className="px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200"
+            >
+              {payment.status === "processing" ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : payment.status === "failed" ? (
+                "Retry Payment"
+              ) : (
+                "Setup Payment"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderBasicInfo = () => (
     <motion.div
@@ -196,7 +423,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.companyName}
-            onChange={e => setForm({ ...form, companyName: e.target.value })}
+            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
           />
           <label
             htmlFor="companyName"
@@ -214,9 +441,9 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.subdomain}
-            onChange={e => {
-              setForm({ ...form, subdomain: e.target.value })
-              checkSubdomainAvailability(e.target.value)
+            onChange={(e) => {
+              setForm({ ...form, subdomain: e.target.value });
+              checkSubdomainAvailability(e.target.value);
             }}
           />
           <label
@@ -243,7 +470,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.website}
-            onChange={e => setForm({ ...form, website: e.target.value })}
+            onChange={(e) => setForm({ ...form, website: e.target.value })}
           />
           <label
             htmlFor="website"
@@ -260,7 +487,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.phone}
-            onChange={e => setForm({ ...form, phone: e.target.value })}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
           <label
             htmlFor="phone"
@@ -271,7 +498,7 @@ function OrganizationSignup() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderCompanyDetails = () => (
     <motion.div
@@ -292,7 +519,7 @@ function OrganizationSignup() {
               required
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               value={form.industry}
-              onChange={e => setForm({ ...form, industry: e.target.value })}
+              onChange={(e) => setForm({ ...form, industry: e.target.value })}
             >
               <option value=""></option>
               <option value="technology">Technology</option>
@@ -328,7 +555,9 @@ function OrganizationSignup() {
               required
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               value={form.companySize}
-              onChange={e => setForm({ ...form, companySize: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, companySize: e.target.value })
+              }
             >
               <option value=""></option>
               <option value="1-10">1-10 employees</option>
@@ -366,7 +595,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.foundedYear}
-            onChange={e => setForm({ ...form, foundedYear: e.target.value })}
+            onChange={(e) => setForm({ ...form, foundedYear: e.target.value })}
           />
           <label
             htmlFor="foundedYear"
@@ -383,7 +612,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.headquarters}
-            onChange={e => setForm({ ...form, headquarters: e.target.value })}
+            onChange={(e) => setForm({ ...form, headquarters: e.target.value })}
           />
           <label
             htmlFor="headquarters"
@@ -398,22 +627,19 @@ function OrganizationSignup() {
             Company Type
           </label>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {["startup", "enterprise", "agency", "other"].map(type => (
+            {["startup", "enterprise", "agency", "other"].map((type) => (
               <button
                 key={type}
                 type="button"
-                className={`
-                  px-6 py-3 rounded-3xl transition-colors duration-200
-                  ${
-                    form.type === type
-                      ? "bg-md-primary-container text-md-on-primary-container"
-                      : "border border-md-outline-variant text-md-on-surface hover:bg-md-surface-variant"
-                  }
-                `}
+                className={`px-6 py-3 rounded-3xl transition-colors duration-200 ${
+                  form.type === type
+                    ? "bg-md-primary-container text-md-on-primary-container"
+                    : "border border-md-outline-variant text-md-on-surface hover:bg-md-surface-variant"
+                }`}
                 onClick={() =>
                   setForm({
                     ...form,
-                    type: type
+                    type: type,
                   })
                 }
               >
@@ -424,7 +650,7 @@ function OrganizationSignup() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderLocationContact = () => (
     <motion.div
@@ -446,7 +672,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.address}
-            onChange={e => setForm({ ...form, address: e.target.value })}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
           <label
             htmlFor="address"
@@ -465,7 +691,7 @@ function OrganizationSignup() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.city}
-              onChange={e => setForm({ ...form, city: e.target.value })}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
             />
             <label
               htmlFor="city"
@@ -483,7 +709,7 @@ function OrganizationSignup() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.country}
-              onChange={e => setForm({ ...form, country: e.target.value })}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
             />
             <label
               htmlFor="country"
@@ -501,7 +727,7 @@ function OrganizationSignup() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.zipCode}
-              onChange={e => setForm({ ...form, zipCode: e.target.value })}
+              onChange={(e) => setForm({ ...form, zipCode: e.target.value })}
             />
             <label
               htmlFor="zipCode"
@@ -511,9 +737,123 @@ function OrganizationSignup() {
             </label>
           </div>
         </div>
+
+        <div className="mt-8">
+          <h4 className="text-xl font-semibold text-md-on-surface mb-4">
+            Primary Contact Person
+          </h4>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div className="relative">
+              <input
+                type="text"
+                id="contactName"
+                required
+                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                placeholder=" "
+                value={form.contactPerson.name}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contactPerson: {
+                      ...form.contactPerson,
+                      name: e.target.value,
+                    },
+                  })
+                }
+              />
+              <label
+                htmlFor="contactName"
+                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+              >
+                Contact Name
+              </label>
+            </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                id="contactPosition"
+                required
+                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                placeholder=" "
+                value={form.contactPerson.position}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contactPerson: {
+                      ...form.contactPerson,
+                      position: e.target.value,
+                    },
+                  })
+                }
+              />
+              <label
+                htmlFor="contactPosition"
+                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+              >
+                Position
+              </label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-6">
+            <div className="relative">
+              <input
+                type="email"
+                id="contactEmail"
+                required
+                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                placeholder=" "
+                value={form.contactPerson.email}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contactPerson: {
+                      ...form.contactPerson,
+                      email: e.target.value,
+                    },
+                  })
+                }
+              />
+              <label
+                htmlFor="contactEmail"
+                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+              >
+                Email
+              </label>
+            </div>
+
+            <div className="relative">
+              <input
+                type="tel"
+                id="contactPhone"
+                required
+                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                placeholder=" "
+                value={form.contactPerson.phone}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contactPerson: {
+                      ...form.contactPerson,
+                      phone: e.target.value,
+                    },
+                  })
+                }
+              />
+              <label
+                htmlFor="contactPhone"
+                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+              >
+                Phone
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderAdditionalInfo = () => (
     <motion.div
@@ -533,7 +873,7 @@ function OrganizationSignup() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface h-32 resize-none"
             placeholder=" "
             value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
           <label
             htmlFor="description"
@@ -599,7 +939,7 @@ function OrganizationSignup() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.linkedin || ""}
-              onChange={e => setForm({ ...form, linkedin: e.target.value })}
+              onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
             />
             <label
               htmlFor="linkedin"
@@ -616,7 +956,7 @@ function OrganizationSignup() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.twitter || ""}
-              onChange={e => setForm({ ...form, twitter: e.target.value })}
+              onChange={(e) => setForm({ ...form, twitter: e.target.value })}
             />
             <label
               htmlFor="twitter"
@@ -628,7 +968,7 @@ function OrganizationSignup() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderSubscriptionPlan = () => (
     <motion.div
@@ -643,14 +983,12 @@ function OrganizationSignup() {
         </h3>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Free Plan */}
           <div
-            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md
-              ${
-                form.subscriptionPlan === "free"
-                  ? "border-md-primary bg-md-primary-container"
-                  : "border-md-outline-variant"
-              }`}
+            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md ${
+              form.subscriptionPlan === "free"
+                ? "border-md-primary bg-md-primary-container"
+                : "border-md-outline-variant"
+            }`}
             onClick={() => setForm({ ...form, subscriptionPlan: "free" })}
           >
             <div className="flex justify-between items-center mb-4">
@@ -665,7 +1003,7 @@ function OrganizationSignup() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -686,7 +1024,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -701,7 +1039,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -718,7 +1056,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -727,14 +1065,12 @@ function OrganizationSignup() {
             </ul>
           </div>
 
-          {/* Startup Plan */}
           <div
-            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md
-              ${
-                form.subscriptionPlan === "startup"
-                  ? "border-md-primary bg-md-primary-container"
-                  : "border-md-outline-variant"
-              }`}
+            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md ${
+              form.subscriptionPlan === "startup"
+                ? "border-md-primary bg-md-primary-container"
+                : "border-md-outline-variant"
+            }`}
             onClick={() => setForm({ ...form, subscriptionPlan: "startup" })}
           >
             <div className="flex justify-between items-center mb-4">
@@ -751,7 +1087,7 @@ function OrganizationSignup() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -772,7 +1108,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -789,7 +1125,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -806,7 +1142,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -823,7 +1159,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -832,14 +1168,12 @@ function OrganizationSignup() {
             </ul>
           </div>
 
-          {/* Enterprise Plan */}
           <div
-            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md
-              ${
-                form.subscriptionPlan === "enterprise"
-                  ? "border-md-primary bg-md-primary-container"
-                  : "border-md-outline-variant"
-              }`}
+            className={`border rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:shadow-md ${
+              form.subscriptionPlan === "enterprise"
+                ? "border-md-primary bg-md-primary-container"
+                : "border-md-outline-variant"
+            }`}
             onClick={() => setForm({ ...form, subscriptionPlan: "enterprise" })}
           >
             <div className="flex justify-between items-center mb-4">
@@ -856,7 +1190,7 @@ function OrganizationSignup() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -879,7 +1213,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -896,7 +1230,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -913,7 +1247,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -930,7 +1264,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -945,7 +1279,7 @@ function OrganizationSignup() {
                 >
                   <path
                     fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 00-1.414 1.414l2 2a1 1 001.414 0l4-4z"
                     clipRule="evenodd"
                   />
                 </svg>
@@ -955,7 +1289,6 @@ function OrganizationSignup() {
           </div>
         </div>
 
-        {/* Contact Sales Option */}
         <div className="mt-8 p-6 border border-dashed border-md-outline-variant rounded-3xl bg-md-surface-container-high">
           <div
             className="flex items-center cursor-pointer"
@@ -963,8 +1296,7 @@ function OrganizationSignup() {
           >
             <div className="mr-4">
               <div
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center
-                ${
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                   form.subscriptionPlan === "contact"
                     ? "border-md-primary bg-md-primary"
                     : "border-md-outline"
@@ -979,7 +1311,7 @@ function OrganizationSignup() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -1022,82 +1354,79 @@ function OrganizationSignup() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 0:
-        return renderBasicInfo()
+        return renderBasicInfo();
       case 1:
-        return renderCompanyDetails()
+        return renderCompanyDetails();
       case 2:
-        return renderLocationContact()
+        return renderLocationContact();
       case 3:
-        return renderAdditionalInfo()
+        return renderAdditionalInfo();
       case 4:
-        return renderSubscriptionPlan()
+        return renderSubscriptionPlan();
       default:
-        return null
+        return null;
     }
-  }
+  };
 
-  const validateStep = step => {
+  const validateStep = (step) => {
     switch (step) {
       case 0:
-        return form.companyName.length > 0
+        return form.companyName.length > 0;
       case 1:
-        return form.industry.length > 0 && form.companySize.length > 0
+        return form.industry.length > 0 && form.companySize.length > 0;
       case 2:
         return (
           form.address.length > 0 &&
           form.city.length > 0 &&
           form.country.length > 0 &&
           form.contactPerson.name.length > 0
-        )
+        );
       case 3:
-        return form.description.length > 0
+        return form.description.length > 0;
       case 4:
-        return !!form.subscriptionPlan
+        return !!form.subscriptionPlan;
       default:
-        return false
+        return false;
     }
-  }
+  };
 
   useEffect(() => {
-    localStorage.setItem("authToken", token)
+    localStorage.setItem("authToken", token);
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/user`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
-        )
+        );
         if (response.data) {
-          localStorage.setItem("user", JSON.stringify(response.data))
-          setUser(response.data)
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setUser(response.data);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error)
+        console.error("Error fetching user data:", error);
       }
-    }
-    fetchUserData()
-  }, [token])
+    };
+    fetchUserData();
+  }, [token]);
 
   return (
     <div className="flex h-dvh bg-md-background">
-      {/* Left pane - only visible on md and larger */}
       <div className="hidden md:flex md:w-1/3 bg-md-primary p-8 flex-col justify-between relative overflow-hidden">
-        {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-3xl bg-md-on-primary opacity-5"></div>
           <div className="absolute top-1/4 -left-20 w-40 h-40 rounded-3xl bg-md-on-primary opacity-5"></div>
           <div className="absolute bottom-1/3 right-10 w-32 h-32 rounded-3xl bg-md-on-primary opacity-5"></div>
         </div>
 
-        {/* Content */}
         <div className="relative z-10">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-3xl bg-md-on-primary flex items-center justify-center">
@@ -1145,9 +1474,7 @@ function OrganizationSignup() {
         </div>
       </div>
 
-      {/* Right pane - main content */}
       <div className="w-full md:w-2/3 flex flex-col">
-        {/* Mobile header and progress - only visible on smaller screens */}
         <div className="md:hidden bg-md-surface px-6 py-6 sticky top-0 z-20 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-3xl bg-md-primary flex items-center justify-center">
@@ -1169,17 +1496,15 @@ function OrganizationSignup() {
           <FormProgress steps={orgSteps} currentStep={currentStep} />
         </div>
 
-        {/* Main form area */}
         <div className="flex-grow md:mt-20 overflow-auto p-4 md:p-8 bg-md-background">
           <div className="max-w-3xl mx-auto mb-24 md:mb-0">
-            {/* Error message if any */}
             {formError && (
               <div className="mb-6 p-4 rounded-3xl bg-md-error-container text-md-on-error-container">
                 <p>{formError}</p>
               </div>
             )}
 
-            <form className="space-y-8" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
               <AnimatePresence mode="wait">
                 {renderCurrentStep()}
               </AnimatePresence>
@@ -1189,11 +1514,9 @@ function OrganizationSignup() {
                   type="button"
                   onClick={prevStep}
                   disabled={currentStep === 0 || isSubmitting}
-                  className={`
-                    px-6 py-3 rounded-3xl text-md-on-surface-variant bg-md-surface-variant hover:bg-md-surface-container-high transition-colors duration-200
-                    ${currentStep === 0 ? "opacity-0 pointer-events-none" : ""}
-                    ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
-                  `}
+                  className={`px-6 py-3 rounded-3xl text-md-on-surface-variant bg-md-surface-variant hover:bg-md-surface-container-high transition-colors duration-200 ${
+                    currentStep === 0 ? "opacity-0 pointer-events-none" : ""
+                  } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   Previous
                 </button>
@@ -1205,10 +1528,9 @@ function OrganizationSignup() {
                       : nextStep
                   }
                   disabled={isSubmitting}
-                  className={`
-                    px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200
-                    ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
-                  `}
+                  className={`px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200 ${
+                    isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center">
@@ -1247,6 +1569,8 @@ function OrganizationSignup() {
           </div>
         </div>
       </div>
+
+      {renderPaymentModal()}
     </div>
-  )
+  );
 }

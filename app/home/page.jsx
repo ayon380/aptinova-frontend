@@ -84,7 +84,7 @@ const Page = () => {
             router.push("/candidate/profile");
           } else if (data.userType === "HR") {
             router.push("/orgs/hr/profile");
-          } else if (data.userType === "HRManager") {
+          } else if (data.userType === "hrManager") {
             router.push("/orgs/hrm/profile");
           }
           return;
@@ -102,7 +102,7 @@ const Page = () => {
         router.push("/candidate/profile");
       } else if (data.userType === "HR") {
         router.push("/orgs/hr/profile");
-      } else if (data.userType === "HRManager") {
+      } else if (data.userType === "hrManager") {
         router.push("/orgs/hrm/profile");
       }
     } catch (err) {
@@ -131,7 +131,7 @@ const Page = () => {
         router.push("/candidate/profile");
       } else if (userType === "HR") {
         router.push("/orgs/hr/profile");
-      } else if (userType === "HRManager") {
+      } else if (userType === "hrManager") {
         router.push("/orgs/hrm/profile");
       }
     }

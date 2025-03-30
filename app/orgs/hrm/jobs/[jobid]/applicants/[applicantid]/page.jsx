@@ -1,7 +1,7 @@
 // 'use client';
 // import { useState, useEffect } from 'react';
-// import { 
-//   Container, Typography, Box, Grid, Card, Avatar, 
+// import {
+//   Container, Typography, Box, Grid, Card, Avatar,
 //   Button, Divider, Chip, Stepper, Step, StepLabel,
 //   Tabs, Tab, List, ListItem, ListItemText, ListItemIcon,
 //   IconButton, TextField, Menu, MenuItem
@@ -65,16 +65,16 @@
 //         { stage: 'Offer', completed: false, date: null }
 //       ]
 //     });
-    
+
 //     setNotes([
 //       { id: 1, text: 'Great portfolio with strong visual design skills', author: 'Alex Rodriguez', date: '2023-10-19', authorAvatar: '/avatars/recruiter1.jpg' },
 //       { id: 2, text: 'Candidate has experience with our tech stack and seems enthusiastic about our product', author: 'Jamie Smith', date: '2023-10-20', authorAvatar: '/avatars/recruiter2.jpg' }
 //     ]);
-    
+
 //     setAssessments([
 //       { id: 1, name: 'UX Design Challenge', status: 'Completed', score: '92%', completedDate: '2023-10-22' }
 //     ]);
-    
+
 //     setInterviews([
 //       { id: 1, type: 'Initial Screening', date: '2023-10-19', time: '10:00 AM', interviewer: 'Jamie Smith', feedback: 'Positive initial impression, good communication skills' },
 //       { id: 2, type: 'Technical Interview', date: '2023-10-25', time: '2:00 PM', interviewer: 'Alex Rodriguez', feedback: null }
@@ -106,7 +106,7 @@
 //         date: new Date().toISOString().split('T')[0],
 //         authorAvatar: '/avatars/current-user.jpg' // Replace with actual avatar
 //       };
-      
+
 //       setNotes([newNote, ...notes]);
 //       setNoteText('');
 //     }
@@ -148,8 +148,8 @@
 //               <ListItemIcon sx={{ minWidth: 40 }}>
 //                 <LinkedInIcon color="primary" fontSize="small" />
 //               </ListItemIcon>
-//               <ListItemText 
-//                 primary="LinkedIn" 
+//               <ListItemText
+//                 primary="LinkedIn"
 //                 secondary={
 //                   <Link href={`https://${applicant.linkedin}`} target="_blank">
 //                     {applicant.linkedin}
@@ -162,8 +162,8 @@
 //                 <ListItemIcon sx={{ minWidth: 40 }}>
 //                   <OpenInNewIcon color="primary" fontSize="small" />
 //                 </ListItemIcon>
-//                 <ListItemText 
-//                   primary="Portfolio" 
+//                 <ListItemText
+//                   primary="Portfolio"
 //                   secondary={
 //                     <Link href={`https://${applicant.portfolio}`} target="_blank">
 //                       {applicant.portfolio}
@@ -176,9 +176,9 @@
 //               <ListItemIcon sx={{ minWidth: 40 }}>
 //                 <CalendarIcon color="primary" fontSize="small" />
 //               </ListItemIcon>
-//               <ListItemText 
-//                 primary="Applied On" 
-//                 secondary={new Date(applicant.appliedDate).toLocaleDateString()} 
+//               <ListItemText
+//                 primary="Applied On"
+//                 secondary={new Date(applicant.appliedDate).toLocaleDateString()}
 //               />
 //             </ListItem>
 //           </List>
@@ -194,20 +194,20 @@
 //         <Button startIcon={<DownloadIcon />} size="small">Download</Button>
 //       </Box>
 //       <Divider sx={{ mb: 3 }} />
-      
+
 //       <Typography variant="subtitle1" sx={{ mb: 1 }}>Experience</Typography>
 //       <Typography variant="body2" sx={{ mb: 2 }}>{applicant.experience}</Typography>
-      
+
 //       <Typography variant="subtitle1" sx={{ mb: 1 }}>Education</Typography>
 //       <Typography variant="body2" sx={{ mb: 2 }}>{applicant.education}</Typography>
-      
+
 //       <Typography variant="subtitle1" sx={{ mb: 1 }}>Skills</Typography>
 //       <Box sx={{ mb: 2 }}>
 //         {applicant.skills.map((skill, index) => (
 //           <Chip key={index} label={skill} size="small" sx={{ mr: 1, mb: 1 }} />
 //         ))}
 //       </Box>
-      
+
 //       <Typography variant="subtitle1" sx={{ mb: 1 }}>Cover Letter</Typography>
 //       <Box dangerouslySetInnerHTML={{ __html: applicant.coverLetter }} />
 //     </Card>
@@ -227,9 +227,9 @@
 //           sx={{ mb: 1 }}
 //         />
 //         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-//           <Button 
-//             variant="contained" 
-//             size="small" 
+//           <Button
+//             variant="contained"
+//             size="small"
 //             onClick={handleAddNote}
 //             disabled={!noteText.trim()}
 //           >
@@ -237,9 +237,9 @@
 //           </Button>
 //         </Box>
 //       </Box>
-      
+
 //       <Divider sx={{ mb: 2 }} />
-      
+
 //       <List>
 //         {notes.map((note) => (
 //           <ListItem key={note.id} sx={{ flexDirection: 'column', alignItems: 'flex-start', pb: 2 }}>
@@ -270,22 +270,22 @@
 //         <Button startIcon={<AddIcon />} size="small">Schedule Interview</Button>
 //       </Box>
 //       <Divider sx={{ mb: 3 }} />
-      
+
 //       <List>
 //         {interviews.map((interview) => (
-//           <ListItem 
-//             key={interview.id} 
-//             sx={{ 
-//               border: '1px solid #e0e0e0', 
-//               borderRadius: 1, 
+//           <ListItem
+//             key={interview.id}
+//             sx={{
+//               border: '1px solid #e0e0e0',
+//               borderRadius: 1,
 //               mb: 2,
 //               flexDirection: 'column',
 //               alignItems: 'flex-start'
 //             }}
 //           >
-//             <Box sx={{ 
-//               display: 'flex', 
-//               width: '100%', 
+//             <Box sx={{
+//               display: 'flex',
+//               width: '100%',
 //               p: 1,
 //               backgroundColor: interview.feedback ? '#f0f7ff' : '#fff9c4',
 //               borderTopLeftRadius: 4,
@@ -298,20 +298,20 @@
 //                 </Typography>
 //               </Box>
 //               <Box sx={{ flexGrow: 1 }} />
-//               <Chip 
-//                 label={interview.feedback ? 'Completed' : 'Scheduled'} 
-//                 color={interview.feedback ? 'success' : 'warning'} 
-//                 size="small" 
+//               <Chip
+//                 label={interview.feedback ? 'Completed' : 'Scheduled'}
+//                 color={interview.feedback ? 'success' : 'warning'}
+//                 size="small"
 //               />
 //             </Box>
-            
+
 //             {interview.feedback && (
 //               <Box sx={{ p: 2, width: '100%' }}>
 //                 <Typography variant="subtitle2">Feedback:</Typography>
 //                 <Typography variant="body2">{interview.feedback}</Typography>
 //               </Box>
 //             )}
-            
+
 //             {!interview.feedback && (
 //               <Box sx={{ p: 2, width: '100%' }}>
 //                 <Button variant="outlined" size="small">Add Feedback</Button>
@@ -330,29 +330,29 @@
 //         <Button startIcon={<AddIcon />} size="small">Send Assessment</Button>
 //       </Box>
 //       <Divider sx={{ mb: 3 }} />
-      
+
 //       {assessments.length > 0 ? (
 //         <List>
 //           {assessments.map((assessment) => (
-//             <ListItem 
-//               key={assessment.id} 
-//               sx={{ 
-//                 border: '1px solid #e0e0e0', 
-//                 borderRadius: 1, 
+//             <ListItem
+//               key={assessment.id}
+//               sx={{
+//                 border: '1px solid #e0e0e0',
+//                 borderRadius: 1,
 //                 mb: 2
 //               }}
 //             >
-//               <ListItemText 
-//                 primary={assessment.name} 
-//                 secondary={`Completed on ${new Date(assessment.completedDate).toLocaleDateString()}`} 
+//               <ListItemText
+//                 primary={assessment.name}
+//                 secondary={`Completed on ${new Date(assessment.completedDate).toLocaleDateString()}`}
 //               />
 //               <Box>
-//                 <Chip 
-//                   label={assessment.score} 
+//                 <Chip
+//                   label={assessment.score}
 //                   color={
-//                     parseFloat(assessment.score) > 80 ? 'success' : 
+//                     parseFloat(assessment.score) > 80 ? 'success' :
 //                     parseFloat(assessment.score) > 60 ? 'warning' : 'error'
-//                   } 
+//                   }
 //                 />
 //               </Box>
 //             </ListItem>
@@ -369,45 +369,45 @@
 //   return (
 //     <Container maxWidth="lg">
 //       <Box sx={{ display: 'flex', mb: 3 }}>
-//         <Button 
+//         <Button
 //           startIcon={<ArrowBackIcon />}
 //           onClick={() => router.push('/orgs/applicants')}
 //         >
 //           Back to All Applicants
 //         </Button>
 //       </Box>
-      
+
 //       <Grid container spacing={3}>
 //         <Grid item xs={12} md={4}>
 //           <Card sx={{ p: 3, mb: 3, textAlign: 'center' }}>
-//             <Avatar 
-//               src={applicant.avatar} 
-//               sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }} 
+//             <Avatar
+//               src={applicant.avatar}
+//               sx={{ width: 120, height: 120, mx: 'auto', mb: 2 }}
 //             />
 //             <Typography variant="h5" sx={{ mb: 0.5 }}>{applicant.name}</Typography>
 //             <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
 //               {applicant.title}
 //             </Typography>
-            
+
 //             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
 //               {[...Array(5)].map((_, index) => (
-//                 index < applicant.rating ? 
-//                   <StarIcon key={index} sx={{ color: '#FFD700' }} /> : 
+//                 index < applicant.rating ?
+//                   <StarIcon key={index} sx={{ color: '#FFD700' }} /> :
 //                   <StarBorderIcon key={index} sx={{ color: '#FFD700' }} />
 //               ))}
 //             </Box>
-            
-//             <Chip 
-//               label={applicant.status} 
+
+//             <Chip
+//               label={applicant.status}
 //               color={getStatusColor(applicant.status)}
 //               sx={{ mb: 2 }}
 //             />
-            
+
 //             <Box sx={{ textAlign: 'left' }}>
 //               <Typography variant="subtitle1" sx={{ mb: 1 }}>Hiring Progress</Typography>
-//               <Stepper 
-//                 activeStep={applicant.hiringProcess.findIndex(stage => !stage.completed)} 
-//                 orientation="vertical" 
+//               <Stepper
+//                 activeStep={applicant.hiringProcess.findIndex(stage => !stage.completed)}
+//                 orientation="vertical"
 //                 sx={{ mb: 2 }}
 //               >
 //                 {applicant.hiringProcess.map((stage, index) => (
@@ -415,7 +415,7 @@
 //                     <StepLabel>
 //                       <Typography variant="body2">
 //                         {stage.stage}
-//                         {stage.date && 
+//                         {stage.date &&
 //                           <Typography variant="caption" component="span" sx={{ ml: 1 }}>
 //                             ({new Date(stage.date).toLocaleDateString()})
 //                           </Typography>
@@ -426,10 +426,10 @@
 //                 ))}
 //               </Stepper>
 //             </Box>
-            
+
 //             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-//               <Button 
-//                 variant="outlined" 
+//               <Button
+//                 variant="outlined"
 //                 onClick={handleMenuOpen}
 //                 endIcon={<MoreVertIcon />}
 //               >
@@ -438,14 +438,14 @@
 //               <Button variant="contained">Move to Next Stage</Button>
 //             </Box>
 //           </Card>
-          
+
 //           <Card sx={{ p: 3 }}>
 //             <Typography variant="h6" sx={{ mb: 2 }}>Attached Documents</Typography>
 //             <List>
-//               <ListItem 
-//                 button 
-//                 component="a" 
-//                 href={applicant.resumeUrl} 
+//               <ListItem
+//                 button
+//                 component="a"
+//                 href={applicant.resumeUrl}
 //                 target="_blank"
 //               >
 //                 <ListItemIcon>
@@ -468,7 +468,7 @@
 //             </List>
 //           </Card>
 //         </Grid>
-        
+
 //         <Grid item xs={12} md={8}>
 //           <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
 //             <Tab label="Overview" />
@@ -477,7 +477,7 @@
 //             <Tab label="Interviews" />
 //             <Tab label="Assessments" />
 //           </Tabs>
-          
+
 //           {tabValue === 0 && (
 //             <>
 //               {renderBasicInfo()}
@@ -485,14 +485,14 @@
 //               {renderInterviews()}
 //             </>
 //           )}
-          
+
 //           {tabValue === 1 && renderResume()}
 //           {tabValue === 2 && renderNotes()}
 //           {tabValue === 3 && renderInterviews()}
 //           {tabValue === 4 && renderAssessments()}
 //         </Grid>
 //       </Grid>
-      
+
 //       <Menu
 //         anchorEl={menuAnchorEl}
 //         open={Boolean(menuAnchorEl)}
@@ -509,12 +509,10 @@
 //   );
 // }
 
-import React from 'react'
+import React from "react";
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <div>page</div>;
+};
 
-export default page
+export default page;

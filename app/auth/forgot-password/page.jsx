@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Header from "@/components/main/Header";
-import Footer from "@/components/main/Footer";
 
 export default function ForgotPassword() {
   const [formData, setFormData] = useState({
     email: "",
-    userType: "",
+    userType: "candidate",
   });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
