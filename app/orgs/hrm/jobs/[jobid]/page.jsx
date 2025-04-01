@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-
+//v0.29
 export default function JobDetailsPage() {
   const router = useRouter();
   const { jobid } = useParams();
