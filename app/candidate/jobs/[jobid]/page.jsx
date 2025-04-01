@@ -10,10 +10,6 @@ export default function JobDetailsPage() {
   const { jobid } = useParams();
   const [job, setJob] = useState(null);
   const SearchParams = useSearchParams();
-  const token = SearchParams.get("authToken");
-  if (token) {
-    localStorage.setItem("authToken", token);
-  }
   const [applicants, setApplicants] = useState([]);
   const [activeTab, setActiveTab] = useState("overview");
   const [isApplying, setIsApplying] = useState(false);
@@ -41,6 +37,32 @@ export default function JobDetailsPage() {
     fetchJobDetails();
   }, [jobid]);
 
+  const handleApply = async () => {
+    setIsApplying(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobid}/apply`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({
+            appliedAt: new Date().toISOString(),
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Application failed");
+      const result = await response.json();
+      alert("Application submitted successfully!");
+    } catch (error) {
+      console.error("Error applying:", error);
+      alert(error.message || "Failed to submit application. Please try again.");
+    }
+    setIsApplying(false);
+  };
+
   if (!job)
     return (
       <div className="container mx-auto p-4 flex justify-center items-center h-screen">
@@ -53,11 +75,12 @@ export default function JobDetailsPage() {
       </div>
     );
 
-  // Parse hiring process steps if available
-  const hiringProcess = job.hiringProcess ? JSON.parse(job.hiringProcess) : [];
+  const hiringProcess = job.hiringProcess
+    ? JSON.parse(job.hiringProcess)
+    : [];
 
   return (
-    <div className="container mx-auto md:bg-md-surface-container h-full rounded-tl-3xl w-full px-4 md:p-10 py-8">
+    <div className=" md:bg-md-surface-container h-full rounded-tl-3xl w-full px-4 md:p-10 py-8">
       {/* Back Button */}
       <button
         onClick={() => router.back()}
@@ -106,6 +129,17 @@ export default function JobDetailsPage() {
               )}
             </div>
           </div>
+
+          <button
+            onClick={handleApply}
+            disabled={isApplying}
+            className={`px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
+              transition-all duration-200 shadow-sm hover:shadow ${
+                isApplying ? "opacity-75 cursor-not-allowed" : ""
+              }`}
+          >
+            {isApplying ? "Applying..." : "Apply Now"}
+          </button>
         </div>
       </div>
 
@@ -248,7 +282,7 @@ export default function JobDetailsPage() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M20 6H17.82C17.93 5.69 18 5.35 18 5C18 3.34 16.66 2 15 2C13.95 2 13.04 2.54 12.5 3.35L12 4L11.5 3.34C10.96 2.54 10.05 2 9 2C7.34 2 6 3.34 6 5C6 5.35 6.07 5.69 6.18 6H4C2.89 6 2.01 6.89 2.01 8L2 19C2 20.11 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6ZM15 4C15.55 4 16 4.45 16 5C16 5.55 15.55 6 15 6C14.45 6 14 5.55 14 5C14 4.45 14.45 4 15 4ZM9 4C9.55 4 10 4.45 10 5C10 5.55 9.55 6 9 6C8.45 6 8 5.55 8 5C8 4.45 8.45 4 9 4ZM20 19H4V17H20V19ZM20 14H4V8H9.08L7 10.83L8.62 12L11 8.76L12 7.4L13 8.76L15.38 12L17 10.83L14.92 8H20V14Z"
+                    d="M20 6H17.82C17.93 5.69 18 5.35 18 5C18 3.34 16.66 2 15 2C13.95 2 13.04 2.54 12.5 3.35L12 4L11.5 3.34C10.96 2.54 10.05 2 9 2C7.34 2 6 3.34 6 5C6 5.35 6.07 5.69 6.18 6H4C2.89 6 2.01 6.89 2.01 8L2 19C2 20.1 2.89 21 4 21H20C21.11 21 22 20.11 22 19V8C22 6.89 21.11 6 20 6ZM19 19H4V17H20V19ZM20 14H4V8H9.08L7 10.83L8.62 12L11 8.76L12 7.4L13 8.76L15.38 12L17 10.83L14.92 8H20V14Z"
                     fill="currentColor"
                   />
                 </svg>
@@ -262,7 +296,7 @@ export default function JobDetailsPage() {
         )}
 
         {activeTab === "hiring process" && (
-          <div className="prose max-w-none  prose-md-primary">
+          <div className="prose max-w-none prose-md-primary">
             <h3 className="text-xl font-semibold mb-4 text-md-on-surface flex items-center gap-2">
               <span className="inline-flex items-center justify-center w-8 h-8 bg-md-primary-container text-md-on-primary-container rounded-full">
                 <svg
@@ -278,10 +312,10 @@ export default function JobDetailsPage() {
                   />
                 </svg>
               </span>
-              Hiring Process Timeline
+              What to Expect
             </h3>
 
-            <div className="max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               {hiringProcess.length > 0 ? (
                 <div className="relative">
                   <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-md-outline-variant"></div>
@@ -365,7 +399,7 @@ export default function JobDetailsPage() {
                         </div>
 
                         {step.description && (
-                          <p className="text-md-on-surface-variant mb-4">
+                          <p className="text-md-on-surface-variant mb-2">
                             {step.description}
                           </p>
                         )}
@@ -380,12 +414,12 @@ export default function JobDetailsPage() {
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path
-                                d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3.01 3.9 3.01 5L3 19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V9H19V19ZM19 7H5V5H19V7ZM12 11H7V16H12V11Z"
+                                d="M19 3H18V1H16V3H8V1H6V3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V9H19V19ZM19 7H5V5H19V7ZM12 11H7V16H12V11Z"
                                 fill="currentColor"
                               />
                             </svg>
                             <span>
-                              Planned:{" "}
+                              Expected:{" "}
                               {new Date(step.plannedDate).toLocaleDateString(
                                 undefined,
                                 {
@@ -396,33 +430,6 @@ export default function JobDetailsPage() {
                               )}
                             </span>
                           </div>
-
-                          {step.completedDate && (
-                            <div className="flex items-center gap-1 text-md-success">
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                              <span>
-                                Completed:{" "}
-                                {new Date(
-                                  step.completedDate
-                                ).toLocaleDateString(undefined, {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                })}
-                              </span>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -433,6 +440,23 @@ export default function JobDetailsPage() {
                   No hiring process details available for this position.
                 </div>
               )}
+            </div>
+
+            <div className="mt-6 p-4 bg-md-surface-variant rounded-2xl">
+              <h4 className="text-md-on-surface font-medium">
+                Ready to take the first step?
+              </h4>
+              <p className="text-md-on-surface-variant mb-4">
+                Apply now to begin your journey with us.
+              </p>
+              <button
+                onClick={handleApply}
+                disabled={isApplying}
+                className="px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
+                transition-all duration-200 shadow-sm hover:shadow"
+              >
+                {isApplying ? "Applying..." : "Apply Now"}
+              </button>
             </div>
           </div>
         )}
@@ -487,6 +511,26 @@ export default function JobDetailsPage() {
             </span>
           </div>
         )}
+
+        <button
+          onClick={handleApply}
+          disabled={isApplying}
+          className="mt-4 sm:mt-0 w-full sm:w-auto px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              fill="currentColor"
+            />
+          </svg>
+          {isApplying ? "Submitting Application..." : "Apply Now"}
+        </button>
       </div>
     </div>
   );

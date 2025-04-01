@@ -7,7 +7,13 @@ import { motion } from "framer-motion";
 import { jobService } from "@/services/jobService";
 import ReactMarkdown from "react-markdown";
 
-const steps = ["Job Details", "Job Description", "Requirements", "Review"];
+const steps = [
+  "Job Details",
+  "Job Description",
+  "Requirements",
+  "Hiring Process",
+  "Review",
+];
 const JOB_LEVELS = [
   "Entry-level",
   "Mid-level",
@@ -16,6 +22,7 @@ const JOB_LEVELS = [
   "Executive",
 ];
 const REMOTE_TYPES = ["On-site", "Remote", "Hybrid"];
+const HIRING_STEP_TYPES = ["Shortlist", "Test", "Interview", "Onboard"];
 
 export default function CreateJobPage() {
   const router = useRouter();
@@ -39,6 +46,15 @@ export default function CreateJobPage() {
     remoteEligibility: false,
     visaSponsorshipAvailable: false,
     additionalDetails: "",
+    hiringProcess: [
+      {
+        type: "Shortlist",
+        name: "Resume Screening",
+        description: "Initial review of submitted applications",
+        plannedDate: "",
+        completedDate: "",
+      },
+    ],
   });
 
   // Validate form completeness to enable/disable Next button
@@ -72,6 +88,15 @@ export default function CreateJobPage() {
         setIsStepValid(true); // Modified since qualifications are now optional
         break;
       case 3:
+        // Hiring process validation
+        const hiringProcessValid =
+          jobData.hiringProcess.length > 0 &&
+          jobData.hiringProcess.every(
+            (step) => step.type && step.name && step.name.trim() !== ""
+          );
+        setIsStepValid(hiringProcessValid);
+        break;
+      case 4:
         setIsStepValid(true);
         break;
       default:
@@ -110,13 +135,14 @@ export default function CreateJobPage() {
         experienceRequired: parseInt(jobData.experienceRequired) || null,
         postedAt: new Date().toISOString(),
         status: "Open",
+        hiringProcess: JSON.stringify(jobData.hiringProcess),
       };
 
       await jobService.createJob(transformedData);
 
       // Show success confirmation
       alert("Job posted successfully!");
-      router.push("/orgs/jobs");
+      router.push("/orgs/hrm/jobs");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create job posting");
       // Scroll to top to show error
@@ -126,21 +152,70 @@ export default function CreateJobPage() {
     }
   };
 
+  // Handle hiring process steps
+  const addHiringStep = () => {
+    setJobData((prevData) => ({
+      ...prevData,
+      hiringProcess: [
+        ...prevData.hiringProcess,
+        {
+          type: "Shortlist",
+          name: "",
+          description: "",
+          plannedDate: "",
+          completedDate: "",
+        },
+      ],
+    }));
+  };
+
+  const updateHiringStep = (index, field, value) => {
+    const updatedSteps = [...jobData.hiringProcess];
+    updatedSteps[index] = {
+      ...updatedSteps[index],
+      [field]: value,
+    };
+    handleJobDataChange("hiringProcess", updatedSteps);
+  };
+
+  const removeHiringStep = (index) => {
+    const updatedSteps = jobData.hiringProcess.filter((_, i) => i !== index);
+    handleJobDataChange("hiringProcess", updatedSteps);
+  };
+
+  const moveHiringStep = (index, direction) => {
+    if (
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === jobData.hiringProcess.length - 1)
+    ) {
+      return;
+    }
+
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    const updatedSteps = [...jobData.hiringProcess];
+    [updatedSteps[index], updatedSteps[newIndex]] = [
+      updatedSteps[newIndex],
+      updatedSteps[index],
+    ];
+
+    handleJobDataChange("hiringProcess", updatedSteps);
+  };
+
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
         return (
           <motion.div
-            className="space-y-6"
+            className="space-y-6 "
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="space-y-6">
+            <div className="space-y-6 ">
               <div>
                 <label
                   htmlFor="job-title"
-                  className="block text-sm font-medium mb-1"
+                  className="block text-sm font-medium "
                 >
                   Job Title <span className="text-md-error">*</span>
                 </label>
@@ -232,7 +307,7 @@ export default function CreateJobPage() {
                 </p>
               </div>
 
-              <div className="p-6 bg-md-surface-container rounded-xl">
+              <div className="p-6 bg-md-primary-container md:bg-md-secondary-container rounded-xl">
                 <h3 className="text-lg font-medium mb-4">
                   Salary Information (Optional)
                 </h3>
@@ -330,7 +405,7 @@ export default function CreateJobPage() {
                 </select>
               </div>
 
-              <div className="p-6 bg-md-surface-container rounded-xl">
+              <div className="p-6 bg-md-primary-container md:bg-md-secondary-container rounded-xl">
                 <div className="flex items-center mb-4">
                   <input
                     id="visa-sponsorship"
@@ -352,7 +427,7 @@ export default function CreateJobPage() {
                   </label>
                 </div>
 
-                <div className="form-row mb-4">
+                <div className="form-row  mb-4">
                   <label
                     htmlFor="deadline"
                     className="block text-sm font-medium mb-1"
@@ -505,6 +580,162 @@ export default function CreateJobPage() {
       case 3:
         return (
           <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="bg-md-surface-container p-6 rounded-xl">
+              <h2 className="text-xl font-bold mb-4">Define Hiring Process</h2>
+              <p className="text-md-on-surface-variant mb-6">
+                Specify the steps candidates will go through in your hiring
+                process.
+              </p>
+
+              <div className="space-y-6">
+                {jobData.hiringProcess.map((step, index) => (
+                  <div
+                    key={index}
+                    className="bg-md-surface p-6 rounded-xl border border-md-outline"
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-lg font-medium">Step {index + 1}</h3>
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => moveHiringStep(index, "up")}
+                          disabled={index === 0}
+                          className="p-2 rounded-full hover:bg-md-surface-variant disabled:opacity-50"
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveHiringStep(index, "down")}
+                          disabled={index === jobData.hiringProcess.length - 1}
+                          className="p-2 rounded-full hover:bg-md-surface-variant disabled:opacity-50"
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeHiringStep(index)}
+                          className="p-2 rounded-full text-md-error hover:bg-md-error-container"
+                          title="Remove step"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Type <span className="text-md-error">*</span>
+                        </label>
+                        <select
+                          value={step.type}
+                          onChange={(e) =>
+                            updateHiringStep(index, "type", e.target.value)
+                          }
+                          className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent appearance-none transition-all duration-200"
+                          required
+                        >
+                          {HIRING_STEP_TYPES.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Name <span className="text-md-error">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={step.name}
+                          onChange={(e) =>
+                            updateHiringStep(index, "name", e.target.value)
+                          }
+                          placeholder="e.g. Phone Screening, Technical Interview"
+                          className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        value={step.description}
+                        onChange={(e) =>
+                          updateHiringStep(index, "description", e.target.value)
+                        }
+                        placeholder="Describe this hiring step"
+                        rows={3}
+                        className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Planned Date
+                        </label>
+                        <input
+                          type="date"
+                          value={step.plannedDate}
+                          onChange={(e) =>
+                            updateHiringStep(
+                              index,
+                              "plannedDate",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-2 rounded-xl border border-md-outline bg-md-surface-container focus:ring-2 focus:ring-md-primary focus:border-transparent transition-all duration-200"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addHiringStep}
+                  className="w-full py-3 border-2 border-dashed border-md-outline rounded-xl hover:bg-md-surface-variant transition-colors flex items-center justify-center"
+                >
+                  <span className="mr-2">+</span> Add Hiring Step
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-md-secondary-container text-md-on-secondary-container p-4 rounded-xl">
+              <h3 className="font-medium mb-2">
+                Tips for a Good Hiring Process:
+              </h3>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>
+                  Order steps chronologically as candidates will experience them
+                </li>
+                <li>Be specific about what each step entails</li>
+                <li>Include approximate timeframes when possible</li>
+                <li>
+                  Common steps include: application review, screening call,
+                  assessments, interviews, reference checks, and onboarding
+                </li>
+              </ul>
+            </div>
+          </motion.div>
+        );
+      case 4:
+        return (
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
@@ -612,6 +843,45 @@ export default function CreateJobPage() {
                     </div>
                   </div>
                 )}
+
+                {jobData.hiringProcess.length > 0 && (
+                  <div className="p-4 bg-md-surface-container rounded-xl">
+                    <h3 className="flex items-center text-lg font-medium mb-3">
+                      <span className="mr-2">📋</span> Hiring Process
+                    </h3>
+                    <div className="bg-md-surface p-4 rounded-lg">
+                      <ol className="space-y-3">
+                        {jobData.hiringProcess.map((step, index) => (
+                          <li
+                            key={index}
+                            className="p-3 border-l-4 border-md-primary-container pl-3"
+                          >
+                            <div className="flex justify-between">
+                              <div>
+                                <span className="font-medium">
+                                  {index + 1}. {step.name}
+                                </span>
+                                <span className="ml-2 px-2 py-0.5 bg-md-secondary-container text-md-on-secondary-container rounded-full text-xs">
+                                  {step.type}
+                                </span>
+                              </div>
+                              {step.plannedDate && (
+                                <span className="text-sm text-md-on-surface-variant">
+                                  {step.plannedDate}
+                                </span>
+                              )}
+                            </div>
+                            {step.description && (
+                              <p className="text-sm mt-1 text-md-on-surface-variant">
+                                {step.description}
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -623,7 +893,7 @@ export default function CreateJobPage() {
 
   return (
     <div className="w-full h-full overflow-y-auto md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto pb-20">
         {error && (
           <div className="mb-4 p-4 bg-md-error-container text-md-on-error-container rounded-xl border border-md-error">
             {error}
@@ -675,7 +945,7 @@ export default function CreateJobPage() {
           </div>
         </div>
 
-        <div className="bg-md-surface-container-highest rounded-2xl shadow-md p-8 mb-8">
+        <div className=" rounded-2xl  md:p-8 mb-8">
           {renderStepContent(activeStep)}
         </div>
 
@@ -690,7 +960,7 @@ export default function CreateJobPage() {
           <div className="space-x-4">
             <button
               className="px-6 py-2 rounded-full text-md-on-surface-variant hover:bg-md-surface-variant transition-colors duration-200"
-              onClick={() => router.push("/orgs/jobs")}
+              onClick={() => router.push("/orgs/hrm/jobs")}
             >
               Cancel
             </button>

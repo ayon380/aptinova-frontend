@@ -32,7 +32,7 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId) => {
-    router.push(`/orgs/jobs/${jobId}`);
+    router.push(`/orgs/hrm/jobs/${jobId}`);
     setShowMenu(false);
   };
 
@@ -41,7 +41,7 @@ export default function JobsPage() {
   };
 
   const viewjobapplicants = (jobId) => {
-    router.push(`/orgs/jobs/${jobId}/applicants`);
+    router.push(`/orgs/hrm/jobs/${jobId}/applicants`);
   };
 
   const filteredJobs = (Array.isArray(jobs) ? jobs : []).filter(
@@ -126,7 +126,7 @@ export default function JobsPage() {
         </button>
       </div>
 
-      <div className="bg-md-surface rounded-3xl shadow-sm overflow-hidden border border-md-outline">
+      <div className=" rounded-3xl shadow-sm overflow-hidden border border-md-outline-variant">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-md-outline">
             <thead className="bg-md-secondary-container">
@@ -166,7 +166,7 @@ export default function JobsPage() {
                 filteredJobs.map((job) => (
                   <motion.tr
                     key={job.id}
-                    className="hover:bg-md-surface-container transition-colors duration-150"
+                    className="hover:bg-md-on transition-colors duration-150"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -174,8 +174,8 @@ export default function JobsPage() {
                   >
                     <td className="px-6 py-4">
                       <Link
-                        href={`/orgs/jobs/${job.id}`}
-                        className="text-md-primary hover:text-md-primary-container font-medium"
+                        href={`/orgs/hrm/jobs/${job.id}`}
+                        className="text-md-primary  font-medium"
                       >
                         {job.title}
                       </Link>
@@ -198,7 +198,7 @@ export default function JobsPage() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => viewjobapplicants(job.id)}
-                        className="text-md-primary hover:text-md-primary-container transition-colors duration-200"
+                        className="text-md-primary transition-colors duration-200"
                       >
                         View
                       </button>

@@ -5,11 +5,11 @@ export default async function Page({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="h-dvh w-screen overflow-hidden">
+    <div className="h-dvh w-screen overflow-hidden flex flex-col">
       <AppHeader />
-      <div className="flex h-full w-full">
+      <div className="flex flex-1 overflow-hidden w-full">
         <BottomNav />
-        {children}
+        <div className="flex-1 overflow-hidden">{children}</div>
       </div>
     </div>
   );
