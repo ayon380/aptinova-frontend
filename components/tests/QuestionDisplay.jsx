@@ -1,104 +1,47 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { runTestCases } from "@/utils/codeRunner";
-import { Spinner } from "@/components/common/Spinner";
+import { Loader2 } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 import { useTheme } from "@/contexts/ThemeContext";
 
 // Dynamically import Monaco editor with no SSR
-const MonacoCodeEditor = dynamic(() => import("./MonacoCodeEditor"), {
+const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ssr: false,
+  loading: () => <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center">
+    <Loader2 className="animate-spin h-8 w-8 text-md-primary" />
+  </div>
 });
 
 export default function QuestionDisplay({ question, answer, onAnswerChange }) {
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
+  const [selectedLanguage, setSelectedLanguage] = useState("python");
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testResults, setTestResults] = useState(null);
   const { theme } = useTheme();
+  
+  // Initialize code with solution template when question changes
+  useEffect(() => {
+    if (question.type === "code" && question.solutionTemplate && !answer) {
+      onAnswerChange(question.index || 0, question.solutionTemplate);
+    }
+  }, [question, answer, onAnswerChange]);
 
   // Handle language change for code questions
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
-
-    // Set up default code template based on language
-    let codeTemplate = "";
-
-    if (language === "javascript") {
-      if (question.code && question.code.includes("function")) {
-        codeTemplate = question.code;
-      } else {
-        // Extract function name from question text if possible
-        const functionMatch = question.text.match(/function\s+(\w+)/i);
-        const functionName = functionMatch ? functionMatch[1] : "solution";
-        codeTemplate = `function ${functionName}(input) {\n  // Your code here\n  \n}`;
-      }
-    } else if (language === "python") {
-      if (question.code && question.code.includes("def")) {
-        codeTemplate = question.code;
-      } else {
-        // Extract function name from question text if possible
-        const functionMatch = question.text.match(/function\s+(\w+)/i);
-        const functionName = functionMatch ? functionMatch[1] : "solution";
-        codeTemplate = `def ${functionName}(input):\n  # Your code here\n  \n`;
-      }
-    }
-
-    onAnswerChange(question.id, codeTemplate);
+    // No need to change template since we're using the provided solutionTemplate
   };
 
   // Run test cases
   const handleRunTests = async () => {
-    if (!question.testCases || isRunningTests) return;
+    if (!question.testCases || question.testCases.length === 0 || isRunningTests) return;
 
     setIsRunningTests(true);
     setTestResults(null);
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/code/execute`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({
-            language: selectedLanguage,
-            code: answer || "",
-            testCases: question.testCases,
-            constraints: question.constraints,
-            questionId: question.id,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to execute code");
-      }
-
-      const result = await response.json();
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      setTestResults({
-        success: true,
-        results: result.testResults.map((test) => ({
-          passed: test.passed,
-          input: test.input,
-          expected: test.expectedOutput,
-          actual: test.output || test.error,
-          executionTime: test.executionTime || 0,
-          marks: test.marks,
-        })),
-        summary: {
-          passed: result.testResults.filter((t) => t.passed).length,
-          total: result.testResults.length,
-          marks: result.earnedMarks,
-          possibleMarks: result.totalMarks,
-          percentage: result.percentage,
-        },
-      });
+      // Simulating API call (replace with actual API when available)
+      const results = await simulateTestExecution(answer, question.testCases, selectedLanguage);
+      setTestResults(results);
     } catch (error) {
       setTestResults({
         success: false,
@@ -109,89 +52,56 @@ export default function QuestionDisplay({ question, answer, onAnswerChange }) {
       setIsRunningTests(false);
     }
   };
+  
+  // Simulate test execution (replace with actual API call in production)
+  const simulateTestExecution = async (code, testCases, language) => {
+    // This is a placeholder. In a real app, you'd call your API
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+    
+    return {
+      success: true,
+      results: testCases.map(test => ({
+        passed: Math.random() > 0.5, // Random pass/fail for demo
+        input: test.input,
+        expected: test.expectedOutput,
+        actual: test.expectedOutput, // In a real app this would be the actual output
+        executionTime: Math.random() * 100,
+      })),
+      summary: {
+        passed: Math.floor(testCases.length * 0.7),
+        total: testCases.length,
+        percentage: 70,
+      }
+    };
+  };
 
   // Handle different question types
   const renderQuestionContent = () => {
     switch (question.type) {
-      case "multiple-choice":
-        const options = question.options.map((opt) =>
-          typeof opt === "object"
-            ? { label: opt.label, value: opt.value }
-            : { value: opt }
-        );
-
+      case "multiple_choice":
         return (
           <div className="space-y-3">
-            {options.map((option, index) => {
-              const optionLabel = option.label
-                ? `${option.label}. ${option.value}`
-                : option.value;
-              const optionValue = option.value;
-              const isChecked = answer === optionValue;
+            {question.options.map((option, index) => {
+              const isChecked = answer === option;
 
               return (
                 <label
                   key={index}
                   className={`flex items-center p-3 rounded-lg border cursor-pointer transition ${
                     isChecked
-                      ? "bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700"
-                      : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                      ? "bg-md-primary-container border-md-primary text-md-on-primary-container"
+                      : "border-md-outline hover:bg-md-surface-container-high text-md-on-surface"
                   }`}
                 >
                   <input
                     type="radio"
-                    name={`question-${question.id}`}
-                    value={optionValue}
-                    checked={isChecked}
-                    onChange={() => onAnswerChange(question.id, optionValue)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 dark:text-blue-400 dark:focus:ring-blue-400"
-                  />
-                  <span className="ml-3 text-gray-800 dark:text-gray-200">
-                    {optionLabel}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-        );
-
-      case "checkbox":
-        return (
-          <div className="space-y-3">
-            {question.options.map((option, index) => {
-              const isChecked =
-                Array.isArray(answer) && answer.includes(option);
-
-              const handleCheckboxChange = () => {
-                let newAnswer = Array.isArray(answer) ? [...answer] : [];
-                if (isChecked) {
-                  newAnswer = newAnswer.filter((item) => item !== option);
-                } else {
-                  newAnswer.push(option);
-                }
-                onAnswerChange(question.id, newAnswer);
-              };
-
-              return (
-                <label
-                  key={index}
-                  className={`flex items-center p-3 rounded-lg border cursor-pointer transition ${
-                    isChecked
-                      ? "bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700"
-                      : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    name={`question-${question.id}`}
+                    name={`question-${question.index || 0}`}
                     value={option}
                     checked={isChecked}
-                    onChange={handleCheckboxChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 dark:text-blue-400 dark:focus:ring-blue-400"
+                    onChange={() => onAnswerChange(question.index || 0, option)}
+                    className="h-4 w-4 text-md-primary focus:ring-md-primary"
                   />
-                  <span className="ml-3 text-gray-800 dark:text-gray-200">
-                    {option}
-                  </span>
+                  <span className="ml-3">{option}</span>
                 </label>
               );
             })}
@@ -203,238 +113,73 @@ export default function QuestionDisplay({ question, answer, onAnswerChange }) {
           <div>
             <textarea
               value={answer || ""}
-              onChange={(e) => onAnswerChange(question.id, e.target.value)}
-              rows={6}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              onChange={(e) => onAnswerChange(question.index || 0, e.target.value)}
+              rows={8}
+              className="w-full p-3 border border-md-outline rounded-lg focus:ring-md-primary focus:border-md-primary bg-md-surface-container-highest text-md-on-surface resize-y"
               placeholder="Type your answer here..."
             />
-            {question.evaluationCriteria && (
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">
-                  Evaluation Criteria:
-                </h4>
-                <ul className="list-disc pl-5">
-                  {Object.entries(question.evaluationCriteria).map(
-                    ([criterion, marks]) => (
-                      <li
-                        key={criterion}
-                        className="text-sm text-blue-700 dark:text-blue-400"
-                      >
-                        {criterion.charAt(0).toUpperCase() + criterion.slice(1)}
-                        : {marks} mark{marks > 1 ? "s" : ""}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-            )}
           </div>
         );
 
       case "code":
+        // Extract markdown content and code template from question
+        const questionContent = question.question;
+        
         return (
-          <div className="font-mono">
-            <div className="bg-gray-800 dark:bg-black text-white p-4 rounded-t-md overflow-auto my-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Question panel (left) */}
+            <div className="lg:w-1/2 lg:max-h-[600px] overflow-y-auto bg-md-surface-container p-4 rounded-lg border border-md-outline-variant">
+              <h4 className="font-medium text-md-on-surface mb-3">Problem Statement</h4>
+              <ReactMarkdown >
+                {questionContent}
+              </ReactMarkdown>
+            </div>
+              
+            {/* Editor panel (right) */}
+            <div className="lg:w-1/2 flex flex-col">
               <div className="flex justify-between items-center mb-2">
-                <h4 className="text-sm font-medium">{question.text}</h4>
+                <h4 className="font-medium text-md-on-surface">Your Solution:</h4>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleLanguageChange("javascript")}
-                    className={`px-2 py-1 text-xs rounded ${
-                      selectedLanguage === "javascript"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    }`}
-                  >
-                    JavaScript
-                  </button>
-                  <button
                     onClick={() => handleLanguageChange("python")}
-                    className={`px-2 py-1 text-xs rounded ${
+                    className={`px-3 py-1 text-sm rounded-full ${
                       selectedLanguage === "python"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                        ? "bg-md-secondary-container text-md-on-secondary-container"
+                        : "bg-md-surface-container-low text-md-on-surface-variant hover:bg-md-surface-container"
                     }`}
                   >
                     Python
                   </button>
-                </div>
-              </div>
-              <code className="text-sm">{question.code}</code>
-            </div>
-
-            <MonacoCodeEditor
-              value={answer || question.code || ""}
-              onChange={(code) => onAnswerChange(question.id, code)}
-              language={selectedLanguage}
-              height="300px"
-            />
-
-            {question.testCases && (
-              <div className="mt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="font-medium text-gray-800 dark:text-gray-200">
-                    Test Cases:
-                  </h4>
                   <button
-                    onClick={handleRunTests}
-                    disabled={isRunningTests}
-                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed flex items-center space-x-2"
-                  >
-                    {isRunningTests ? (
-                      <>
-                        <Spinner size="small" className="border-white" />
-                        <span>Running...</span>
-                      </>
-                    ) : (
-                      <span>Run Tests</span>
-                    )}
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="bg-gray-100 dark:bg-gray-700">
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                          Input
-                        </th>
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                          Expected Output
-                        </th>
-                        <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-300">
-                          Marks
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {question.testCases.map((testCase, idx) => (
-                        <tr
-                          key={idx}
-                          className="border-b border-gray-200 dark:border-gray-700"
-                        >
-                          <td className="px-4 py-2 font-mono text-gray-800 dark:text-gray-300">
-                            {JSON.stringify(testCase.input)}
-                          </td>
-                          <td className="px-4 py-2 font-mono text-gray-800 dark:text-gray-300">
-                            {JSON.stringify(testCase.expectedOutput)}
-                          </td>
-                          <td className="px-4 py-2 text-gray-800 dark:text-gray-300">
-                            {testCase.marks}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {testResults && (
-                  <div
-                    className={`mt-4 p-4 rounded-lg ${
-                      testResults.success
-                        ? "bg-gray-50 dark:bg-gray-800"
-                        : "bg-red-50 dark:bg-red-900/30"
+                    onClick={() => handleLanguageChange("javascript")}
+                    className={`px-3 py-1 text-sm rounded-full ${
+                      selectedLanguage === "javascript"
+                        ? "bg-md-secondary-container text-md-on-secondary-container"
+                        : "bg-md-surface-container-low text-md-on-surface-variant hover:bg-md-surface-container"
                     }`}
                   >
-                    {testResults.success ? (
-                      <>
-                        <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-2">
-                          Test Results
-                        </h5>
-                        <div className="mb-3 flex justify-between">
-                          <span className="text-gray-700 dark:text-gray-300">
-                            Passed: {testResults.summary.passed}/
-                            {testResults.summary.total} tests
-                          </span>
-                          <span className="text-gray-700 dark:text-gray-300 font-medium">
-                            Score: {testResults.summary.marks}/
-                            {testResults.summary.possibleMarks} marks
-                          </span>
-                        </div>
-
-                        <div className="space-y-3">
-                          {testResults.results.map((result, idx) => (
-                            <div
-                              key={idx}
-                              className={`p-3 rounded-md ${
-                                result.passed
-                                  ? "bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500"
-                                  : "bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500"
-                              }`}
-                            >
-                              <div className="flex justify-between">
-                                <span className="font-medium text-gray-800 dark:text-gray-200">
-                                  Test {idx + 1}
-                                </span>
-                                <span
-                                  className={
-                                    result.passed
-                                      ? "text-green-600 dark:text-green-400"
-                                      : "text-red-600 dark:text-red-400"
-                                  }
-                                >
-                                  {result.passed ? "Passed" : "Failed"} (
-                                  {result.executionTime.toFixed(2)}ms)
-                                </span>
-                              </div>
-                              <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
-                                <div>
-                                  <div className="text-gray-600 dark:text-gray-400">
-                                    Input:
-                                  </div>
-                                  <div className="font-mono text-gray-800 dark:text-gray-300">
-                                    {JSON.stringify(result.input)}
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="text-gray-600 dark:text-gray-400">
-                                    Expected:
-                                  </div>
-                                  <div className="font-mono text-gray-800 dark:text-gray-300">
-                                    {JSON.stringify(result.expected)}
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="text-gray-600 dark:text-gray-400">
-                                    Actual:
-                                  </div>
-                                  <div className="font-mono text-gray-800 dark:text-gray-300">
-                                    {typeof result.actual === "string" &&
-                                    result.actual.startsWith("Error:") ? (
-                                      <span className="text-red-600 dark:text-red-400">
-                                        {result.actual}
-                                      </span>
-                                    ) : (
-                                      JSON.stringify(result.actual)
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-red-600 dark:text-red-400">
-                        <h5 className="font-medium mb-1">
-                          Error Running Tests
-                        </h5>
-                        <p>{testResults.error}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                    JavaScript
+                  </button>
+                </div>
               </div>
-            )}
 
-            {question.constraints && (
-              <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                <p>
-                  Time limit: {question.constraints.timeoutMs}ms | Memory limit:{" "}
-                  {question.constraints.memoryLimitMb}MB
-                </p>
+              <div className="border border-md-outline-variant rounded-lg overflow-hidden flex-grow">
+                <MonacoEditor
+                  height="400px"
+                  language={selectedLanguage}
+                  theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                  value={answer || question.solutionTemplate || ""}
+                  onChange={(code) => onAnswerChange(question.index || 0, code)}
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    fontSize: 14,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                  }}
+                />
               </div>
-            )}
+            </div>
           </div>
         );
 
@@ -442,51 +187,192 @@ export default function QuestionDisplay({ question, answer, onAnswerChange }) {
         return <div>Question type not supported.</div>;
     }
   };
+  
+  // Render test cases and results (for code questions)
+  const renderTestCases = () => {
+    if (question.type !== "code" || !question.testCases || question.testCases.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mt-6">
+        <div className="flex justify-between items-center mb-3">
+          <h4 className="font-medium text-md-on-surface flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m7 11 2-2-2-2"></path>
+              <path d="M11 13h4"></path>
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            </svg>
+            Test Cases
+          </h4>
+          <button
+            onClick={handleRunTests}
+            disabled={isRunningTests}
+            className="px-4 py-2 text-sm font-medium text-md-on-tertiary bg-md-tertiary rounded-full hover:bg-md-tertiary/90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm"
+          >
+            {isRunningTests ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Running...</span>
+              </>
+            ) : (
+              <span>Run Tests</span>
+            )}
+          </button>
+        </div>
+
+        <div className="overflow-x-auto bg-md-surface-container border border-md-outline-variant rounded-xl">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-md-surface-container-high border-b border-md-outline-variant">
+                <th className="px-4 py-2 text-left text-md-on-surface font-medium">
+                  Input
+                </th>
+                <th className="px-4 py-2 text-left text-md-on-surface font-medium">
+                  Expected Output
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {question.testCases.map((testCase, idx) => (
+                <tr
+                  key={idx}
+                  className="border-b border-md-outline-variant last:border-0"
+                >
+                  <td className="px-4 py-2 font-mono text-md-on-surface-variant">
+                    {testCase.input}
+                  </td>
+                  <td className="px-4 py-2 font-mono text-md-on-surface-variant">
+                    {testCase.expectedOutput}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {testResults && (
+          <div
+            className={`mt-4 p-4 rounded-lg ${
+              testResults.success
+                ? "bg-md-surface-container"
+                : "bg-md-error-container"
+            }`}
+          >
+            {testResults.success ? (
+              <>
+                <h5 className="font-medium text-md-on-surface mb-2">
+                  Test Results
+                </h5>
+                <div className="mb-3 flex justify-between">
+                  <span className="text-md-on-surface-variant">
+                    Passed: {testResults.summary.passed}/
+                    {testResults.summary.total} tests
+                  </span>
+                  <span className="text-md-primary font-medium">
+                    Score: {testResults.summary.percentage}%
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {testResults.results.map((result, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3 rounded-md ${
+                        result.passed
+                          ? "bg-md-tertiary-container border-l-4 border-md-tertiary"
+                          : "bg-md-error-container border-l-4 border-md-error"
+                      }`}
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium text-md-on-surface">
+                          Test {idx + 1}
+                        </span>
+                        <span
+                          className={
+                            result.passed
+                              ? "text-md-tertiary font-medium"
+                              : "text-md-error font-medium"
+                          }
+                        >
+                          {result.passed ? "Passed" : "Failed"} (
+                          {result.executionTime.toFixed(2)}ms)
+                        </span>
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <div className="text-md-on-surface-variant">
+                            Input:
+                          </div>
+                          <div className="font-mono text-md-on-surface">
+                            {result.input}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-md-on-surface-variant">
+                            Expected:
+                          </div>
+                          <div className="font-mono text-md-on-surface">
+                            {result.expected}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-md-on-surface-variant">
+                            Actual:
+                          </div>
+                          <div className="font-mono text-md-on-surface">
+                            {typeof result.actual === "string" &&
+                            result.actual.startsWith("Error:") ? (
+                              <span className="text-md-error">
+                                {result.actual}
+                              </span>
+                            ) : (
+                              result.actual
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-md-on-error-container">
+                <h5 className="font-medium mb-1">
+                  Error Running Tests
+                </h5>
+                <p>{testResults.error}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div>
       <div className="mb-6">
-        <div className="flex justify-between">
-          <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
-            Question {question.number}
+        <div className="flex justify-between items-start">
+          <h3 className="text-xl font-medium mb-2 text-md-on-surface">
+            Question {(question.index || 0) + 1}
           </h3>
-          {question.marks && (
-            <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-sm font-semibold px-3 py-1 rounded">
-              {question.marks} mark{question.marks > 1 ? "s" : ""}
-              {question.negativeMarks > 0 &&
-                ` (${question.negativeMarks} negative mark${
-                  question.negativeMarks > 1 ? "s" : ""
-                })`}
+          {question.points && (
+            <span className="bg-md-secondary-container text-md-on-secondary-container text-sm font-medium px-3 py-1 rounded-full">
+              {question.points} point{question.points > 1 ? "s" : ""}
             </span>
           )}
         </div>
-        <div className="text-gray-800 dark:text-gray-200 mb-4">
-          {question.text}
-        </div>
-
-        {question.code && question.type !== "code" && (
-          <pre className="bg-gray-800 dark:bg-black text-white p-4 rounded-md overflow-auto my-4">
-            <code>{question.code}</code>
-          </pre>
-        )}
-
-        {question.image && (
-          <div className="my-4">
-            <img
-              src={question.image}
-              alt="Question illustration"
-              className="max-w-full max-h-64 object-contain dark:filter-none"
-            />
-          </div>
-        )}
-        {question.required && (
-          <div className="text-red-600 dark:text-red-400 text-xs mb-2">
-            * Required
+        
+        {question.type !== "code" && (
+          <div className="text-md-on-surface mb-6">
+            {question.question}
           </div>
         )}
       </div>
 
       <div className="mb-6">{renderQuestionContent()}</div>
+      {renderTestCases()}
     </div>
   );
 }

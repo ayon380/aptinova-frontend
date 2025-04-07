@@ -435,36 +435,6 @@ function OrganizationSignup() {
 
         <div className="relative">
           <input
-            type="text"
-            id="subdomain"
-            required
-            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-            placeholder=" "
-            value={form.subdomain}
-            onChange={(e) => {
-              setForm({ ...form, subdomain: e.target.value });
-              checkSubdomainAvailability(e.target.value);
-            }}
-          />
-          <label
-            htmlFor="subdomain"
-            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-          >
-            Subdomain
-          </label>
-          {subdomainAvailable !== null && (
-            <p
-              className={`text-sm mt-2 ${
-                subdomainAvailable ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {subdomainMessage}
-            </p>
-          )}
-        </div>
-
-        <div className="relative">
-          <input
             type="url"
             id="website"
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
@@ -1095,7 +1065,7 @@ function OrganizationSignup() {
               )}
             </div>
             <div className="mb-4">
-              <span className="text-3xl font-bold text-md-on-surface">$49</span>
+              <span className="text-3xl font-bold text-md-on-surface">₹9999</span>
               <span className="text-md-on-surface-variant">/month</span>
             </div>
             <ul className="space-y-3 mb-6">
@@ -1199,7 +1169,7 @@ function OrganizationSignup() {
             </div>
             <div className="mb-4">
               <span className="text-3xl font-bold text-md-on-surface">
-                $199
+                ₹99999
               </span>
               <span className="text-md-on-surface-variant">/month</span>
             </div>
@@ -1409,6 +1379,10 @@ function OrganizationSignup() {
         );
         if (response.data) {
           localStorage.setItem("user", JSON.stringify(response.data));
+          setForm((prevForm) => ({
+            ...prevForm,
+            email: response.data.email,
+          }));
           setUser(response.data);
         }
       } catch (error) {

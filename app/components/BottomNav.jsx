@@ -187,7 +187,7 @@ export default function NavComponent() {
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="hidden md:block h-full bg-md-surface w-96 shadow-sm "
+        className="hidden md:block h-full bg-md-surface w-72 shadow-sm "
       >
         <div className="flex flex-col text-xl h-full py-8">
           <div className="flex flex-col flex-1 space-y-2 px-2">

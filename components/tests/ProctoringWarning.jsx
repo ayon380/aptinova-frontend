@@ -1,31 +1,96 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion } from "framer-motion";
+import {
+  AlertTriangle,
+  Mic,
+  Video,
+  Monitor,
+  User,
+  Users,
+  Smartphone,
+  Copy,
+  MousePointerClick,
+  X,
+} from "lucide-react";
 
 export default function ProctoringWarning({ warnings }) {
-  if (!warnings || warnings.length === 0) return null;
+  const [collapsed, setCollapsed] = useState(false);
   
-  // Only show the most recent warning
-  const latestWarning = warnings[warnings.length - 1];
+  // Get only the most recent 5 warnings
+  const recentWarnings = warnings.slice(-5).reverse();
+  
+  const getWarningIcon = (message) => {
+    if (message.includes("Voice") || message.includes("noise")) return <Mic className="h-4 w-4" />;
+    if (message.includes("webcam")) return <Video className="h-4 w-4" />;
+    if (message.includes("Fullscreen")) return <Monitor className="h-4 w-4" />;
+    if (message.includes("multiple people")) return <Users className="h-4 w-4" />;
+    if (message.includes("No person")) return <User className="h-4 w-4" />;
+    if (message.includes("mobile")) return <Smartphone className="h-4 w-4" />;
+    if (message.includes("Copy") || message.includes("Paste")) return <Copy className="h-4 w-4" />;
+    if (message.includes("Right-click")) return <MousePointerClick className="h-4 w-4" />;
+    return <AlertTriangle className="h-4 w-4" />;
+  };
+  
+  if (collapsed) {
+    return (
+      <motion.div
+        initial={{ y: -50 }}
+        animate={{ y: 0 }}
+        exit={{ y: -50 }}
+        onClick={() => setCollapsed(false)}
+        className="fixed top-16 right-4 z-50 bg-md-error rounded-full p-2 shadow-lg cursor-pointer"
+      >
+        <AlertTriangle className="h-6 w-6 text-md-on-error" />
+      </motion.div>
+    );
+  }
   
   return (
-    <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-600 p-4 mb-4 mx-4 mt-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <svg className="h-5 w-5 text-red-400 dark:text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-        </div>
-        <div className="ml-3">
-          <p className="text-sm text-red-700 dark:text-red-300">
-            <strong>Warning:</strong> {latestWarning.message}
-            <span className="ml-2 text-xs">
-              ({new Date(latestWarning.timestamp).toLocaleTimeString()})
-            </span>
-          </p>
-          <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-            This violation has been recorded. Continuing may result in test disqualification.
-          </p>
-        </div>
+    <motion.div
+      initial={{ y: -50 }}
+      animate={{ y: 0 }}
+      exit={{ y: -50 }}
+      className="fixed top-16 right-4 w-96 z-50 bg-md-error-container rounded-xl shadow-lg"
+    >
+      <div className="flex justify-between items-center p-3 border-b border-md-outline-variant">
+        <h3 className="font-medium text-md-on-error-container flex items-center">
+          <AlertTriangle className="h-5 w-5 mr-2" />
+          Proctoring Alerts
+        </h3>
+        <button 
+          onClick={() => setCollapsed(true)}
+          className="text-md-on-surface-variant hover:text-md-on-surface p-1 rounded-full hover:bg-md-surface-container-high transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
-    </div>
+      <div className="max-h-60 overflow-y-auto p-2">
+        {recentWarnings.length > 0 ? (
+          <ul className="space-y-1">
+            {recentWarnings.map((warning, index) => (
+              <li 
+                key={index}
+                className="p-2 rounded-lg bg-md-surface hover:bg-md-surface-container-low transition-colors text-sm flex items-start"
+              >
+                <span className="text-md-error mr-2 mt-0.5 flex-shrink-0">
+                  {getWarningIcon(warning.message)}
+                </span>
+                <div>
+                  <p className="text-md-on-surface">{warning.message}</p>
+                  <p className="text-md-on-surface-variant text-xs">
+                    {new Date(warning.timestamp).toLocaleTimeString()}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-md-on-surface-variant text-center py-4 italic">No warnings yet</p>
+        )}
+      </div>
+      <div className="p-2 text-xs text-md-on-error-container/60 text-center bg-md-error-container-low rounded-b-xl">
+        {warnings.length} total warnings recorded
+      </div>
+    </motion.div>
   );
 }

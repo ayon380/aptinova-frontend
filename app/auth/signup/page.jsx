@@ -13,11 +13,14 @@ function RoleHandler({ setFormData }) {
   useEffect(() => {
     if (role) {
       console.log("Role found in URL:", role);
-
+      
+      // Normalize role value to match expected format
+      const normalizedRole = role.toLowerCase() === 'hrmanager' ? 'hrManager' : role.toLowerCase();
+      
       setFormData((prev) => {
         const updatedFormData = {
           ...prev,
-          userType: role,
+          userType: normalizedRole,
         };
         console.log("Updated formData:", updatedFormData); // Debug log
         return updatedFormData;
@@ -220,37 +223,49 @@ export default function Register() {
                 </label>
               </div>
 
-              <div className="relative mt-5">
-                <select
-                  id="userType"
-                  name="userType"
-                  required
-                  className="block w-full px-8 pt-6 pb-1 rounded-3xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                  value={formData.userType}
-                  onChange={handleChange}
-                >
-                  <option value="candidate">Candidate</option>
-                  <option value="hrManager">HR Manager</option>
-                </select>
-                <label
-                  htmlFor="userType"
-                  className="absolute duration-300 transform -translate-y-3 scale-75 top-4 z-10 origin-[0] left-8 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                >
-                  User Type
+              {/* Replace select dropdown with radio buttons */}
+              <div className="mt-5">
+                <label className="block text-md-on-surface-variant mb-2">
+                  I am a:
                 </label>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg
-                    className="w-5 h-5 text-md-on-surface-variant"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                <div className="flex gap-4">
+                  <div 
+                    className={`flex-1 border ${formData.userType === 'candidate' ? 'border-md-primary bg-md-primary-container' : 'border-md-outline'} rounded-3xl p-4 cursor-pointer transition-all`}
+                    onClick={() => setFormData(prev => ({...prev, userType: 'candidate'}))}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`w-5 h-5 rounded-full border ${formData.userType === 'candidate' ? 'border-md-primary' : 'border-md-outline'} flex items-center justify-center`}>
+                        {formData.userType === 'candidate' && (
+                          <div className="w-3 h-3 rounded-full bg-md-primary"></div>
+                        )}
+                      </div>
+                      <span className="font-medium text-md-on-surface">Candidate</span>
+                    </div>
+                    <p className="text-sm text-md-on-surface-variant ml-7">I'm looking for job opportunities</p>
+                  </div>
+                  
+                  <div 
+                    className={`flex-1 border ${formData.userType === 'hrManager' ? 'border-md-primary bg-md-primary-container' : 'border-md-outline'} rounded-3xl p-4 cursor-pointer transition-all`}
+                    onClick={() => setFormData(prev => ({...prev, userType: 'hrManager'}))}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`w-5 h-5 rounded-full border ${formData.userType === 'hrManager' ? 'border-md-primary' : 'border-md-outline'} flex items-center justify-center`}>
+                        {formData.userType === 'hrManager' && (
+                          <div className="w-3 h-3 rounded-full bg-md-primary"></div>
+                        )}
+                      </div>
+                      <span className="font-medium text-md-on-surface">HR Manager</span>
+                    </div>
+                    <p className="text-sm text-md-on-surface-variant ml-7">I'm hiring for my company</p>
+                  </div>
                 </div>
+                
+                {/* Hidden input to maintain the form submission */}
+                <input 
+                  type="hidden" 
+                  name="userType" 
+                  value={formData.userType}
+                />
               </div>
 
               <button

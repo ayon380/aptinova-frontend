@@ -12,8 +12,6 @@ export default function JobsPage() {
   const [selectedJobId, setSelectedJobId] = useState(null);
 
   useEffect(() => {
-    // Fetch jobs from API
-    // Placeholder data
     const fetchData = async () => {
       const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/jobs`, {
         headers: {
@@ -65,7 +63,7 @@ export default function JobsPage() {
   };
 
   return (
-    <div className=" mx-auto w-full h-full px-4 py-8 md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container ">
+    <div className=" mx-auto w-full h-full p-2 md:p-10 md:rounded-tl-3xl md:bg-md-surface-container ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-md-on-surface">Job Listings</h1>
         <motion.button

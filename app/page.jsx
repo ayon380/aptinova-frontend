@@ -1100,7 +1100,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-4xl font-bold text-md-on-surface">
-                    $0
+                    ₹0
                   </span>
                   <span className="text-md-on-surface-variant ml-2">
                     /month
@@ -1148,7 +1148,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-4xl font-bold text-md-on-primary-container">
-                    ${SUBSCRIPTION_PLANS.CANDIDATE.PRO.amount / 100}
+                    ₹{SUBSCRIPTION_PLANS.CANDIDATE.PRO.amount }
                   </span>
                   <span className="text-md-on-primary-container opacity-70 ml-2">
                     /month
@@ -1198,7 +1198,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-3xl font-bold text-md-on-surface">
-                    $0
+                    ₹0
                   </span>
                   <span className="text-md-on-surface-variant ml-2">
                     /month
@@ -1241,7 +1241,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-3xl font-bold text-md-on-surface">
-                    ${SUBSCRIPTION_PLANS.HR_MANAGER.STARTUP.amount / 100}
+                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.STARTUP.amount }
                   </span>
                   <span className="text-md-on-surface-variant ml-2">
                     /month
@@ -1289,7 +1289,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-3xl font-bold text-md-on-primary-container">
-                    ${SUBSCRIPTION_PLANS.HR_MANAGER.ENTERPRISE.amount / 100}
+                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.ENTERPRISE.amount }
                   </span>
                   <span className="text-md-on-primary-container opacity-70 ml-2">
                     /month

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Editor from "@monaco-editor/react";
+
 // import PythonExecutor from "../hiring/PythonExecutor";
 import { usePythonWorker } from "../../../hooks/usePythonWorker";
 
@@ -393,7 +393,7 @@ except Exception as e:
                   Your Solution:
                 </h4>
 
-                <Editor
+                {/* <Editor
                   height="200px"
                   language={language === "python" ? "python" : "javascript"}
                   value={solutions[challenge.id] || challenge.starterCode}
@@ -401,7 +401,7 @@ except Exception as e:
                     handleSolutionChange(challenge.id, value)
                   }
                   theme="vs-dark"
-                />
+                /> */}
 
                 <div className="mt-6">
                   <h4 className="text-base font-semibold mb-2">Test Cases:</h4>

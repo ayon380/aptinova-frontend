@@ -18,7 +18,7 @@ export default function JobDetailsPage() {
     const fetchJobDetails = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobid}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/jobs/candidate/${jobid}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("authToken")}`,
@@ -75,9 +75,7 @@ export default function JobDetailsPage() {
       </div>
     );
 
-  const hiringProcess = job.hiringProcess
-    ? JSON.parse(job.hiringProcess)
-    : [];
+  const hiringProcess = job.hiringProcess ? JSON.parse(job.hiringProcess) : [];
 
   return (
     <div className=" md:bg-md-surface-container h-full rounded-tl-3xl w-full px-4 md:p-10 py-8">
@@ -130,16 +128,18 @@ export default function JobDetailsPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleApply}
-            disabled={isApplying}
-            className={`px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
+          {!job.isApplied && (
+            <button
+              onClick={handleApply}
+              disabled={isApplying}
+              className={`px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
               transition-all duration-200 shadow-sm hover:shadow ${
                 isApplying ? "opacity-75 cursor-not-allowed" : ""
               }`}
-          >
-            {isApplying ? "Applying..." : "Apply Now"}
-          </button>
+            >
+              {isApplying ? "Applying..." : "Apply Now"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -442,22 +442,24 @@ export default function JobDetailsPage() {
               )}
             </div>
 
-            <div className="mt-6 p-4 bg-md-surface-variant rounded-2xl">
-              <h4 className="text-md-on-surface font-medium">
-                Ready to take the first step?
-              </h4>
-              <p className="text-md-on-surface-variant mb-4">
-                Apply now to begin your journey with us.
-              </p>
-              <button
-                onClick={handleApply}
-                disabled={isApplying}
-                className="px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
+            {!job.isApplied && (
+              <div className="mt-6 p-4 bg-md-surface-variant rounded-2xl">
+                <h4 className="text-md-on-surface font-medium">
+                  Ready to take the first step?
+                </h4>
+                <p className="text-md-on-surface-variant mb-4">
+                  Apply now to begin your journey with us.
+                </p>
+                <button
+                  onClick={handleApply}
+                  disabled={isApplying}
+                  className="px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container
                 transition-all duration-200 shadow-sm hover:shadow"
-              >
-                {isApplying ? "Applying..." : "Apply Now"}
-              </button>
-            </div>
+                >
+                  {isApplying ? "Applying..." : "Apply Now"}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -512,25 +514,27 @@ export default function JobDetailsPage() {
           </div>
         )}
 
-        <button
-          onClick={handleApply}
-          disabled={isApplying}
-          className="mt-4 sm:mt-0 w-full sm:w-auto px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+        {!job.isApplied && (
+          <button
+            onClick={handleApply}
+            disabled={isApplying}
+            className="mt-4 sm:mt-0 w-full sm:w-auto px-6 py-2 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center gap-2"
           >
-            <path
-              d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-              fill="currentColor"
-            />
-          </svg>
-          {isApplying ? "Submitting Application..." : "Apply Now"}
-        </button>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                fill="currentColor"
+              />
+            </svg>
+            {isApplying ? "Submitting Application..." : "Apply Now"}
+          </button>
+        )}
       </div>
     </div>
   );

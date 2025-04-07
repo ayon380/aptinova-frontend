@@ -1,13 +1,51 @@
-"use client"
-import React, { Suspense, useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import axios from "axios"
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { FormProgress } from "@/app/components/FormProgress"
-import { SkillInput } from "@/app/components/SkillInput"
-
+"use client";
+import React, { Suspense, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { FormProgress } from "@/app/components/FormProgress";
+import { SkillInput } from "@/app/components/SkillInput";
+import dynamic from "next/dynamic";
+const PublicationsSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Publications"),
+  { ssr: false }
+);
+const CertificationsSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Certifications"),
+  { ssr: false }
+);
+const WorkExperienceSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Experience"),
+  {
+    ssr: false,
+  }
+);
+const AwardsSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Awards"),
+  {
+    ssr: false,
+  }
+);
+const AchievementsSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Achievements"),
+  {
+    ssr: false,
+  }
+);
+const EducationSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Education"),
+  {
+    ssr: false,
+  }
+);
+const ProjectsSection = dynamic(
+  () => import("@/app/components/candidate/getstarted/Projects"),
+  {
+    ssr: false,
+  }
+);
 const skillSuggestions = [
   "JavaScript",
   "Python",
@@ -20,8 +58,8 @@ const skillSuggestions = [
   "Git",
   "CI/CD",
   "Agile",
-  "Scrum"
-]
+  "Scrum",
+];
 
 const languageSuggestions = [
   "English",
@@ -34,63 +72,70 @@ const languageSuggestions = [
   "Russian",
   "Arabic",
   "Portuguese",
-  "Italian"
-]
+  "Italian",
+];
 
 const candidateSteps = [
   "Basic Info",
   "Professional Details",
   "Skills & Experience",
   "Additional Info",
-  "Plan Selection" // Added new step
-]
+  "Plan Selection", // Added new step
+];
+
+// Add country-currency mapping
+const countryToCurrency = {
+  India: "INR",
+  // Add more countries and their currencies
+};
 
 function CandidateSignupContent() {
-  const [currentStep, setCurrentStep] = useState(0)
-  const router = useRouter()
-  const [user, setUser] = useState({})
-  const searchParams = useSearchParams()
-  const token = searchParams?.get("token") || ""
-  const [selectedResume, setSelectedResume] = useState(null)
-  const [selectedProfilePicture, setSelectedProfilePicture] = useState(null)
-  const [formError, setFormError] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
+  const [user, setUser] = useState({});
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token") || "";
+  const [selectedResume, setSelectedResume] = useState(null);
+  const [selectedProfilePicture, setSelectedProfilePicture] = useState(null);
+  const [formError, setFormError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Add payment state
   const [payment, setPayment] = useState({
-    status: "pending"
-  })
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
+    status: "pending",
+  });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("authToken", token)
+    localStorage.setItem("authToken", token);
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/user`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
-        )
+        );
         if (response.data) {
-          localStorage.setItem("user", JSON.stringify(response.data))
-          setUser(response.data)
+          localStorage.setItem("user", JSON.stringify(response.data));
+          setUser(response.data);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error)
+        console.error("Error fetching user data:", error);
       }
-    }
-    fetchUserData()
-  }, [token])
+    };
+    fetchUserData();
+  }, [token]);
 
   useEffect(() => {
-    console.log(user.email)
+    console.log(user.email);
     if (user.email) {
-      setForm(prev => ({ ...prev, email: user.email }))
+      setForm((prev) => ({ ...prev, email: user.email }));
     }
-  }, [user])
+  }, [user]);
 
+  // Update form state to match model schema
   const [form, setForm] = useState({
     email: user.email,
     firstName: "",
@@ -103,32 +148,40 @@ function CandidateSignupContent() {
     desiredSalary: "",
     workPreference: "remote",
     country: "",
-    currency: "",
     skills: [],
     languages: [],
     certifications: [],
     education: [],
+    workExperience: [],
+    projects: [],
+    publications: [],
+    awards: [],
+    achievements: [],
+    linkedin: "",
+    github: "",
+    portfolio: "",
     bio: "",
-    plan: "free" // Default to free plan
-  })
+    plan: "FREE", // Match model enum
+    status: "dormant",
+  });
 
   const nextStep = () => {
-    setFormError(null)
+    setFormError(null);
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, candidateSteps.length - 1))
+      setCurrentStep((prev) => Math.min(prev + 1, candidateSteps.length - 1));
       // Scroll to top when changing steps
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
     } else {
-      setFormError("Please fill in all required fields to continue")
+      setFormError("Please fill in all required fields to continue");
     }
-  }
+  };
 
   const prevStep = () => {
-    setFormError(null)
-    setCurrentStep(prev => Math.max(prev - 1, 0))
+    setFormError(null);
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
     // Scroll to top when changing steps
-    window.scrollTo(0, 0)
-  }
+    window.scrollTo(0, 0);
+  };
 
   const renderBasicInfo = () => (
     <motion.div
@@ -204,7 +257,7 @@ function CandidateSignupContent() {
               className="block  w-full px-6 text-xl pt-6 pb-1 rounded-3xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.firstName}
-              onChange={e => setForm({ ...form, firstName: e.target.value })}
+              onChange={(e) => setForm({ ...form, firstName: e.target.value })}
             />
             <label
               htmlFor="firstName"
@@ -222,7 +275,7 @@ function CandidateSignupContent() {
               className="block w-full text-xl px-6 pt-6 pb-1 rounded-3xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.lastName}
-              onChange={e => setForm({ ...form, lastName: e.target.value })}
+              onChange={(e) => setForm({ ...form, lastName: e.target.value })}
             />
             <label
               htmlFor="lastName"
@@ -241,7 +294,7 @@ function CandidateSignupContent() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl  text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.phone}
-            onChange={e => setForm({ ...form, phone: e.target.value })}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
           <label
             htmlFor="phone"
@@ -252,8 +305,43 @@ function CandidateSignupContent() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
+  // Add validation functions
+  const validateFields = {
+    email: (email) => {
+      if (!email) return "Email is required";
+      // Using a basic email regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) return "Invalid email format";
+      return null;
+    },
+    phone: (phone) => {
+      if (!phone) return "Phone number is required";
+      // Basic phone validation - can be enhanced
+      const phoneRegex = /^\+?[\d\s-]{10,}$/;
+      if (!phoneRegex.test(phone)) return "Invalid phone number format";
+      return null;
+    },
+    education: (education) => {
+      if (!education.length) return "At least one education entry is required";
+      
+      return null;
+    },
+    // Add more field validations as needed
+  };
+
+  // Update country selection to automatically set currency
+  const handleCountryChange = (e) => {
+    const country = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      country,
+      currency: countryToCurrency[country] || "USD", // Default to USD if currency not found
+    }));
+  };
+
+  // Modify professional details render function to update country selection
   const renderProfessionalDetails = () => (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -274,7 +362,7 @@ function CandidateSignupContent() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.title}
-            onChange={e => setForm({ ...form, title: e.target.value })}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
           <label
             htmlFor="title"
@@ -291,7 +379,7 @@ function CandidateSignupContent() {
               required
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               value={form.experience}
-              onChange={e => setForm({ ...form, experience: e.target.value })}
+              onChange={(e) => setForm({ ...form, experience: e.target.value })}
             >
               <option value=""></option>
               <option value="0-2">0-2 years</option>
@@ -313,7 +401,7 @@ function CandidateSignupContent() {
               >
                 <path
                   fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 0l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 0l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
                   clipRule="evenodd"
                 />
               </svg>
@@ -326,7 +414,7 @@ function CandidateSignupContent() {
               required
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               value={form.industry}
-              onChange={e => setForm({ ...form, industry: e.target.value })}
+              onChange={(e) => setForm({ ...form, industry: e.target.value })}
             >
               <option value=""></option>
               <option value="technology">Technology</option>
@@ -363,13 +451,15 @@ function CandidateSignupContent() {
             required
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             value={form.desiredSalary}
-            onChange={e => setForm({ ...form, desiredSalary: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, desiredSalary: e.target.value })
+            }
           >
             <option value=""></option>
-            <option value="0-50">$0 - $50,000</option>
-            <option value="50-100">$50,000 - $100,000</option>
-            <option value="100-150">$100,000 - $150,000</option>
-            <option value="150+">$150,000+</option>
+            <option value="0-5">₹0 - ₹5L</option>
+            <option value="5-10">₹5L - ₹10L</option>
+            <option value="10-30">₹10L - ₹30L</option>
+            <option value="30+">₹30L and above</option>
           </select>
           <label
             htmlFor="desiredSalary"
@@ -397,7 +487,7 @@ function CandidateSignupContent() {
             Work Preference
           </label>
           <div className="grid grid-cols-3 gap-4">
-            {["remote", "hybrid", "onsite"].map(type => (
+            {["remote", "hybrid", "onsite"].map((type) => (
               <button
                 key={type}
                 type="button"
@@ -412,7 +502,7 @@ function CandidateSignupContent() {
                 onClick={() =>
                   setForm({
                     ...form,
-                    workPreference: type
+                    workPreference: type,
                   })
                 }
               >
@@ -423,43 +513,36 @@ function CandidateSignupContent() {
         </div>
 
         <div className="relative">
-          <input
-            type="text"
+          <select
             id="country"
             required
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-            placeholder=" "
             value={form.country}
-            onChange={e => setForm({ ...form, country: e.target.value })}
-          />
+            onChange={handleCountryChange}
+          >
+            <option value=""></option>
+            {Object.keys(countryToCurrency).map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
           <label
             htmlFor="country"
             className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
           >
             Country
           </label>
-        </div>
-
-        <div className="relative">
-          <input
-            type="text"
-            id="currency"
-            required
-            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-            placeholder=" "
-            value={form.currency}
-            onChange={e => setForm({ ...form, currency: e.target.value })}
-          />
-          <label
-            htmlFor="currency"
-            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-          >
-            Currency
-          </label>
+          {/* Add currency display */}
+          {form.country && (
+            <div className="mt-2 text-sm text-md-on-surface-variant">
+              Currency: {countryToCurrency[form.country]}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderSkillsAndExperience = () => (
     <motion.div
@@ -480,7 +563,7 @@ function CandidateSignupContent() {
           <div className="bg-md-surface-container-high border border-md-outline rounded-3xl text-xl p-2">
             <SkillInput
               value={form.skills}
-              onChange={skills => setForm({ ...form, skills })}
+              onChange={(skills) => setForm({ ...form, skills })}
               suggestions={skillSuggestions}
             />
           </div>
@@ -493,210 +576,22 @@ function CandidateSignupContent() {
           <div className="bg-md-surface-container-high border border-md-outline rounded-3xl text-xl p-2">
             <SkillInput
               value={form.languages}
-              onChange={languages => setForm({ ...form, languages })}
+              onChange={(languages) => setForm({ ...form, languages })}
               suggestions={languageSuggestions}
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-            Certifications
-          </label>
-          <div className="space-y-4">
-            {form.certifications.map((cert, index) => (
-              <div key={index} className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    id={`cert-${index}`}
-                    required
-                    className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                    placeholder=" "
-                    value={cert}
-                    onChange={e => {
-                      // Create a shallow copy of certifications array to avoid losing focus
-                      const newCerts = [...form.certifications]
-                      newCerts[index] = e.target.value
-                      setForm(prevForm => ({
-                        ...prevForm,
-                        certifications: newCerts
-                      }))
-                    }}
-                  />
-                  <label
-                    htmlFor={`cert-${index}`}
-                    className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                  >
-                    Certification Name
-                  </label>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newCerts = form.certifications.filter(
-                      (_, i) => i !== index
-                    )
-                    setForm(prevForm => ({
-                      ...prevForm,
-                      certifications: newCerts
-                    }))
-                  }}
-                  className="px-6 py-2 text-md-error hover:text-md-error rounded-3xl text-xl self-center"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() =>
-                setForm(prevForm => ({
-                  ...prevForm,
-                  certifications: [...prevForm.certifications, ""]
-                }))
-              }
-              className="text-md-primary hover:text-md-primary-container"
-            >
-              + Add Certification
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-            Education
-          </label>
-          <div className="space-y-6">
-            {form.education.map((edu, index) => (
-              <div
-                key={index}
-                className="p-6 border border-md-outline-variant rounded-3xl text-xl space-y-4 bg-md-surface-container-high"
-              >
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id={`degree-${index}`}
-                      required
-                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                      placeholder=" "
-                      value={edu.degree}
-                      onChange={e => {
-                        const newEdu = [...form.education]
-                        newEdu[index] = {
-                          ...newEdu[index],
-                          degree: e.target.value
-                        }
-                        setForm(prevForm => ({
-                          ...prevForm,
-                          education: newEdu
-                        }))
-                      }}
-                    />
-                    <label
-                      htmlFor={`degree-${index}`}
-                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                    >
-                      Degree
-                    </label>
-                  </div>
-
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id={`institution-${index}`}
-                      required
-                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                      placeholder=" "
-                      value={edu.institution}
-                      onChange={e => {
-                        const newEdu = [...form.education]
-                        newEdu[index] = {
-                          ...newEdu[index],
-                          institution: e.target.value
-                        }
-                        setForm(prevForm => ({
-                          ...prevForm,
-                          education: newEdu
-                        }))
-                      }}
-                    />
-                    <label
-                      htmlFor={`institution-${index}`}
-                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                    >
-                      Institution
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="w-1/3 relative">
-                    <input
-                      type="text"
-                      id={`year-${index}`}
-                      required
-                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                      placeholder=" "
-                      value={edu.graduationYear}
-                      onChange={e => {
-                        const newEdu = [...form.education]
-                        newEdu[index] = {
-                          ...newEdu[index],
-                          graduationYear: e.target.value
-                        }
-                        setForm(prevForm => ({
-                          ...prevForm,
-                          education: newEdu
-                        }))
-                      }}
-                    />
-                    <label
-                      htmlFor={`year-${index}`}
-                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                    >
-                      Graduation Year
-                    </label>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newEdu = form.education.filter(
-                        (_, i) => i !== index
-                      )
-                      setForm(prevForm => ({
-                        ...prevForm,
-                        education: newEdu
-                      }))
-                    }}
-                    className="text-md-error hover:text-md-error rounded-3xl text-xl"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() =>
-                setForm(prevForm => ({
-                  ...prevForm,
-                  education: [
-                    ...prevForm.education,
-                    { degree: "", institution: "", graduationYear: "" }
-                  ]
-                }))
-              }
-              className="text-md-primary hover:text-md-primary-container"
-            >
-              + Add Education
-            </button>
-          </div>
-        </div>
+        <CertificationsSection form={form} setForm={setForm} />
+        <PublicationsSection form={form} setForm={setForm} />
+        <ProjectsSection form={form} setForm={setForm} />
+        <WorkExperienceSection form={form} setForm={setForm} />
+        <EducationSection form={form} setForm={setForm} />
+        <AwardsSection form={form} setForm={setForm} />
+        <AchievementsSection form={form} setForm={setForm} />
       </div>
     </motion.div>
-  )
+  );
 
   const renderAdditionalInfo = () => (
     <motion.div
@@ -718,7 +613,7 @@ function CandidateSignupContent() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.linkedin || ""}
-              onChange={e => setForm({ ...form, linkedin: e.target.value })}
+              onChange={(e) => setForm({ ...form, linkedin: e.target.value })}
             />
             <label
               htmlFor="linkedin"
@@ -735,7 +630,7 @@ function CandidateSignupContent() {
               className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
               placeholder=" "
               value={form.github || ""}
-              onChange={e => setForm({ ...form, github: e.target.value })}
+              onChange={(e) => setForm({ ...form, github: e.target.value })}
             />
             <label
               htmlFor="github"
@@ -753,7 +648,7 @@ function CandidateSignupContent() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
             placeholder=" "
             value={form.portfolio || ""}
-            onChange={e => setForm({ ...form, portfolio: e.target.value })}
+            onChange={(e) => setForm({ ...form, portfolio: e.target.value })}
           />
           <label
             htmlFor="portfolio"
@@ -769,7 +664,7 @@ function CandidateSignupContent() {
             className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface h-32 resize-none"
             placeholder=" "
             value={form.bio}
-            onChange={e => setForm({ ...form, bio: e.target.value })}
+            onChange={(e) => setForm({ ...form, bio: e.target.value })}
           />
           <label
             htmlFor="bio"
@@ -828,7 +723,7 @@ function CandidateSignupContent() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   // Add new render function for plan selection
   const renderPlanSelection = () => (
@@ -878,7 +773,7 @@ function CandidateSignupContent() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 00-1.414 0l-4-4a1 1 010-1.414z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -887,7 +782,7 @@ function CandidateSignupContent() {
             </div>
 
             <p className="font-bold text-3xl text-md-on-surface mb-4">
-              $0 <span className="text-base font-normal">/month</span>
+            ₹0 <span className="text-base font-normal">/month</span>
             </p>
 
             <div className="border-t border-md-outline-variant pt-4 mt-4">
@@ -986,7 +881,7 @@ function CandidateSignupContent() {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 01-1.414 0l-4-4a1 1 00-1.414 0l-4-4a1 1 010-1.414z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -995,7 +890,7 @@ function CandidateSignupContent() {
             </div>
 
             <p className="font-bold text-3xl text-md-on-surface mb-4">
-              $10 <span className="text-base font-normal">/month</span>
+            ₹999 <span className="text-base font-normal">/month</span>
             </p>
 
             <div className="border-t border-md-outline-variant pt-4 mt-4">
@@ -1082,77 +977,78 @@ function CandidateSignupContent() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 0:
-        return renderBasicInfo()
+        return renderBasicInfo();
       case 1:
-        return renderProfessionalDetails()
+        return renderProfessionalDetails();
       case 2:
-        return renderSkillsAndExperience()
+        return renderSkillsAndExperience();
       case 3:
-        return renderAdditionalInfo()
+        return renderAdditionalInfo();
       case 4:
-        return renderPlanSelection()
+        return renderPlanSelection();
       default:
-        return null
+        return null;
     }
-  }
+  };
 
-  const validateStep = step => {
+  // Update validateStep function with new validations
+  const validateStep = (step) => {
+    let errors = [];
+
     switch (step) {
       case 0:
-        return form.firstName.length > 0 && form.lastName.length > 0
+        if (!form.firstName) errors.push("First name is required");
+        if (!form.lastName) errors.push("Last name is required");
+        if (validateFields.phone(form.phone))
+          errors.push(validateFields.phone(form.phone));
+        break;
       case 1:
-        return (
-          form.title.length > 0 &&
-          form.experience.length > 0 &&
-          form.industry.length > 0 &&
-          form.country.length > 0 &&
-          form.currency.length > 0
-        )
+        if (!form.title) errors.push("Professional title is required");
+        if (!form.experience) errors.push("Experience is required");
+        if (!form.industry) errors.push("Industry is required");
+        if (!form.country) errors.push("Country is required");
+        if (!form.desiredSalary) errors.push("Desired salary is required");
+        break;
       case 2:
-        return (
-          form.skills.length > 0 &&
-          form.education.length > 0 &&
-          form.education.every(
-            edu =>
-              edu.degree.length > 0 &&
-              edu.institution.length > 0 &&
-              edu.graduationYear.length > 0
-          )
-        )
-      case 3:
-        return true
-      case 4:
-        return true
-      default:
-        return false
+        if (!form.skills.length) errors.push("At least one skill is required");
+        if (validateFields.education(form.education))
+          errors.push(validateFields.education(form.education));
+        break;
+      // ...existing validation cases...
     }
-  }
 
-  const handleProfilePictureChange = e => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setForm({ ...form, profilePicture: file })
-      setSelectedProfilePicture(file.name)
+    if (errors.length) {
+      setFormError(errors.join(", "));
+      return false;
     }
-  }
+    return true;
+  };
 
-  const handleFileChange = e => {
-    const file = e.target.files?.[0]
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files?.[0];
     if (file) {
-      setForm({ ...form, resume: file })
-      setSelectedResume(file.name)
+      setForm({ ...form, profilePicture: file });
+      setSelectedProfilePicture(file.name);
     }
-  }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setForm({ ...form, resume: file });
+      setSelectedResume(file.name);
+    }
+  };
 
   // Add function to initialize payment
   const initializePayment = async () => {
     try {
-      setPayment({ status: "processing" })
+      setPayment({ status: "processing" });
 
       // Call API to create subscription
       const response = await axios.post(
@@ -1161,19 +1057,19 @@ function CandidateSignupContent() {
           userType: "candidate",
           userId: user.id || "021e33f6-87e2-4c5d-bac5-f0227ea7d3e2",
           tier: "PRO", // Use uppercase for tier as per backend
-          totalCount: 12 // 12 months subscription
+          totalCount: 12, // 12 months subscription
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
-      )
+      );
 
       // Store subscription ID from the response
-      console.log(response)
+      console.log(response);
 
-      const subscriptionId = response.data.subscription.id
+      const subscriptionId = response.data.subscription.id;
 
       // Initialize Razorpay
       const options = {
@@ -1182,73 +1078,77 @@ function CandidateSignupContent() {
         name: "Aptinova",
         description: "Pro Plan Subscription",
         // Fix the handler function to correctly access payment response
-        handler: function(response) {
+        handler: function (response) {
           setPayment({
             subscriptionId: subscriptionId,
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
-            status: "completed"
-          })
+            status: "completed",
+          });
 
           // Now submit the form with payment details
-          handleSubmitAfterPayment(response.razorpay_payment_id)
+          handleSubmitAfterPayment(response.razorpay_payment_id);
         },
         prefill: {
           name: `${form.firstName} ${form.lastName}`,
-          email: form.email,
-          contact: form.phone
+          contact: form.phone,
         },
         theme: {
-          color: "#7E57C2" // A purple color that might match your theme
-        }
-      }
+          color: "#7E57C2", // A purple color that might match your theme
+        },
+      };
 
       // Open Razorpay payment window
-      const razorpay = new window.Razorpay(options)
-      razorpay.open()
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
     } catch (error) {
-      console.error("Payment initialization error:", error)
+      console.error("Payment initialization error:", error);
       setPayment({
         status: "failed",
-        error: error.response?.data?.message || "Payment initialization failed"
-      })
+        error: error.response?.data?.message || "Payment initialization failed",
+      });
     }
-  }
+  };
 
   // Function to submit form after payment
-  const handleSubmitAfterPayment = async paymentId => {
-    const formData = new FormData()
+  const handleSubmitAfterPayment = async (paymentId) => {
+    const formData = new FormData();
     // Add all the form fields
-    formData.append("email", form.email || "ayonsarkar380@gmail.com")
-    formData.append("firstName", form.firstName)
-    formData.append("lastName", form.lastName)
-    formData.append("phone", form.phone)
-    formData.append("title", form.title)
-    formData.append("experience", form.experience)
-    formData.append("industry", form.industry)
-    formData.append("location", form.location)
-    formData.append("desiredSalary", form.desiredSalary)
-    formData.append("workPreference", form.workPreference)
-    formData.append("country", form.country)
-    formData.append("currency", form.currency)
-    formData.append("skills", JSON.stringify(form.skills))
-    formData.append("languages", JSON.stringify(form.languages))
-    formData.append("certifications", JSON.stringify(form.certifications))
-    formData.append("education", JSON.stringify(form.education))
-    formData.append("linkedin", form.linkedin || "")
-    formData.append("github", form.github || "")
-    formData.append("portfolio", form.portfolio || "")
-    formData.append("bio", form.bio)
-    formData.append("plan", form.plan)
+    // formData.append("email", form.email || "ayonsarkar3);
+    formData.append("firstName", form.firstName);
+    formData.append("lastName", form.lastName);
+    formData.append("phone", form.phone);
+    formData.append("title", form.title);
+    formData.append("experience", form.experience);
+    formData.append("industry", form.industry);
+    formData.append("location", form.location);
+    formData.append("desiredSalary", form.desiredSalary);
+    formData.append("workExperience", JSON.stringify(form.workExperience));
+    formData.append("projects", JSON.stringify(form.projects));
+    formData.append("awards", JSON.stringify(form.awards));
+    formData.append("achievements", JSON.stringify(form.achievements));
+    formData.append("workPreference", form.workPreference);
+    formData.append("publications", JSON.stringify(form.publications));
+    formData.append("country", form.country);
+    formData.append("currency", form.currency);
+    formData.append("skills", JSON.stringify(form.skills));
+    formData.append("languages", JSON.stringify(form.languages));
+    formData.append("certifications", JSON.stringify(form.certifications));
+    formData.append("education", JSON.stringify(form.education));
+    formData.append("linkedin", form.linkedin || "");
+    formData.append("github", form.github || "");
+    formData.append("portfolio", form.portfolio || "");
+    formData.append("bio", form.bio);
+    formData.append("plan", form.plan);
     // Add payment details
-    formData.append("paymentId", paymentId)
+    formData.append("paymentId", paymentId);
 
     if (form.resume) {
-      formData.append("resume", form.resume)
+      formData.append("resume", form.resume);
     }
 
     if (form.profilePicture) {
-      formData.append("profileImage", form.profilePicture)
+      formData.append("profileImage", form.profilePicture);
     }
 
     try {
@@ -1258,88 +1158,88 @@ function CandidateSignupContent() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
-      )
+      );
       if (response.data.success) {
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         setFormError(
           "Failed to create profile: " +
             (response.data.message || "Unknown error")
-        )
+        );
       }
     } catch (error) {
-      console.error("Error creating profile:", error)
+      console.error("Error creating profile:", error);
       setFormError(
         "An error occurred: " +
           (error.response?.data?.message || error.message || "Unknown error")
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Modify the original handleSubmit function to check if payment is needed
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) {
-      setFormError("Please fill in all required fields to continue")
-      return
+      setFormError("Please fill in all required fields to continue");
+      return;
     }
 
-    setIsSubmitting(true)
-    setFormError(null)
+    setIsSubmitting(true);
+    setFormError(null);
 
     // If user selected pro plan, initiate payment flow
     if (form.plan === "pro") {
       // First make sure Razorpay script is loaded
       if (!window.Razorpay) {
-        const script = document.createElement("script")
-        script.src = "https://checkout.razorpay.com/v1/checkout.js"
-        script.async = true
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.async = true;
         script.onload = () => {
           // Show payment modal after script loads
-          setShowPaymentModal(true)
-        }
-        document.body.appendChild(script)
+          setShowPaymentModal(true);
+        };
+        document.body.appendChild(script);
       } else {
         // Razorpay already loaded, show the modal directly
-        setShowPaymentModal(true)
+        setShowPaymentModal(true);
       }
-      setIsSubmitting(false)
-      return
+      setIsSubmitting(false);
+      return;
     }
 
     // For free plan, proceed with regular submission
-    const formData = new FormData()
-    formData.append("email", form.email)
-    formData.append("firstName", form.firstName)
-    formData.append("lastName", form.lastName)
-    formData.append("phone", form.phone)
-    formData.append("title", form.title)
-    formData.append("experience", form.experience)
-    formData.append("industry", form.industry)
-    formData.append("location", form.location)
-    formData.append("desiredSalary", form.desiredSalary)
-    formData.append("workPreference", form.workPreference)
-    formData.append("country", form.country)
-    formData.append("currency", form.currency)
-    formData.append("skills", JSON.stringify(form.skills))
-    formData.append("languages", JSON.stringify(form.languages))
-    formData.append("certifications", JSON.stringify(form.certifications))
-    formData.append("education", JSON.stringify(form.education))
-    formData.append("linkedin", form.linkedin || "")
-    formData.append("github", form.github || "")
-    formData.append("portfolio", form.portfolio || "")
-    formData.append("bio", form.bio)
-    formData.append("plan", form.plan)
+    const formData = new FormData();
+    formData.append("email", form.email);
+    formData.append("firstName", form.firstName);
+    formData.append("lastName", form.lastName);
+    formData.append("phone", form.phone);
+    formData.append("title", form.title);
+    formData.append("experience", form.experience);
+    formData.append("industry", form.industry);
+    formData.append("location", form.location);
+    formData.append("desiredSalary", form.desiredSalary);
+    formData.append("workPreference", form.workPreference);
+    formData.append("country", form.country);
+    formData.append("currency", form.currency);
+    formData.append("skills", JSON.stringify(form.skills));
+    formData.append("languages", JSON.stringify(form.languages));
+    formData.append("certifications", JSON.stringify(form.certifications));
+    formData.append("education", JSON.stringify(form.education));
+    formData.append("linkedin", form.linkedin || "");
+    formData.append("github", form.github || "");
+    formData.append("portfolio", form.portfolio || "");
+    formData.append("bio", form.bio);
+    formData.append("plan", form.plan);
     if (form.resume) {
-      formData.append("resume", form.resume)
+      formData.append("resume", form.resume);
     }
 
     if (form.profilePicture) {
-      formData.append("profileImage", form.profilePicture)
+      formData.append("profileImage", form.profilePicture);
     }
 
     try {
@@ -1349,32 +1249,32 @@ function CandidateSignupContent() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
         }
-      )
+      );
       if (response.data.success) {
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         setFormError(
           "Failed to create profile: " +
             (response.data.message || "Unknown error")
-        )
+        );
       }
     } catch (error) {
-      console.error("Error creating profile:", error)
+      console.error("Error creating profile:", error);
       setFormError(
         "An error occurred: " +
           (error.response?.data?.message || error.message || "Unknown error")
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Payment confirmation modal
   const renderPaymentModal = () => {
-    if (!showPaymentModal) return null
+    if (!showPaymentModal) return null;
 
     return (
       <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -1397,8 +1297,8 @@ function CandidateSignupContent() {
           <div className="flex justify-between">
             <button
               onClick={() => {
-                setShowPaymentModal(false)
-                setForm({ ...form, plan: "free" })
+                setShowPaymentModal(false);
+                setForm({ ...form, plan: "free" });
               }}
               className="px-6 py-3 rounded-3xl text-md-on-surface-variant bg-md-surface-variant hover:bg-md-surface-container-high transition-colors duration-200"
             >
@@ -1441,8 +1341,8 @@ function CandidateSignupContent() {
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="flex h-dvh bg-md-background">
@@ -1538,7 +1438,7 @@ function CandidateSignupContent() {
               </div>
             )}
 
-            <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div className="max-h-[calc(100vh-180px)] md:max-h-[calc(100vh-220px)] overflow-y-auto pr-2">
                 <AnimatePresence mode="wait">
                   {renderCurrentStep()}
@@ -1611,7 +1511,7 @@ function CandidateSignupContent() {
       {/* Payment modal */}
       {renderPaymentModal()}
     </div>
-  )
+  );
 }
 
 export default function CandidateSignup() {
@@ -1625,5 +1525,5 @@ export default function CandidateSignup() {
     >
       <CandidateSignupContent />
     </Suspense>
-  )
+  );
 }

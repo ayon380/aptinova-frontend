@@ -1,12 +1,15 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { motion } from 'framer-motion';
 
 export default function QuestionNavigation({ questions, currentIndex, answers, onSelect }) {
   const { theme } = useTheme();
   
   // Determine status of each question (answered, current, unanswered)
-  const getQuestionStatus = (index, questionId) => {
+  const getQuestionStatus = (index) => {
     if (index === currentIndex) return 'current';
+    // Use index as the identifier if id is not available
+    const questionId = index;
     return answers[questionId] ? 'answered' : 'unanswered';
   };
 
@@ -21,32 +24,36 @@ export default function QuestionNavigation({ questions, currentIndex, answers, o
 
   // Human-readable question type labels
   const typeLabels = {
-    'multiple-choice': 'Multiple Choice',
+    'multiple_choice': 'Multiple Choice',
     'checkbox': 'Multiple Select',
     'text': 'Written Answer',
     'code': 'Programming'
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 w-64 h-fit">
-      <h2 className="font-semibold mb-4 text-gray-900 dark:text-white">Questions</h2>
+    <motion.div 
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="bg-md-surface-container-low rounded-3xl shadow-sm p-4 w-64 h-fit overflow-auto"
+    >
+      <h2 className="font-semibold mb-4 text-md-on-surface">Questions</h2>
       
       <div className="mb-6">
         <div className="grid grid-cols-4 gap-2">
           {questions.map((question, index) => (
             <button
-              key={question.id}
+              key={index}
               onClick={() => onSelect(index)}
               className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
-                getQuestionStatus(index, question.id) === 'current'
-                  ? 'bg-blue-500 text-white'
-                  : getQuestionStatus(index, question.id) === 'answered'
-                  ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-              } ${question.required ? 'ring-2 ring-red-200 dark:ring-red-900' : ''}`}
-              title={`Question ${question.number}${question.required ? ' (Required)' : ''}`}
+                getQuestionStatus(index) === 'current'
+                  ? 'bg-md-primary text-md-on-primary'
+                  : getQuestionStatus(index) === 'answered'
+                  ? 'bg-md-secondary-container text-md-on-secondary-container border border-md-secondary'
+                  : 'bg-md-surface-container text-md-on-surface-variant'
+              }`}
+              title={`Question ${index + 1}`}
             >
-              {question.number}
+              {index + 1}
             </button>
           ))}
         </div>
@@ -54,8 +61,8 @@ export default function QuestionNavigation({ questions, currentIndex, answers, o
       
       {/* Question types summary */}
       <div className="mt-6 mb-2">
-        <h3 className="text-sm font-semibold mb-1 text-gray-800 dark:text-gray-300">Question Types</h3>
-        <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+        <h3 className="text-sm font-semibold mb-1 text-md-on-surface">Question Types</h3>
+        <div className="space-y-1 text-xs text-md-on-surface-variant">
           {Object.entries(questionsByType).map(([type, qs]) => (
             <div key={type} className="flex justify-between">
               <span>{typeLabels[type] || type}</span>
@@ -65,40 +72,36 @@ export default function QuestionNavigation({ questions, currentIndex, answers, o
         </div>
       </div>
       
-      <div className="mt-6 text-xs text-gray-700 dark:text-gray-300">
+      <div className="mt-6 text-xs text-md-on-surface-variant">
         <div className="flex items-center mb-2">
-          <span className="w-4 h-4 rounded-full bg-blue-500 mr-2"></span>
+          <span className="w-4 h-4 rounded-full bg-md-primary mr-2"></span>
           <span>Current Question</span>
         </div>
         <div className="flex items-center mb-2">
-          <span className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/50 border border-green-300 dark:border-green-700 mr-2"></span>
+          <span className="w-4 h-4 rounded-full bg-md-secondary-container border border-md-secondary mr-2"></span>
           <span>Answered</span>
         </div>
         <div className="flex items-center mb-2">
-          <span className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 mr-2"></span>
+          <span className="w-4 h-4 rounded-full bg-md-surface-container mr-2"></span>
           <span>Not Answered</span>
-        </div>
-        <div className="flex items-center">
-          <span className="w-4 h-4 rounded-full bg-gray-100 dark:bg-gray-700 ring-2 ring-red-200 dark:ring-red-900 mr-2"></span>
-          <span>Required Question</span>
         </div>
       </div>
       
       {/* Progress */}
       <div className="mt-6">
-        <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+        <div className="flex justify-between text-xs text-md-on-surface-variant mb-1">
           <span>Progress</span>
           <span>
-            {Object.values(answers).filter(a => a !== null).length} / {questions.length} answered
+            {Object.values(answers).filter(a => a !== null && a !== undefined).length} / {questions.length} answered
           </span>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+        <div className="w-full bg-md-surface-container-high rounded-full h-2.5">
           <div 
-            className="bg-green-500 h-2.5 rounded-full" 
-            style={{ width: `${(Object.values(answers).filter(a => a !== null).length / questions.length) * 100}%` }}
+            className="bg-md-tertiary h-2.5 rounded-full" 
+            style={{ width: `${(Object.values(answers).filter(a => a !== null && a !== undefined).length / questions.length) * 100}%` }}
           ></div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

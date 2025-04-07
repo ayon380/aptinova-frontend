@@ -7,7 +7,7 @@ export default async function Page({ children }) {
       <AppHeader />
       <div className="flex flex-1 overflow-hidden w-full">
         <BottomNav />
-        <div className="flex-1  overflow-hidden">
+        <div className="flex-1  ">
           {children}
         </div>
       </div>

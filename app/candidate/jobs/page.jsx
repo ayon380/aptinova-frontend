@@ -416,7 +416,7 @@ const JobBoard = () => {
   );
 
   return (
-    <div className="h-full w-full md:bg-md-surface-container rounded-tl-3xl md:p-10  text-md-on-background">
+    <div className="h-full w-full md:bg-md-surface-container overflow-scroll rounded-tl-3xl md:p-10  text-md-on-background">
       {/* Search and Filter Header */}
       <div className="sticky top-0 z-30  pt-4 w-full pb-3 shadow-sm">
         <div className="w-full mx-auto px-2">

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import useStore from "@/app/store";
+import { useRouter } from "next/navigation";
 // Add these icons for the stats cards
 import Link from "next/link";
 import {
@@ -14,7 +15,7 @@ import {
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const Router = useRouter();
   const [filters, setFilters] = useState({
     status: "all",
     date: "all",
@@ -282,8 +283,7 @@ export default function ApplicationsPage() {
             <motion.button
               className="w-full mt-4 text-center text-md-primary hover:text-md-on-primary-container hover:bg-md-primary-container px-4 py-3 rounded-full transition-colors flex items-center justify-center"
               onClick={(e) => {
-                e.stopPropagation();
-                handleButtonClick("view-details");
+                Router.push("/candidate/applications/" + application.id);
               }}
               whileTap={{ scale: 0.95 }}
             >
@@ -351,7 +351,15 @@ export default function ApplicationsPage() {
                     {new Date(application.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <button className="text-md-primary hover:text-md-on-primary-container hover:bg-md-primary-container px-3 py-1 rounded-full transition-colors">
+                    <button
+                      className="text-md-primary hover:text-md-on-primary-container hover:bg-md-primary-container px-3 py-1 rounded-full transition-colors"
+                      onClick={() => {
+                        Router.push(
+                          "/candidate/applications/" + application.id
+                        );
+                        triggerVibration();
+                      }}
+                    >
                       View Details
                     </button>
                   </td>
