@@ -13,9 +13,6 @@ const Page = () => {
   const [elementPositions, setElementPositions] = useState([]);
 
   // Token refresh function
-  // useEffect(() => {
-  //   const
-  // }, []);
   const refreshToken = async () => {
     try {
       const response = await fetch(
@@ -41,6 +38,31 @@ const Page = () => {
       console.error("Token refresh failed:", err);
       return false;
     }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    // Clear all auth data
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include", // Important for cookies
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+      },
+    });
+    if (!res.ok) {
+      console.error("Logout failed:", res.statusText);
+      return;
+    }
+    localStorage.removeItem("authToken");
+    setUserdata(null);
+    setuserType(null);
+
+    // Add a small animation delay before redirecting
+    setTimeout(() => {
+      router.push("/auth/login");
+    }, 500);
   };
 
   const fetchUserProfile = async () => {
@@ -81,8 +103,8 @@ const Page = () => {
 
           // Route based on user type
           if (data.userType === "candidate") {
-            router.push("/candidate/profile");
-          } else if (data.userType === "HR") {
+            router.push("/candidate/home");
+          } else if (data.userType === "hr") {
             router.push("/orgs/hr/profile");
           } else if (data.userType === "hrManager") {
             router.push("/orgs/hrm/profile");
@@ -99,8 +121,8 @@ const Page = () => {
 
       // Route based on user type
       if (data.userType === "candidate") {
-        router.push("/candidate/profile");
-      } else if (data.userType === "HR") {
+        router.push("/candidate/home");
+      } else if (data.userType === "hr") {
         router.push("/orgs/hr/profile");
       } else if (data.userType === "hrManager") {
         router.push("/orgs/hrm/profile");
@@ -128,8 +150,8 @@ const Page = () => {
     } else {
       // If we already have the data, route accordingly
       if (userType === "candidate") {
-        router.push("/candidate/profile");
-      } else if (userType === "HR") {
+        router.push("/candidate/home");
+      } else if (userType === "hr") {
         router.push("/orgs/hr/profile");
       } else if (userType === "hrManager") {
         router.push("/orgs/hrm/profile");
@@ -206,8 +228,14 @@ const Page = () => {
         {/* Logo placeholder - replace with your actual logo */}
         <div className="w-32 h-32 mb-6 rounded-3xl bg-md-primary-container flex items-center justify-center text-md-on-primary-container">
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            animate={{
+              rotate: 360,
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              rotate: { duration: 60, repeat: Infinity, ease: "linear" },
+              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+            }}
             className="w-20 h-20 flex items-center justify-center text-5xl"
           >
             🚀
@@ -269,33 +297,60 @@ const Page = () => {
           ) : error ? (
             <motion.div
               key="error"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center bg-md-surface p-6 rounded-xl shadow-lg"
             >
               <div className="mb-4 text-6xl text-md-error">
                 <motion.div
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
+                  initial={{ scale: 0.8, rotate: -10 }}
+                  animate={{
+                    scale: 1,
+                    rotate: [0, -10, 0, 10, 0],
+                  }}
                   transition={{
                     type: "spring",
                     stiffness: 300,
                     damping: 15,
+                    rotate: {
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    },
                   }}
                 >
                   ⚠️
                 </motion.div>
               </div>
-              <p className="text-md-error mb-4 text-center">{error}</p>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={fetchUserProfile}
-                className="px-6 py-3 bg-md-primary text-md-on-primary rounded-full shadow-md hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+              <motion.p
+                className="text-md-error mb-6 text-center font-medium text-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
               >
-                Try Again
-              </motion.button>
+                {error}
+              </motion.p>
+
+              <div className="flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={fetchUserProfile}
+                  className="px-6 py-3 bg-md-primary text-md-on-primary rounded-full shadow-md hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center gap-2"
+                >
+                  <span className="text-lg">🔄</span> Try Again
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  className="px-6 py-3 bg-md-error text-md-on-error rounded-full shadow-md hover:bg-md-error-container hover:text-md-on-error-container transition-colors flex items-center gap-2"
+                >
+                  <span className="text-lg">🚪</span> Logout
+                </motion.button>
+              </div>
             </motion.div>
           ) : null}
         </AnimatePresence>

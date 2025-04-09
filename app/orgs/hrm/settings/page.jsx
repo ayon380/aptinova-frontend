@@ -163,11 +163,16 @@ const OrganizationSettings = () => {
         formData.append("logo", logoFile);
       }
 
-      const response = await axios.put("/api/organization", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/hrm/organization`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
 
       setOrganization(response.data);
       setNotification({
@@ -381,7 +386,6 @@ const OrganizationSettings = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm"
           >
             <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
               Company Information
@@ -394,7 +398,7 @@ const OrganizationSettings = () => {
                     <img
                       src={logoPreview}
                       alt="Company Logo"
-                      className="w-full h-full object-cover"
+                      className="w-full  h-full object-contain  "
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-md-on-surface-variant">

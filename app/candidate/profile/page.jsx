@@ -508,321 +508,320 @@ export default function CandidateProfile() {
   ];
 
   return (
-    <div className="flex flex-col ml- text-xl h-full w-full bg-md-background">
+    <div className=" text-xl h-full w-full">
       {/* Main content with sidebar for larger screens */}
-      <div className="flex flex-1 md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container h-full overflow-hidden">
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
-          {loading ? (
-            <div className="flex-1 flex justify-center items-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-md-primary"></div>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Mobile TabView */}
-              <div className="md:hidden">
-                <TabView
-                  tabs={tabs}
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                >
-                  {/* Form content - shown based on active tab */}
-                  <div className="px-4 py-4">
-                    {/* Personal Information */}
-                    {activeTab === "personal" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Personal Information
-                        </h2>
 
-                        <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="text"
-                                name="firstName"
-                                id="firstName"
-                                value={profile.firstName || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="firstName"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                First Name
-                              </label>
-                            </div>
-                          </div>
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="text"
-                                name="lastName"
-                                id="lastName"
-                                value={profile.lastName || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="lastName"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Last Name
-                              </label>
-                            </div>
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {loading ? (
+          <div className="flex-1 flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-md-primary"></div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Mobile TabView */}
+            <div className="md:hidden">
+              <TabView
+                tabs={tabs}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              >
+                {/* Form content - shown based on active tab */}
+                <div className="px-4 py-4">
+                  {/* Personal Information */}
+                  {activeTab === "personal" && (
+                    <div className="p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Personal Information
+                      </h2>
+
+                      <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="firstName"
+                              id="firstName"
+                              value={profile.firstName || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="firstName"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              First Name
+                            </label>
                           </div>
                         </div>
-
-                        <div className="mb-6">
-                          <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                            Profile Image
-                          </label>
-                          <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <div className="w-24 h-24 rounded-3xl overflow-hidden bg-md-surface-container-high flex items-center justify-center border border-md-outline">
-                              {previewImage ? (
-                                <img
-                                  src={previewImage}
-                                  alt="Profile"
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-md-on-surface-variant">
-                                  <svg
-                                    className="w-12 h-12"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="profile-upload"
-                                className="cursor-pointer inline-block px-6 py-2 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200"
-                              >
-                                Choose File
-                                <input
-                                  type="file"
-                                  id="profile-upload"
-                                  accept="image/*"
-                                  onChange={handleProfileImageChange}
-                                  className="sr-only"
-                                />
-                              </label>
-                              {profilePictureFile && (
-                                <p className="mt-2 text-xs text-md-on-surface-variant">
-                                  {profilePictureFile.name}
-                                </p>
-                              )}
-                            </div>
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="lastName"
+                              id="lastName"
+                              value={profile.lastName || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="lastName"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Last Name
+                            </label>
                           </div>
-                        </div>
-
-                        <div className="relative mb-6">
-                          <input
-                            type="text"
-                            name="phone"
-                            id="phone"
-                            value={profile.phone || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="phone"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Phone Number
-                          </label>
-                        </div>
-
-                        <div className="relative">
-                          <textarea
-                            name="bio"
-                            id="bio"
-                            rows="4"
-                            value={profile.bio || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface resize-none h-32"
-                            placeholder=" "
-                          ></textarea>
-                          <label
-                            htmlFor="bio"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Professional Bio
-                          </label>
                         </div>
                       </div>
-                    )}
 
-                    {/* Professional Information */}
-                    {activeTab === "professional" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Professional Information
-                        </h2>
-
-                        <div className="relative mb-6">
-                          <input
-                            type="text"
-                            name="title"
-                            id="title"
-                            value={profile.title || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="title"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Professional Title
-                          </label>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="number"
-                                name="experience"
-                                id="experience"
-                                value={profile.experience || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
+                      <div className="mb-6">
+                        <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                          Profile Image
+                        </label>
+                        <div className="flex flex-col sm:flex-row items-center gap-4">
+                          <div className="w-24 h-24 rounded-3xl overflow-hidden bg-md-surface-container-high flex items-center justify-center border border-md-outline">
+                            {previewImage ? (
+                              <img
+                                src={previewImage}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
                               />
-                              <label
-                                htmlFor="experience"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Years of Experience
-                              </label>
-                            </div>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-md-on-surface-variant">
+                                <svg
+                                  className="w-12 h-12"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            )}
                           </div>
-                          <div className="w-full">
-                            <div className="relative">
+                          <div>
+                            <label
+                              htmlFor="profile-upload"
+                              className="cursor-pointer inline-block px-6 py-2 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200"
+                            >
+                              Choose File
                               <input
-                                type="text"
-                                name="industry"
-                                id="industry"
-                                value={profile.industry || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
+                                type="file"
+                                id="profile-upload"
+                                accept="image/*"
+                                onChange={handleProfileImageChange}
+                                className="sr-only"
                               />
-                              <label
-                                htmlFor="industry"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Industry
-                              </label>
-                            </div>
+                            </label>
+                            {profilePictureFile && (
+                              <p className="mt-2 text-xs text-md-on-surface-variant">
+                                {profilePictureFile.name}
+                              </p>
+                            )}
                           </div>
                         </div>
+                      </div>
 
-                        <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="text"
-                                name="location"
-                                id="location"
-                                value={profile.location || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="location"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Location
-                              </label>
-                            </div>
-                          </div>
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="text"
-                                name="country"
-                                id="country"
-                                value={profile.country || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="country"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Country
-                              </label>
-                            </div>
+                      <div className="relative mb-6">
+                        <input
+                          type="text"
+                          name="phone"
+                          id="phone"
+                          value={profile.phone || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="phone"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Phone Number
+                        </label>
+                      </div>
+
+                      <div className="relative">
+                        <textarea
+                          name="bio"
+                          id="bio"
+                          rows="4"
+                          value={profile.bio || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface resize-none h-32"
+                          placeholder=" "
+                        ></textarea>
+                        <label
+                          htmlFor="bio"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Professional Bio
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Professional Information */}
+                  {activeTab === "professional" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Professional Information
+                      </h2>
+
+                      <div className="relative mb-6">
+                        <input
+                          type="text"
+                          name="title"
+                          id="title"
+                          value={profile.title || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="title"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Professional Title
+                        </label>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              name="experience"
+                              id="experience"
+                              value={profile.experience || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="experience"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Years of Experience
+                            </label>
                           </div>
                         </div>
-
-                        <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="number"
-                                name="desiredSalary"
-                                id="desiredSalary"
-                                value={profile.desiredSalary || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="desiredSalary"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Desired Salary
-                              </label>
-                            </div>
-                          </div>
-                          <div className="w-full">
-                            <div className="relative">
-                              <input
-                                type="text"
-                                name="currency"
-                                id="currency"
-                                value={profile.currency || ""}
-                                onChange={handleChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="currency"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Currency
-                              </label>
-                            </div>
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="industry"
+                              id="industry"
+                              value={profile.industry || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="industry"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Industry
+                            </label>
                           </div>
                         </div>
+                      </div>
 
-                        <div className="mb-6">
-                          <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                            Work Preference
-                          </label>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {["remote", "hybrid", "onsite"].map((type) => (
-                              <button
-                                key={type}
-                                type="button"
-                                className={`
+                      <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="location"
+                              id="location"
+                              value={profile.location || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="location"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Location
+                            </label>
+                          </div>
+                        </div>
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="country"
+                              id="country"
+                              value={profile.country || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="country"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Country
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              name="desiredSalary"
+                              id="desiredSalary"
+                              value={profile.desiredSalary || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="desiredSalary"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Desired Salary
+                            </label>
+                          </div>
+                        </div>
+                        <div className="w-full">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="currency"
+                              id="currency"
+                              value={profile.currency || ""}
+                              onChange={handleChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="currency"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Currency
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                          Work Preference
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {["remote", "hybrid", "onsite"].map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              className={`
                                   px-6 py-3 rounded-3xl transition-colors duration-200
                                   ${
                                     profile.workPreference === type
@@ -830,1418 +829,138 @@ export default function CandidateProfile() {
                                       : "border border-md-outline-variant text-md-on-surface hover:bg-md-surface-variant"
                                   }
                                 `}
-                                onClick={() =>
-                                  setProfile({
-                                    ...profile,
-                                    workPreference: type,
-                                  })
-                                }
-                              >
-                                {type.charAt(0).toUpperCase() + type.slice(1)}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="mb-6">
-                          <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                            Resume
-                          </label>
-                          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-md-outline-variant border-dashed rounded-3xl bg-md-surface-container-high">
-                            <div className="space-y-1 text-center">
-                              <svg
-                                className="mx-auto h-12 w-12 text-md-on-surface-variant"
-                                stroke="currentColor"
-                                fill="none"
-                                viewBox="0 0 48 48"
-                                aria-hidden="true"
-                              >
-                                <path
-                                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                  strokeWidth={2}
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                              <div className="flex text-sm text-md-on-surface-variant justify-center">
-                                <label
-                                  htmlFor="file-upload"
-                                  className="relative cursor-pointer rounded-3xl px-6 py-2 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-md-primary"
-                                >
-                                  <span>Upload a file</span>
-                                  <input
-                                    id="file-upload"
-                                    name="file-upload"
-                                    type="file"
-                                    className="sr-only"
-                                    accept=".pdf,.doc,.docx"
-                                    onChange={handleResumeChange}
-                                  />
-                                </label>
-                              </div>
-                              {resumeFile && (
-                                <p className="text-xs text-md-on-surface-variant mt-2">
-                                  Selected file: {resumeFile.name}
-                                </p>
-                              )}
-                              {profile.resume && !resumeFile && (
-                                <div className="mt-2">
-                                  <a
-                                    href={profile.resume}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-md-primary hover:underline text-sm"
-                                  >
-                                    View current resume
-                                  </a>
-                                </div>
-                              )}
-                              <p className="text-xs text-md-on-surface-variant">
-                                PDF, DOC up to 10MB
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Skills & Qualifications */}
-                    {activeTab === "skills" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Skills & Qualifications
-                        </h2>
-
-                        <div className="relative mb-6">
-                          <input
-                            type="text"
-                            id="skills"
-                            value={profile.skills?.join(", ") || ""}
-                            onChange={handleSkillsChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="skills"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Skills (comma separated)
-                          </label>
-                        </div>
-
-                        <div className="relative">
-                          <input
-                            type="text"
-                            id="languages"
-                            value={profile.languages?.join(", ") || ""}
-                            onChange={handleLanguagesChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="languages"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Languages (comma separated)
-                          </label>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Education Section */}
-                    {activeTab === "education" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Education
-                        </h2>
-
-                        {profile.education && profile.education.length > 0 && (
-                          <div className="mb-6">
-                            <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                              Your Education History
-                            </h3>
-                            <ul className="space-y-4">
-                              {profile.education.map((edu, index) => (
-                                <li
-                                  key={index}
-                                  className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
-                                >
-                                  <div className="flex flex-col sm:flex-row justify-between gap-4">
-                                    <div>
-                                      <div className="font-medium text-md-on-surface">
-                                        {edu.institution}
-                                      </div>
-                                      <div className="text-md-on-surface">
-                                        {edu.degree}{" "}
-                                        {edu.field && `in ${edu.field}`}
-                                      </div>
-                                      <div className="text-sm text-md-on-surface-variant">
-                                        {edu.startDate &&
-                                          new Date(
-                                            edu.startDate
-                                          ).getFullYear()}{" "}
-                                        -
-                                        {edu.current
-                                          ? " Present"
-                                          : edu.endDate &&
-                                            ` ${new Date(
-                                              edu.endDate
-                                            ).getFullYear()}`}
-                                      </div>
-                                    </div>
-                                    <div className="flex space-x-2 self-start">
-                                      <button
-                                        type="button"
-                                        onClick={() => editEducation(index)}
-                                        className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
-                                      >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          className="h-5 w-5"
-                                          viewBox="0 0 20 20"
-                                          fill="currentColor"
-                                        >
-                                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                        </svg>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => removeEducation(index)}
-                                        className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
-                                      >
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          className="h-5 w-5"
-                                          viewBox="0 0 20 20"
-                                          fill="currentColor"
-                                        >
-                                          <path
-                                            fillRule="evenodd"
-                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                            clipRule="evenodd"
-                                          />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {/* Form to add new education */}
-                        <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
-                          <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                            {editEducationIndex >= 0
-                              ? "Edit Education"
-                              : "Add Education"}
-                          </h3>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  id="institution"
-                                  name="institution"
-                                  value={newEducation.institution}
-                                  onChange={handleEducationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                  placeholder=" "
-                                />
-                                <label
-                                  htmlFor="institution"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Institution*
-                                </label>
-                              </div>
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  id="degree"
-                                  name="degree"
-                                  value={newEducation.degree}
-                                  onChange={handleEducationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                  placeholder=" "
-                                />
-                                <label
-                                  htmlFor="degree"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Degree*
-                                </label>
-                              </div>
-                            </div>
-
-                            <div className="relative">
-                              <input
-                                type="text"
-                                id="field"
-                                name="field"
-                                value={newEducation.field}
-                                onChange={handleEducationChange}
-                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                placeholder=" "
-                              />
-                              <label
-                                htmlFor="field"
-                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                              >
-                                Field of Study
-                              </label>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="relative">
-                                <input
-                                  type="date"
-                                  id="startDate"
-                                  name="startDate"
-                                  value={newEducation.startDate}
-                                  onChange={handleEducationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                />
-                                <label
-                                  htmlFor="startDate"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Start Date
-                                </label>
-                              </div>
-                              <div className="relative">
-                                <input
-                                  type="date"
-                                  id="endDate"
-                                  name="endDate"
-                                  value={newEducation.endDate}
-                                  onChange={handleEducationChange}
-                                  disabled={newEducation.current}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
-                                />
-                                <label
-                                  htmlFor="endDate"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  End Date
-                                </label>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                id="currentEducation"
-                                name="current"
-                                checked={newEducation.current}
-                                onChange={handleEducationChange}
-                                className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
-                              />
-                              <label
-                                htmlFor="currentEducation"
-                                className="ml-2 text-md-on-surface"
-                              >
-                                I am currently studying here
-                              </label>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-                              {editEducationIndex >= 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditEducationIndex(-1);
-                                    setNewEducation({
-                                      institution: "",
-                                      degree: "",
-                                      field: "",
-                                      startDate: "",
-                                      endDate: "",
-                                      current: false,
-                                    });
-                                  }}
-                                  className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
-                                >
-                                  Cancel
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={addEducation}
-                                className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
-                              >
-                                {editEducationIndex >= 0 ? "Update" : "Add"}{" "}
-                                Education
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Certifications Section */}
-                    {activeTab === "certifications" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Certifications
-                        </h2>
-
-                        {profile.certifications &&
-                          profile.certifications.length > 0 && (
-                            <div className="mb-6">
-                              <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                                Your Certifications
-                              </h3>
-                              <ul className="space-y-4">
-                                {profile.certifications.map((cert, index) => (
-                                  <li
-                                    key={index}
-                                    className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
-                                  >
-                                    <div className="flex flex-col sm:flex-row justify-between gap-4">
-                                      <div>
-                                        <div className="font-medium text-md-on-surface">
-                                          {cert.name}
-                                        </div>
-                                        <div className="text-md-on-surface">
-                                          Issued by {cert.issuer}
-                                        </div>
-                                        <div className="text-sm text-md-on-surface-variant">
-                                          {cert.date &&
-                                            `Issued: ${new Date(
-                                              cert.date
-                                            ).toLocaleDateString()}`}
-                                          {!cert.doesNotExpire &&
-                                            cert.expiryDate &&
-                                            ` • Expires: ${new Date(
-                                              cert.expiryDate
-                                            ).toLocaleDateString()}`}
-                                          {cert.doesNotExpire &&
-                                            " • Does not expire"}
-                                        </div>
-                                      </div>
-                                      <div className="flex space-x-2 self-start">
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            editCertification(index)
-                                          }
-                                          className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
-                                        >
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                          >
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                          </svg>
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            removeCertification(index)
-                                          }
-                                          className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
-                                        >
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                          >
-                                            <path
-                                              fillRule="evenodd"
-                                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                              clipRule="evenodd"
-                                            />
-                                          </svg>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                        {/* Form to add new certification */}
-                        <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
-                          <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                            {editCertificationIndex >= 0
-                              ? "Edit Certification"
-                              : "Add Certification"}
-                          </h3>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  id="certName"
-                                  name="name"
-                                  value={newCertification.name}
-                                  onChange={handleCertificationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                  placeholder=" "
-                                />
-                                <label
-                                  htmlFor="certName"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Certification Name*
-                                </label>
-                              </div>
-                              <div className="relative">
-                                <input
-                                  type="text"
-                                  id="issuer"
-                                  name="issuer"
-                                  value={newCertification.issuer}
-                                  onChange={handleCertificationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                  placeholder=" "
-                                />
-                                <label
-                                  htmlFor="issuer"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Issuing Organization*
-                                </label>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="relative">
-                                <input
-                                  type="date"
-                                  id="certDate"
-                                  name="date"
-                                  value={newCertification.date}
-                                  onChange={handleCertificationChange}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                                />
-                                <label
-                                  htmlFor="certDate"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Issue Date
-                                </label>
-                              </div>
-                              <div className="relative">
-                                <input
-                                  type="date"
-                                  id="expiryDate"
-                                  name="expiryDate"
-                                  value={newCertification.expiryDate}
-                                  onChange={handleCertificationChange}
-                                  disabled={newCertification.doesNotExpire}
-                                  className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
-                                />
-                                <label
-                                  htmlFor="expiryDate"
-                                  className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                                >
-                                  Expiry Date
-                                </label>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                id="doesNotExpire"
-                                name="doesNotExpire"
-                                checked={newCertification.doesNotExpire}
-                                onChange={handleCertificationChange}
-                                className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
-                              />
-                              <label
-                                htmlFor="doesNotExpire"
-                                className="ml-2 text-md-on-surface"
-                              >
-                                This certification does not expire
-                              </label>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-                              {editCertificationIndex >= 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditCertificationIndex(-1);
-                                    setNewCertification({
-                                      name: "",
-                                      issuer: "",
-                                      date: "",
-                                      expiryDate: "",
-                                      doesNotExpire: false,
-                                    });
-                                  }}
-                                  className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
-                                >
-                                  Cancel
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={addCertification}
-                                className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
-                              >
-                                {editCertificationIndex >= 0 ? "Update" : "Add"}{" "}
-                                Certification
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Social Links */}
-                    {activeTab === "social" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Social Links
-                        </h2>
-
-                        <div className="space-y-4">
-                          <div className="relative">
-                            <input
-                              type="url"
-                              id="linkedin"
-                              name="linkedin"
-                              value={profile.linkedin || ""}
-                              onChange={handleChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="linkedin"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              LinkedIn Profile URL
-                            </label>
-                          </div>
-
-                          <div className="relative">
-                            <input
-                              type="url"
-                              id="github"
-                              name="github"
-                              value={profile.github || ""}
-                              onChange={handleChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="github"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              GitHub Profile URL
-                            </label>
-                          </div>
-
-                          <div className="relative">
-                            <input
-                              type="url"
-                              id="portfolio"
-                              name="portfolio"
-                              value={profile.portfolio || ""}
-                              onChange={handleChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="portfolio"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Portfolio Website URL
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Security Settings */}
-                    {activeTab === "security" && (
-                      <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                        <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                          Security Settings
-                        </h2>
-
-                        <button
-                          onClick={handleAddPasskey}
-                          disabled={isRegistering}
-                          className="px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors disabled:opacity-50"
-                        >
-                          {isRegistering ? "Registering..." : "Add Passkey"}
-                        </button>
-
-                        <div className="mt-6">
-                          <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                            Your Passkeys
-                          </h3>
-                          {passkeys.length === 0 ? (
-                            <p className="text-md-on-surface-variant">
-                              No passkeys registered
-                            </p>
-                          ) : (
-                            <ul className="space-y-4">
-                              {passkeys.map((passkey) => (
-                                <li
-                                  key={passkey.cred_id}
-                                  className="flex flex-col sm:flex-row items-center justify-between p-4 bg-md-surface-container-high rounded-3xl border border-md-outline gap-4"
-                                >
-                                  <div className="flex items-center gap-4">
-                                    <div
-                                      className="text-2xl"
-                                      role="img"
-                                      aria-label="device icon"
-                                    >
-                                      {getDeviceIcon(passkey.deviceOS)}
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-medium text-md-on-surface">
-                                          {passkey.deviceName}
-                                        </span>
-                                        <span className="text-xs text-md-on-surface-variant">
-                                          •
-                                        </span>
-                                        <span className="text-sm text-md-on-surface-variant">
-                                          {passkey.browser}
-                                        </span>
-                                      </div>
-                                      <div className="text-sm text-md-on-surface-variant">
-                                        <span>{passkey.deviceOS}</span>
-                                        <span className="mx-2">•</span>
-                                        <span>
-                                          Added{" "}
-                                          {new Date(
-                                            passkey.createdAt
-                                          ).toLocaleDateString()}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={() =>
-                                      handleDeletePasskey(passkey.cred_id)
-                                    }
-                                    className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="h-5 w-5"
-                                      viewBox="0 0 20 20"
-                                      fill="currentColor"
-                                    >
-                                      <path
-                                        fillRule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clipRule="evenodd"
-                                      />
-                                    </svg>
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </TabView>
-              </div>
-
-              {/* Desktop TabView */}
-              <div className="hidden md:block mb-4">
-                <div className="px-4">
-                  <div className="flex overflow-x-auto space-x-2 py-2">
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center space-x-2 px-6 py-3 whitespace-nowrap rounded-full transition-colors ${
-                          activeTab === tab.id
-                            ? "bg-md-primary-container text-md-on-primary-container font-medium"
-                            : "text-md-on-surface hover:bg-md-surface-variant"
-                        }`}
-                      >
-                        <span className="text-xl">{tab.icon}</span>
-                        <span>{tab.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Desktop Tabs Content */}
-              <div className="hidden md:block  flex-1 overflow-y-auto px-4 py-4">
-                {/* Personal Information */}
-                {activeTab === "personal" && (
-                  <div className=" p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Personal Information
-                    </h2>
-
-                    <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="firstName"
-                            id="firstName"
-                            value={profile.firstName || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="firstName"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            First Name
-                          </label>
-                        </div>
-                      </div>
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="lastName"
-                            id="lastName"
-                            value={profile.lastName || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="lastName"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Last Name
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                        Profile Image
-                      </label>
-                      <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <div className="w-24 h-24 rounded-3xl overflow-hidden bg-md-surface-container-high flex items-center justify-center border border-md-outline">
-                          {previewImage ? (
-                            <img
-                              src={previewImage}
-                              alt="Profile"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-md-on-surface-variant">
-                              <svg
-                                className="w-12 h-12"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <label
-                            htmlFor="profile-upload"
-                            className="cursor-pointer inline-block px-6 py-2 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200"
-                          >
-                            Choose File
-                            <input
-                              type="file"
-                              id="profile-upload"
-                              accept="image/*"
-                              onChange={handleProfileImageChange}
-                              className="sr-only"
-                            />
-                          </label>
-                          {profilePictureFile && (
-                            <p className="mt-2 text-xs text-md-on-surface-variant">
-                              {profilePictureFile.name}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="relative mb-6">
-                      <input
-                        type="text"
-                        name="phone"
-                        id="phone"
-                        value={profile.phone || ""}
-                        onChange={handleChange}
-                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="phone"
-                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                      >
-                        Phone Number
-                      </label>
-                    </div>
-
-                    <div className="relative">
-                      <textarea
-                        name="bio"
-                        id="bio"
-                        rows="4"
-                        value={profile.bio || ""}
-                        onChange={handleChange}
-                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface resize-none h-32"
-                        placeholder=" "
-                      ></textarea>
-                      <label
-                        htmlFor="bio"
-                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                      >
-                        Professional Bio
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Professional Information */}
-                {activeTab === "professional" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Professional Information
-                    </h2>
-
-                    <div className="relative mb-6">
-                      <input
-                        type="text"
-                        name="title"
-                        id="title"
-                        value={profile.title || ""}
-                        onChange={handleChange}
-                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="title"
-                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                      >
-                        Professional Title
-                      </label>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="number"
-                            name="experience"
-                            id="experience"
-                            value={profile.experience || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="experience"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Years of Experience
-                          </label>
-                        </div>
-                      </div>
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="industry"
-                            id="industry"
-                            value={profile.industry || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="industry"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Industry
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="location"
-                            id="location"
-                            value={profile.location || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="location"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Location
-                          </label>
-                        </div>
-                      </div>
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="country"
-                            id="country"
-                            value={profile.country || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="country"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Country
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-6 mb-6">
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="number"
-                            name="desiredSalary"
-                            id="desiredSalary"
-                            value={profile.desiredSalary || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="desiredSalary"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Desired Salary
-                          </label>
-                        </div>
-                      </div>
-                      <div className="w-full">
-                        <div className="relative">
-                          <input
-                            type="text"
-                            name="currency"
-                            id="currency"
-                            value={profile.currency || ""}
-                            onChange={handleChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="currency"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Currency
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                        Work Preference
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {["remote", "hybrid", "onsite"].map((type) => (
-                          <button
-                            key={type}
-                            type="button"
-                            className={`
-                              px-6 py-3 rounded-3xl transition-colors duration-200
-                              ${
-                                profile.workPreference === type
-                                  ? "bg-md-primary-container text-md-on-primary-container"
-                                  : "border border-md-outline-variant text-md-on-surface hover:bg-md-surface-variant"
+                              onClick={() =>
+                                setProfile({
+                                  ...profile,
+                                  workPreference: type,
+                                })
                               }
-                            `}
-                            onClick={() =>
-                              setProfile({ ...profile, workPreference: type })
-                            }
-                          >
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
-                        Resume
-                      </label>
-                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-md-outline-variant border-dashed rounded-3xl bg-md-surface-container-high">
-                        <div className="space-y-1 text-center">
-                          <svg
-                            className="mx-auto h-12 w-12 text-md-on-surface-variant"
-                            stroke="currentColor"
-                            fill="none"
-                            viewBox="0 0 48 48"
-                            aria-hidden="true"
-                          >
-                            <path
-                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          <div className="flex text-sm text-md-on-surface-variant justify-center">
-                            <label
-                              htmlFor="file-upload"
-                              className="relative cursor-pointer rounded-3xl px-6 py-2 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-md-primary"
                             >
-                              <span>Upload a file</span>
-                              <input
-                                id="file-upload"
-                                name="file-upload"
-                                type="file"
-                                className="sr-only"
-                                accept=".pdf,.doc,.docx"
-                                onChange={handleResumeChange}
-                              />
-                            </label>
-                          </div>
-                          {resumeFile && (
-                            <p className="text-xs text-md-on-surface-variant mt-2">
-                              Selected file: {resumeFile.name}
-                            </p>
-                          )}
-                          {profile.resume && !resumeFile && (
-                            <div className="mt-2">
-                              <a
-                                href={profile.resume}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-md-primary hover:underline text-sm"
-                              >
-                                View current resume
-                              </a>
-                            </div>
-                          )}
-                          <p className="text-xs text-md-on-surface-variant">
-                            PDF, DOC up to 10MB
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Skills & Qualifications */}
-                {activeTab === "skills" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Skills & Qualifications
-                    </h2>
-
-                    <div className="relative mb-6">
-                      <input
-                        type="text"
-                        id="skills"
-                        value={profile.skills?.join(", ") || ""}
-                        onChange={handleSkillsChange}
-                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="skills"
-                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                      >
-                        Skills (comma separated)
-                      </label>
-                    </div>
-
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="languages"
-                        value={profile.languages?.join(", ") || ""}
-                        onChange={handleLanguagesChange}
-                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                        placeholder=" "
-                      />
-                      <label
-                        htmlFor="languages"
-                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                      >
-                        Languages (comma separated)
-                      </label>
-                    </div>
-                  </div>
-                )}
-
-                {/* Education Section */}
-                {activeTab === "education" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Education
-                    </h2>
-
-                    {profile.education && profile.education.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                          Your Education History
-                        </h3>
-                        <ul className="space-y-4">
-                          {profile.education.map((edu, index) => (
-                            <li
-                              key={index}
-                              className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
-                            >
-                              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                                <div>
-                                  <div className="font-medium text-md-on-surface">
-                                    {edu.institution}
-                                  </div>
-                                  <div className="text-md-on-surface">
-                                    {edu.degree}{" "}
-                                    {edu.field && `in ${edu.field}`}
-                                  </div>
-                                  <div className="text-sm text-md-on-surface-variant">
-                                    {edu.startDate &&
-                                      new Date(
-                                        edu.startDate
-                                      ).getFullYear()}{" "}
-                                    -
-                                    {edu.current
-                                      ? " Present"
-                                      : edu.endDate &&
-                                        ` ${new Date(
-                                          edu.endDate
-                                        ).getFullYear()}`}
-                                  </div>
-                                </div>
-                                <div className="flex space-x-2 self-start">
-                                  <button
-                                    type="button"
-                                    onClick={() => editEducation(index)}
-                                    className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="h-5 w-5"
-                                      viewBox="0 0 20 20"
-                                      fill="currentColor"
-                                    >
-                                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => removeEducation(index)}
-                                    className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="h-5 w-5"
-                                      viewBox="0 0 20 20"
-                                      fill="currentColor"
-                                    >
-                                      <path
-                                        fillRule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clipRule="evenodd"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Form to add new education */}
-                    <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
-                      <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                        {editEducationIndex >= 0
-                          ? "Edit Education"
-                          : "Add Education"}
-                      </h3>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <input
-                              type="text"
-                              id="institution"
-                              name="institution"
-                              value={newEducation.institution}
-                              onChange={handleEducationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="institution"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Institution*
-                            </label>
-                          </div>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              id="degree"
-                              name="degree"
-                              value={newEducation.degree}
-                              onChange={handleEducationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="degree"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Degree*
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="relative">
-                          <input
-                            type="text"
-                            id="field"
-                            name="field"
-                            value={newEducation.field}
-                            onChange={handleEducationChange}
-                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            placeholder=" "
-                          />
-                          <label
-                            htmlFor="field"
-                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                          >
-                            Field of Study
-                          </label>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <input
-                              type="date"
-                              id="startDate"
-                              name="startDate"
-                              value={newEducation.startDate}
-                              onChange={handleEducationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            />
-                            <label
-                              htmlFor="startDate"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Start Date
-                            </label>
-                          </div>
-                          <div className="relative">
-                            <input
-                              type="date"
-                              id="endDate"
-                              name="endDate"
-                              value={newEducation.endDate}
-                              onChange={handleEducationChange}
-                              disabled={newEducation.current}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
-                            />
-                            <label
-                              htmlFor="endDate"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              End Date
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id="currentEducation"
-                            name="current"
-                            checked={newEducation.current}
-                            onChange={handleEducationChange}
-                            className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
-                          />
-                          <label
-                            htmlFor="currentEducation"
-                            className="ml-2 text-md-on-surface"
-                          >
-                            I am currently studying here
-                          </label>
-                        </div>
-
-                        <div className="flex justify-end mt-4">
-                          {editEducationIndex >= 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditEducationIndex(-1);
-                                setNewEducation({
-                                  institution: "",
-                                  degree: "",
-                                  field: "",
-                                  startDate: "",
-                                  endDate: "",
-                                  current: false,
-                                });
-                              }}
-                              className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
-                            >
-                              Cancel
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={addEducation}
-                            className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
-                          >
-                            {editEducationIndex >= 0 ? "Update" : "Add"}{" "}
-                            Education
-                          </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mb-6">
+                        <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                          Resume
+                        </label>
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-md-outline-variant border-dashed rounded-3xl bg-md-surface-container-high">
+                          <div className="space-y-1 text-center">
+                            <svg
+                              className="mx-auto h-12 w-12 text-md-on-surface-variant"
+                              stroke="currentColor"
+                              fill="none"
+                              viewBox="0 0 48 48"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                strokeWidth={2}
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                            <div className="flex text-sm text-md-on-surface-variant justify-center">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer rounded-3xl px-6 py-2 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-md-primary"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  accept=".pdf,.doc,.docx"
+                                  onChange={handleResumeChange}
+                                />
+                              </label>
+                            </div>
+                            {resumeFile && (
+                              <p className="text-xs text-md-on-surface-variant mt-2">
+                                Selected file: {resumeFile.name}
+                              </p>
+                            )}
+                            {profile.resume && !resumeFile && (
+                              <div className="mt-2">
+                                <a
+                                  href={profile.resume}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-md-primary hover:underline text-sm"
+                                >
+                                  View current resume
+                                </a>
+                              </div>
+                            )}
+                            <p className="text-xs text-md-on-surface-variant">
+                              PDF, DOC up to 10MB
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Certifications Section */}
-                {activeTab === "certifications" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Certifications
-                    </h2>
+                  {/* Skills & Qualifications */}
+                  {activeTab === "skills" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Skills & Qualifications
+                      </h2>
 
-                    {profile.certifications &&
-                      profile.certifications.length > 0 && (
+                      <div className="relative mb-6">
+                        <input
+                          type="text"
+                          id="skills"
+                          value={profile.skills?.join(", ") || ""}
+                          onChange={handleSkillsChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="skills"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Skills (comma separated)
+                        </label>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="languages"
+                          value={profile.languages?.join(", ") || ""}
+                          onChange={handleLanguagesChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="languages"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Languages (comma separated)
+                        </label>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education Section */}
+                  {activeTab === "education" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Education
+                      </h2>
+
+                      {profile.education && profile.education.length > 0 && (
                         <div className="mb-6">
                           <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                            Your Certifications
+                            Your Education History
                           </h3>
                           <ul className="space-y-4">
-                            {profile.certifications.map((cert, index) => (
+                            {profile.education.map((edu, index) => (
                               <li
                                 key={index}
                                 className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
@@ -2249,29 +968,30 @@ export default function CandidateProfile() {
                                 <div className="flex flex-col sm:flex-row justify-between gap-4">
                                   <div>
                                     <div className="font-medium text-md-on-surface">
-                                      {cert.name}
+                                      {edu.institution}
                                     </div>
                                     <div className="text-md-on-surface">
-                                      Issued by {cert.issuer}
+                                      {edu.degree}{" "}
+                                      {edu.field && `in ${edu.field}`}
                                     </div>
                                     <div className="text-sm text-md-on-surface-variant">
-                                      {cert.date &&
-                                        `Issued: ${new Date(
-                                          cert.date
-                                        ).toLocaleDateString()}`}
-                                      {!cert.doesNotExpire &&
-                                        cert.expiryDate &&
-                                        ` • Expires: ${new Date(
-                                          cert.expiryDate
-                                        ).toLocaleDateString()}`}
-                                      {cert.doesNotExpire &&
-                                        " • Does not expire"}
+                                      {edu.startDate &&
+                                        new Date(
+                                          edu.startDate
+                                        ).getFullYear()}{" "}
+                                      -
+                                      {edu.current
+                                        ? " Present"
+                                        : edu.endDate &&
+                                          ` ${new Date(
+                                            edu.endDate
+                                          ).getFullYear()}`}
                                     </div>
                                   </div>
                                   <div className="flex space-x-2 self-start">
                                     <button
                                       type="button"
-                                      onClick={() => editCertification(index)}
+                                      onClick={() => editEducation(index)}
                                       className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
                                     >
                                       <svg
@@ -2285,7 +1005,7 @@ export default function CandidateProfile() {
                                     </button>
                                     <button
                                       type="button"
-                                      onClick={() => removeCertification(index)}
+                                      onClick={() => removeEducation(index)}
                                       className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
                                     >
                                       <svg
@@ -2309,294 +1029,1563 @@ export default function CandidateProfile() {
                         </div>
                       )}
 
-                    {/* Form to add new certification */}
-                    <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
-                      <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                        {editCertificationIndex >= 0
-                          ? "Edit Certification"
-                          : "Add Certification"}
-                      </h3>
+                      {/* Form to add new education */}
+                      <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
+                        <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                          {editEducationIndex >= 0
+                            ? "Edit Education"
+                            : "Add Education"}
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="institution"
+                                name="institution"
+                                value={newEducation.institution}
+                                onChange={handleEducationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                                placeholder=" "
+                              />
+                              <label
+                                htmlFor="institution"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Institution*
+                              </label>
+                            </div>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="degree"
+                                name="degree"
+                                value={newEducation.degree}
+                                onChange={handleEducationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                                placeholder=" "
+                              />
+                              <label
+                                htmlFor="degree"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Degree*
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="relative">
+                            <input
+                              type="text"
+                              id="field"
+                              name="field"
+                              value={newEducation.field}
+                              onChange={handleEducationChange}
+                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              placeholder=" "
+                            />
+                            <label
+                              htmlFor="field"
+                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                            >
+                              Field of Study
+                            </label>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative">
+                              <input
+                                type="date"
+                                id="startDate"
+                                name="startDate"
+                                value={newEducation.startDate}
+                                onChange={handleEducationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              />
+                              <label
+                                htmlFor="startDate"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Start Date
+                              </label>
+                            </div>
+                            <div className="relative">
+                              <input
+                                type="date"
+                                id="endDate"
+                                name="endDate"
+                                value={newEducation.endDate}
+                                onChange={handleEducationChange}
+                                disabled={newEducation.current}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
+                              />
+                              <label
+                                htmlFor="endDate"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                End Date
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="currentEducation"
+                              name="current"
+                              checked={newEducation.current}
+                              onChange={handleEducationChange}
+                              className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                            />
+                            <label
+                              htmlFor="currentEducation"
+                              className="ml-2 text-md-on-surface"
+                            >
+                              I am currently studying here
+                            </label>
+                          </div>
+
+                          <div className="flex justify-end mt-4">
+                            {editEducationIndex >= 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditEducationIndex(-1);
+                                  setNewEducation({
+                                    institution: "",
+                                    degree: "",
+                                    field: "",
+                                    startDate: "",
+                                    endDate: "",
+                                    current: false,
+                                  });
+                                }}
+                                className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={addEducation}
+                              className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                            >
+                              {editEducationIndex >= 0 ? "Update" : "Add"}{" "}
+                              Education
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Certifications Section */}
+                  {activeTab === "certifications" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Certifications
+                      </h2>
+
+                      {profile.certifications &&
+                        profile.certifications.length > 0 && (
+                          <div className="mb-6">
+                            <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                              Your Certifications
+                            </h3>
+                            <ul className="space-y-4">
+                              {profile.certifications.map((cert, index) => (
+                                <li
+                                  key={index}
+                                  className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
+                                >
+                                  <div className="flex flex-col sm:flex-row justify-between gap-4">
+                                    <div>
+                                      <div className="font-medium text-md-on-surface">
+                                        {cert.name}
+                                      </div>
+                                      <div className="text-md-on-surface">
+                                        Issued by {cert.issuer}
+                                      </div>
+                                      <div className="text-sm text-md-on-surface-variant">
+                                        {cert.date &&
+                                          `Issued: ${new Date(
+                                            cert.date
+                                          ).toLocaleDateString()}`}
+                                        {!cert.doesNotExpire &&
+                                          cert.expiryDate &&
+                                          ` • Expires: ${new Date(
+                                            cert.expiryDate
+                                          ).toLocaleDateString()}`}
+                                        {cert.doesNotExpire &&
+                                          " • Does not expire"}
+                                      </div>
+                                    </div>
+                                    <div className="flex space-x-2 self-start">
+                                      <button
+                                        type="button"
+                                        onClick={() => editCertification(index)}
+                                        className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          removeCertification(index)
+                                        }
+                                        className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                            clipRule="evenodd"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                      {/* Form to add new certification */}
+                      <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
+                        <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                          {editCertificationIndex >= 0
+                            ? "Edit Certification"
+                            : "Add Certification"}
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="certName"
+                                name="name"
+                                value={newCertification.name}
+                                onChange={handleCertificationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                                placeholder=" "
+                              />
+                              <label
+                                htmlFor="certName"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Certification Name*
+                              </label>
+                            </div>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                id="issuer"
+                                name="issuer"
+                                value={newCertification.issuer}
+                                onChange={handleCertificationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                                placeholder=" "
+                              />
+                              <label
+                                htmlFor="issuer"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Issuing Organization*
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="relative">
+                              <input
+                                type="date"
+                                id="certDate"
+                                name="date"
+                                value={newCertification.date}
+                                onChange={handleCertificationChange}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                              />
+                              <label
+                                htmlFor="certDate"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Issue Date
+                              </label>
+                            </div>
+                            <div className="relative">
+                              <input
+                                type="date"
+                                id="expiryDate"
+                                name="expiryDate"
+                                value={newCertification.expiryDate}
+                                onChange={handleCertificationChange}
+                                disabled={newCertification.doesNotExpire}
+                                className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
+                              />
+                              <label
+                                htmlFor="expiryDate"
+                                className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                              >
+                                Expiry Date
+                              </label>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="doesNotExpire"
+                              name="doesNotExpire"
+                              checked={newCertification.doesNotExpire}
+                              onChange={handleCertificationChange}
+                              className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                            />
+                            <label
+                              htmlFor="doesNotExpire"
+                              className="ml-2 text-md-on-surface"
+                            >
+                              This certification does not expire
+                            </label>
+                          </div>
+
+                          <div className="flex justify-end mt-4">
+                            {editCertificationIndex >= 0 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditCertificationIndex(-1);
+                                  setNewCertification({
+                                    name: "",
+                                    issuer: "",
+                                    date: "",
+                                    expiryDate: "",
+                                    doesNotExpire: false,
+                                  });
+                                }}
+                                className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={addCertification}
+                              className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                            >
+                              {editCertificationIndex >= 0 ? "Update" : "Add"}{" "}
+                              Certification
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Social Links */}
+                  {activeTab === "social" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Social Links
+                      </h2>
+
                       <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <input
-                              type="text"
-                              id="certName"
-                              name="name"
-                              value={newCertification.name}
-                              onChange={handleCertificationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="certName"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Certification Name*
-                            </label>
-                          </div>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              id="issuer"
-                              name="issuer"
-                              value={newCertification.issuer}
-                              onChange={handleCertificationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                              placeholder=" "
-                            />
-                            <label
-                              htmlFor="issuer"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Issuing Organization*
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="relative">
-                            <input
-                              type="date"
-                              id="certDate"
-                              name="date"
-                              value={newCertification.date}
-                              onChange={handleCertificationChange}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                            />
-                            <label
-                              htmlFor="certDate"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Issue Date
-                            </label>
-                          </div>
-                          <div className="relative">
-                            <input
-                              type="date"
-                              id="expiryDate"
-                              name="expiryDate"
-                              value={newCertification.expiryDate}
-                              onChange={handleCertificationChange}
-                              disabled={newCertification.doesNotExpire}
-                              className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
-                            />
-                            <label
-                              htmlFor="expiryDate"
-                              className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                            >
-                              Expiry Date
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
+                        <div className="relative">
                           <input
-                            type="checkbox"
-                            id="doesNotExpire"
-                            name="doesNotExpire"
-                            checked={newCertification.doesNotExpire}
-                            onChange={handleCertificationChange}
-                            className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                            type="url"
+                            id="linkedin"
+                            name="linkedin"
+                            value={profile.linkedin || ""}
+                            onChange={handleChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
                           />
                           <label
-                            htmlFor="doesNotExpire"
-                            className="ml-2 text-md-on-surface"
+                            htmlFor="linkedin"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
                           >
-                            This certification does not expire
+                            LinkedIn Profile URL
                           </label>
                         </div>
 
-                        <div className="flex justify-end mt-4">
-                          {editCertificationIndex >= 0 && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditCertificationIndex(-1);
-                                setNewCertification({
-                                  name: "",
-                                  issuer: "",
-                                  date: "",
-                                  expiryDate: "",
-                                  doesNotExpire: false,
-                                });
-                              }}
-                              className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
-                            >
-                              Cancel
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={addCertification}
-                            className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                        <div className="relative">
+                          <input
+                            type="url"
+                            id="github"
+                            name="github"
+                            value={profile.github || ""}
+                            onChange={handleChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="github"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
                           >
-                            {editCertificationIndex >= 0 ? "Update" : "Add"}{" "}
-                            Certification
-                          </button>
+                            GitHub Profile URL
+                          </label>
+                        </div>
+
+                        <div className="relative">
+                          <input
+                            type="url"
+                            id="portfolio"
+                            name="portfolio"
+                            value={profile.portfolio || ""}
+                            onChange={handleChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="portfolio"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Portfolio Website URL
+                          </label>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Social Links */}
-                {activeTab === "social" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Social Links
-                    </h2>
+                  {/* Security Settings */}
+                  {activeTab === "security" && (
+                    <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                        Security Settings
+                      </h2>
 
-                    <div className="space-y-4">
+                      <button
+                        onClick={handleAddPasskey}
+                        disabled={isRegistering}
+                        className="px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors disabled:opacity-50"
+                      >
+                        {isRegistering ? "Registering..." : "Add Passkey"}
+                      </button>
+
+                      <div className="mt-6">
+                        <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                          Your Passkeys
+                        </h3>
+                        {passkeys.length === 0 ? (
+                          <p className="text-md-on-surface-variant">
+                            No passkeys registered
+                          </p>
+                        ) : (
+                          <ul className="space-y-4">
+                            {passkeys.map((passkey) => (
+                              <li
+                                key={passkey.cred_id}
+                                className="flex flex-col sm:flex-row items-center justify-between p-4 bg-md-surface-container-high rounded-3xl border border-md-outline gap-4"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className="text-2xl"
+                                    role="img"
+                                    aria-label="device icon"
+                                  >
+                                    {getDeviceIcon(passkey.deviceOS)}
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-md-on-surface">
+                                        {passkey.deviceName}
+                                      </span>
+                                      <span className="text-xs text-md-on-surface-variant">
+                                        •
+                                      </span>
+                                      <span className="text-sm text-md-on-surface-variant">
+                                        {passkey.browser}
+                                      </span>
+                                    </div>
+                                    <div className="text-sm text-md-on-surface-variant">
+                                      <span>{passkey.deviceOS}</span>
+                                      <span className="mx-2">•</span>
+                                      <span>
+                                        Added{" "}
+                                        {new Date(
+                                          passkey.createdAt
+                                        ).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() =>
+                                    handleDeletePasskey(passkey.cred_id)
+                                  }
+                                  className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabView>
+            </div>
+
+            {/* Desktop TabView */}
+            <div className="hidden md:block mb-4">
+              <div className="px-4">
+                <div className="flex overflow-x-auto space-x-2 py-2">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center space-x-2 px-6 py-3 whitespace-nowrap rounded-full transition-colors ${
+                        activeTab === tab.id
+                          ? "bg-md-primary-container text-md-on-primary-container font-medium"
+                          : "text-md-on-surface hover:bg-md-surface-variant"
+                      }`}
+                    >
+                      <span className="text-xl">{tab.icon}</span>
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Tabs Content */}
+            <div className="hidden md:block  flex-1 overflow-y-auto px-4 py-4">
+              {/* Personal Information */}
+              {activeTab === "personal" && (
+                <div className=" p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Personal Information
+                  </h2>
+
+                  <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                    <div className="w-full">
                       <div className="relative">
                         <input
-                          type="url"
-                          id="linkedin"
-                          name="linkedin"
-                          value={profile.linkedin || ""}
+                          type="text"
+                          name="firstName"
+                          id="firstName"
+                          value={profile.firstName || ""}
                           onChange={handleChange}
                           className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
                           placeholder=" "
                         />
                         <label
-                          htmlFor="linkedin"
+                          htmlFor="firstName"
                           className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
                         >
-                          LinkedIn Profile URL
+                          First Name
                         </label>
                       </div>
-
+                    </div>
+                    <div className="w-full">
                       <div className="relative">
                         <input
-                          type="url"
-                          id="github"
-                          name="github"
-                          value={profile.github || ""}
+                          type="text"
+                          name="lastName"
+                          id="lastName"
+                          value={profile.lastName || ""}
                           onChange={handleChange}
                           className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
                           placeholder=" "
                         />
                         <label
-                          htmlFor="github"
+                          htmlFor="lastName"
                           className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
                         >
-                          GitHub Profile URL
-                        </label>
-                      </div>
-
-                      <div className="relative">
-                        <input
-                          type="url"
-                          id="portfolio"
-                          name="portfolio"
-                          value={profile.portfolio || ""}
-                          onChange={handleChange}
-                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
-                          placeholder=" "
-                        />
-                        <label
-                          htmlFor="portfolio"
-                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
-                        >
-                          Portfolio Website URL
+                          Last Name
                         </label>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Security Settings */}
-                {activeTab === "security" && (
-                  <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
-                    <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
-                      Security Settings
-                    </h2>
-
-                    <button
-                      onClick={handleAddPasskey}
-                      disabled={isRegistering}
-                      className="px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors disabled:opacity-50"
-                    >
-                      {isRegistering ? "Registering..." : "Add Passkey"}
-                    </button>
-
-                    <div className="mt-6">
-                      <h3 className="text-md font-medium mb-4 text-md-on-surface">
-                        Your Passkeys
-                      </h3>
-                      {passkeys.length === 0 ? (
-                        <p className="text-md-on-surface-variant">
-                          No passkeys registered
-                        </p>
-                      ) : (
-                        <ul className="space-y-4">
-                          {passkeys.map((passkey) => (
-                            <li
-                              key={passkey.cred_id}
-                              className="flex flex-col sm:flex-row items-center justify-between p-4 bg-md-surface-container-high rounded-3xl border border-md-outline gap-4"
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                      Profile Image
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="w-24 h-24 rounded-3xl overflow-hidden bg-md-surface-container-high flex items-center justify-center border border-md-outline">
+                        {previewImage ? (
+                          <img
+                            src={previewImage}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-md-on-surface-variant">
+                            <svg
+                              className="w-12 h-12"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
                             >
-                              <div className="flex items-center gap-4">
-                                <div
-                                  className="text-2xl"
-                                  role="img"
-                                  aria-label="device icon"
-                                >
-                                  {getDeviceIcon(passkey.deviceOS)}
+                              <path
+                                fillRule="evenodd"
+                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="profile-upload"
+                          className="cursor-pointer inline-block px-6 py-2 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200"
+                        >
+                          Choose File
+                          <input
+                            type="file"
+                            id="profile-upload"
+                            accept="image/*"
+                            onChange={handleProfileImageChange}
+                            className="sr-only"
+                          />
+                        </label>
+                        {profilePictureFile && (
+                          <p className="mt-2 text-xs text-md-on-surface-variant">
+                            {profilePictureFile.name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative mb-6">
+                    <input
+                      type="text"
+                      name="phone"
+                      id="phone"
+                      value={profile.phone || ""}
+                      onChange={handleChange}
+                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                      placeholder=" "
+                    />
+                    <label
+                      htmlFor="phone"
+                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                    >
+                      Phone Number
+                    </label>
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      name="bio"
+                      id="bio"
+                      rows="4"
+                      value={profile.bio || ""}
+                      onChange={handleChange}
+                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface resize-none h-32"
+                      placeholder=" "
+                    ></textarea>
+                    <label
+                      htmlFor="bio"
+                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                    >
+                      Professional Bio
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Professional Information */}
+              {activeTab === "professional" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Professional Information
+                  </h2>
+
+                  <div className="relative mb-6">
+                    <input
+                      type="text"
+                      name="title"
+                      id="title"
+                      value={profile.title || ""}
+                      onChange={handleChange}
+                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                      placeholder=" "
+                    />
+                    <label
+                      htmlFor="title"
+                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                    >
+                      Professional Title
+                    </label>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="number"
+                          name="experience"
+                          id="experience"
+                          value={profile.experience || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="experience"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Years of Experience
+                        </label>
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="industry"
+                          id="industry"
+                          value={profile.industry || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="industry"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Industry
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="location"
+                          id="location"
+                          value={profile.location || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="location"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Location
+                        </label>
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="country"
+                          id="country"
+                          value={profile.country || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="country"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Country
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="number"
+                          name="desiredSalary"
+                          id="desiredSalary"
+                          value={profile.desiredSalary || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="desiredSalary"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Desired Salary
+                        </label>
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="currency"
+                          id="currency"
+                          value={profile.currency || ""}
+                          onChange={handleChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="currency"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Currency
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                      Work Preference
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {["remote", "hybrid", "onsite"].map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          className={`
+                              px-6 py-3 rounded-3xl transition-colors duration-200
+                              ${
+                                profile.workPreference === type
+                                  ? "bg-md-primary-container text-md-on-primary-container"
+                                  : "border border-md-outline-variant text-md-on-surface hover:bg-md-surface-variant"
+                              }
+                            `}
+                          onClick={() =>
+                            setProfile({ ...profile, workPreference: type })
+                          }
+                        >
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-md-on-surface-variant mb-2">
+                      Resume
+                    </label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-md-outline-variant border-dashed rounded-3xl bg-md-surface-container-high">
+                      <div className="space-y-1 text-center">
+                        <svg
+                          className="mx-auto h-12 w-12 text-md-on-surface-variant"
+                          stroke="currentColor"
+                          fill="none"
+                          viewBox="0 0 48 48"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <div className="flex text-sm text-md-on-surface-variant justify-center">
+                          <label
+                            htmlFor="file-upload"
+                            className="relative cursor-pointer rounded-3xl px-6 py-2 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-md-primary"
+                          >
+                            <span>Upload a file</span>
+                            <input
+                              id="file-upload"
+                              name="file-upload"
+                              type="file"
+                              className="sr-only"
+                              accept=".pdf,.doc,.docx"
+                              onChange={handleResumeChange}
+                            />
+                          </label>
+                        </div>
+                        {resumeFile && (
+                          <p className="text-xs text-md-on-surface-variant mt-2">
+                            Selected file: {resumeFile.name}
+                          </p>
+                        )}
+                        {profile.resume && !resumeFile && (
+                          <div className="mt-2">
+                            <a
+                              href={profile.resume}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-md-primary hover:underline text-sm"
+                            >
+                              View current resume
+                            </a>
+                          </div>
+                        )}
+                        <p className="text-xs text-md-on-surface-variant">
+                          PDF, DOC up to 10MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Skills & Qualifications */}
+              {activeTab === "skills" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Skills & Qualifications
+                  </h2>
+
+                  <div className="relative mb-6">
+                    <input
+                      type="text"
+                      id="skills"
+                      value={profile.skills?.join(", ") || ""}
+                      onChange={handleSkillsChange}
+                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                      placeholder=" "
+                    />
+                    <label
+                      htmlFor="skills"
+                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                    >
+                      Skills (comma separated)
+                    </label>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="languages"
+                      value={profile.languages?.join(", ") || ""}
+                      onChange={handleLanguagesChange}
+                      className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                      placeholder=" "
+                    />
+                    <label
+                      htmlFor="languages"
+                      className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                    >
+                      Languages (comma separated)
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Education Section */}
+              {activeTab === "education" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Education
+                  </h2>
+
+                  {profile.education && profile.education.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                        Your Education History
+                      </h3>
+                      <ul className="space-y-4">
+                        {profile.education.map((edu, index) => (
+                          <li
+                            key={index}
+                            className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
+                          >
+                            <div className="flex flex-col sm:flex-row justify-between gap-4">
+                              <div>
+                                <div className="font-medium text-md-on-surface">
+                                  {edu.institution}
                                 </div>
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium text-md-on-surface">
-                                      {passkey.deviceName}
-                                    </span>
-                                    <span className="text-xs text-md-on-surface-variant">
-                                      •
-                                    </span>
-                                    <span className="text-sm text-md-on-surface-variant">
-                                      {passkey.browser}
-                                    </span>
-                                  </div>
-                                  <div className="text-sm text-md-on-surface-variant">
-                                    <span>{passkey.deviceOS}</span>
-                                    <span className="mx-2">•</span>
-                                    <span>
-                                      Added{" "}
-                                      {new Date(
-                                        passkey.createdAt
-                                      ).toLocaleDateString()}
-                                    </span>
-                                  </div>
+                                <div className="text-md-on-surface">
+                                  {edu.degree} {edu.field && `in ${edu.field}`}
+                                </div>
+                                <div className="text-sm text-md-on-surface-variant">
+                                  {edu.startDate &&
+                                    new Date(edu.startDate).getFullYear()}{" "}
+                                  -
+                                  {edu.current
+                                    ? " Present"
+                                    : edu.endDate &&
+                                      ` ${new Date(edu.endDate).getFullYear()}`}
                                 </div>
                               </div>
-                              <button
-                                onClick={() =>
-                                  handleDeletePasskey(passkey.cred_id)
-                                }
-                                className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
+                              <div className="flex space-x-2 self-start">
+                                <button
+                                  type="button"
+                                  onClick={() => editEducation(index)}
+                                  className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
                                 >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </button>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeEducation(index)}
+                                  className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Form to add new education */}
+                  <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
+                    <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                      {editEducationIndex >= 0
+                        ? "Edit Education"
+                        : "Add Education"}
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="institution"
+                            name="institution"
+                            value={newEducation.institution}
+                            onChange={handleEducationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="institution"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Institution*
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="degree"
+                            name="degree"
+                            value={newEducation.degree}
+                            onChange={handleEducationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="degree"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Degree*
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="field"
+                          name="field"
+                          value={newEducation.field}
+                          onChange={handleEducationChange}
+                          className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          placeholder=" "
+                        />
+                        <label
+                          htmlFor="field"
+                          className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                        >
+                          Field of Study
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                          <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            value={newEducation.startDate}
+                            onChange={handleEducationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          />
+                          <label
+                            htmlFor="startDate"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Start Date
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            id="endDate"
+                            name="endDate"
+                            value={newEducation.endDate}
+                            onChange={handleEducationChange}
+                            disabled={newEducation.current}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
+                          />
+                          <label
+                            htmlFor="endDate"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            End Date
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="currentEducation"
+                          name="current"
+                          checked={newEducation.current}
+                          onChange={handleEducationChange}
+                          className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                        />
+                        <label
+                          htmlFor="currentEducation"
+                          className="ml-2 text-md-on-surface"
+                        >
+                          I am currently studying here
+                        </label>
+                      </div>
+
+                      <div className="flex justify-end mt-4">
+                        {editEducationIndex >= 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditEducationIndex(-1);
+                              setNewEducation({
+                                institution: "",
+                                degree: "",
+                                field: "",
+                                startDate: "",
+                                endDate: "",
+                                current: false,
+                              });
+                            }}
+                            className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={addEducation}
+                          className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                        >
+                          {editEducationIndex >= 0 ? "Update" : "Add"} Education
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Certifications Section */}
+              {activeTab === "certifications" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Certifications
+                  </h2>
+
+                  {profile.certifications &&
+                    profile.certifications.length > 0 && (
+                      <div className="mb-6">
+                        <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                          Your Certifications
+                        </h3>
+                        <ul className="space-y-4">
+                          {profile.certifications.map((cert, index) => (
+                            <li
+                              key={index}
+                              className="p-4 bg-md-surface-container-high rounded-3xl border border-md-outline"
+                            >
+                              <div className="flex flex-col sm:flex-row justify-between gap-4">
+                                <div>
+                                  <div className="font-medium text-md-on-surface">
+                                    {cert.name}
+                                  </div>
+                                  <div className="text-md-on-surface">
+                                    Issued by {cert.issuer}
+                                  </div>
+                                  <div className="text-sm text-md-on-surface-variant">
+                                    {cert.date &&
+                                      `Issued: ${new Date(
+                                        cert.date
+                                      ).toLocaleDateString()}`}
+                                    {!cert.doesNotExpire &&
+                                      cert.expiryDate &&
+                                      ` • Expires: ${new Date(
+                                        cert.expiryDate
+                                      ).toLocaleDateString()}`}
+                                    {cert.doesNotExpire && " • Does not expire"}
+                                  </div>
+                                </div>
+                                <div className="flex space-x-2 self-start">
+                                  <button
+                                    type="button"
+                                    onClick={() => editCertification(index)}
+                                    className="p-2 text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container rounded-full transition-colors"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeCertification(index)}
+                                    className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="h-5 w-5"
+                                      viewBox="0 0 20 20"
+                                      fill="currentColor"
+                                    >
+                                      <path
+                                        fillRule="evenodd"
+                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                        clipRule="evenodd"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
                             </li>
                           ))}
                         </ul>
-                      )}
+                      </div>
+                    )}
+
+                  {/* Form to add new certification */}
+                  <div className="p-6 bg-md-surface-container-high rounded-3xl border border-md-outline">
+                    <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                      {editCertificationIndex >= 0
+                        ? "Edit Certification"
+                        : "Add Certification"}
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="certName"
+                            name="name"
+                            value={newCertification.name}
+                            onChange={handleCertificationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="certName"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Certification Name*
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="issuer"
+                            name="issuer"
+                            value={newCertification.issuer}
+                            onChange={handleCertificationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                            placeholder=" "
+                          />
+                          <label
+                            htmlFor="issuer"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Issuing Organization*
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="relative">
+                          <input
+                            type="date"
+                            id="certDate"
+                            name="date"
+                            value={newCertification.date}
+                            onChange={handleCertificationChange}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                          />
+                          <label
+                            htmlFor="certDate"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Issue Date
+                          </label>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            id="expiryDate"
+                            name="expiryDate"
+                            value={newCertification.expiryDate}
+                            onChange={handleCertificationChange}
+                            disabled={newCertification.doesNotExpire}
+                            className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface disabled:bg-md-surface-variant disabled:text-md-on-surface-variant"
+                          />
+                          <label
+                            htmlFor="expiryDate"
+                            className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                          >
+                            Expiry Date
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="doesNotExpire"
+                          name="doesNotExpire"
+                          checked={newCertification.doesNotExpire}
+                          onChange={handleCertificationChange}
+                          className="h-4 w-4 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                        />
+                        <label
+                          htmlFor="doesNotExpire"
+                          className="ml-2 text-md-on-surface"
+                        >
+                          This certification does not expire
+                        </label>
+                      </div>
+
+                      <div className="flex justify-end mt-4">
+                        {editCertificationIndex >= 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditCertificationIndex(-1);
+                              setNewCertification({
+                                name: "",
+                                issuer: "",
+                                date: "",
+                                expiryDate: "",
+                                doesNotExpire: false,
+                              });
+                            }}
+                            className="mr-3 px-6 py-2 bg-md-surface-variant text-md-on-surface-variant rounded-3xl hover:bg-md-surface-container-high transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={addCertification}
+                          className="px-6 py-2 bg-md-primary text-md-on-primary rounded-3xl hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                        >
+                          {editCertificationIndex >= 0 ? "Update" : "Add"}{" "}
+                          Certification
+                        </button>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Social Links */}
+              {activeTab === "social" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Social Links
+                  </h2>
+
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <input
+                        type="url"
+                        id="linkedin"
+                        name="linkedin"
+                        value={profile.linkedin || ""}
+                        onChange={handleChange}
+                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                        placeholder=" "
+                      />
+                      <label
+                        htmlFor="linkedin"
+                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                      >
+                        LinkedIn Profile URL
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="url"
+                        id="github"
+                        name="github"
+                        value={profile.github || ""}
+                        onChange={handleChange}
+                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                        placeholder=" "
+                      />
+                      <label
+                        htmlFor="github"
+                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                      >
+                        GitHub Profile URL
+                      </label>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="url"
+                        id="portfolio"
+                        name="portfolio"
+                        value={profile.portfolio || ""}
+                        onChange={handleChange}
+                        className="block w-full px-6 pt-6 pb-1 rounded-3xl text-xl appearance-none focus:outline-none peer border border-md-outline focus:border-md-primary bg-transparent text-md-on-surface"
+                        placeholder=" "
+                      />
+                      <label
+                        htmlFor="portfolio"
+                        className="absolute duration-300 transform -translate-y-3 scale-75 top-3 z-10 origin-[0] left-6 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 text-md-on-surface-variant peer-focus:text-md-primary"
+                      >
+                        Portfolio Website URL
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Security Settings */}
+              {activeTab === "security" && (
+                <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    Security Settings
+                  </h2>
+
+                  <button
+                    onClick={handleAddPasskey}
+                    disabled={isRegistering}
+                    className="px-6 py-3 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors disabled:opacity-50"
+                  >
+                    {isRegistering ? "Registering..." : "Add Passkey"}
+                  </button>
+
+                  <div className="mt-6">
+                    <h3 className="text-md font-medium mb-4 text-md-on-surface">
+                      Your Passkeys
+                    </h3>
+                    {passkeys.length === 0 ? (
+                      <p className="text-md-on-surface-variant">
+                        No passkeys registered
+                      </p>
+                    ) : (
+                      <ul className="space-y-4">
+                        {passkeys.map((passkey) => (
+                          <li
+                            key={passkey.cred_id}
+                            className="flex flex-col sm:flex-row items-center justify-between p-4 bg-md-surface-container-high rounded-3xl border border-md-outline gap-4"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div
+                                className="text-2xl"
+                                role="img"
+                                aria-label="device icon"
+                              >
+                                {getDeviceIcon(passkey.deviceOS)}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-md-on-surface">
+                                    {passkey.deviceName}
+                                  </span>
+                                  <span className="text-xs text-md-on-surface-variant">
+                                    •
+                                  </span>
+                                  <span className="text-sm text-md-on-surface-variant">
+                                    {passkey.browser}
+                                  </span>
+                                </div>
+                                <div className="text-sm text-md-on-surface-variant">
+                                  <span>{passkey.deviceOS}</span>
+                                  <span className="mx-2">•</span>
+                                  <span>
+                                    Added{" "}
+                                    {new Date(
+                                      passkey.createdAt
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() =>
+                                handleDeletePasskey(passkey.cred_id)
+                              }
+                              className="p-2 text-md-error hover:bg-md-error-container hover:text-md-on-error-container rounded-full transition-colors"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Floating Action Button (FAB) - Material Design 3 style */}
