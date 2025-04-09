@@ -5,6 +5,8 @@ import { startRegistration } from "@simplewebauthn/browser";
 import useStore from "@/app/store";
 import TabView from "@/app/components/TabView";
 import { motion } from "framer-motion";
+import { generateMaterialYouTheme } from "@/utils/colourgenerator";
+
 export default function CandidateProfile() {
   const [isRegistering, setIsRegistering] = useState(false);
   const { userdata, setUserdata } = useStore();
@@ -120,15 +122,32 @@ export default function CandidateProfile() {
     }
   };
 
-  const handleProfileImageChange = (e) => {
+  const handleProfileImageChange = async (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfileImageFile(file);
 
       // Create preview
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewImage(e.target.result);
+      reader.onload = async (e) => {
+        const imageDataUrl = e.target.result;
+        setPreviewImage(imageDataUrl);
+
+        // Generate Material You color scheme from profile image
+        try {
+          const colorSchemefull = await generateMaterialYouTheme(imageDataUrl);
+          const colorScheme = {
+            lightTheme: colorSchemefull.lightTheme,
+            darkTheme: colorSchemefull.darkTheme,
+          };
+          console.log("Generated color scheme:", colorScheme); // Debugging line
+
+          // Add colors to profile data
+          setProfile((prev) => ({ ...prev, colors: colorScheme }));
+        } catch (error) {
+          console.error("Error generating color scheme:", error);
+          // Continue without color generation if it fails
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -267,13 +286,14 @@ export default function CandidateProfile() {
           key !== "skills" &&
           key !== "languages" &&
           key !== "certifications" &&
-          key !== "education"
+          key !== "education" &&
+          key !== "colors" // Don't append colors as a field directly
         ) {
           formData.append(key, value || "");
         }
       });
 
-      // Append arrays as JSON strings
+      // Append arrays and objects as JSON strings
       formData.append("skills", JSON.stringify(profile.skills || []));
       formData.append("languages", JSON.stringify(profile.languages || []));
       formData.append(
@@ -281,6 +301,12 @@ export default function CandidateProfile() {
         JSON.stringify(profile.certifications || [])
       );
       formData.append("education", JSON.stringify(profile.education || []));
+
+      // Add colors as JSON if present
+      if (profile.colors) {
+        console.log("profile.colors:", profile.colors); // Debugging line
+        formData.append("colors", JSON.stringify(profile.colors));
+      }
 
       // Append files if they exist
       if (resumeFile) {
@@ -290,6 +316,7 @@ export default function CandidateProfile() {
       if (profilePictureFile) {
         formData.append("profileImage", profilePictureFile);
       }
+      console.log("FormData:", formData.colors); // Debugging line
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/candidate/profile`,

@@ -169,6 +169,13 @@ export default function NavComponent() {
       activeIcon: CogSolid,
       active: pathname.includes("/orgs/hrm/settings"),
     },
+    {
+      name: "Profile",
+      href: "/orgs/hrm/profile",
+      icon: UserCircleIcon,
+      activeIcon: UserSolid,
+      active: pathname.includes("/orgs/hrm/profile"),
+    },
   ];
 
   // Select the appropriate navigation items based on user type
