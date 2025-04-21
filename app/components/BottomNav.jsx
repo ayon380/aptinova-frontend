@@ -48,7 +48,7 @@ export default function NavComponent() {
   // Triggers a short vibration on supported devices
   const triggerVibration = () => {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-      navigator.vibrate(50); // Vibrate for 50 milliseconds
+      navigator.vibrate(20); // Vibrate for 50 milliseconds
     }
   };
 
@@ -107,38 +107,38 @@ export default function NavComponent() {
   const hrNavItems = [
     {
       name: "Dashboard",
-      href: "/hr/dashboard",
+      href: "/orgs/hr/dashboard",
       icon: HomeIcon,
       activeIcon: HomeSolid,
-      active: pathname === "/hr/dashboard",
+      active: pathname === "/orgs/hr/dashboard",
     },
     {
       name: "Candidates",
-      href: "/hr/candidates",
+      href: "/orgs/hr/candidates",
       icon: UsersIcon,
       activeIcon: UsersSolid,
-      active: pathname.startsWith("/hr/candidates"),
+      active: pathname.startsWith("/orgs/hr/candidates"),
     },
     {
       name: "Jobs",
-      href: "/hr/jobs",
+      href: "/orgs/hr/jobs",
       icon: BriefcaseIcon,
       activeIcon: BriefcaseSolid,
-      active: pathname.startsWith("/hr/jobs"),
+      active: pathname.startsWith("/orgs/hr/jobs"),
     },
     {
       name: "Messages",
-      href: "/hr/messages",
+      href: "/orgs/hr/messages",
       icon: ChatBubbleLeftRightIcon,
       activeIcon: ChatSolid,
-      active: pathname.startsWith("/hr/messages"),
+      active: pathname.startsWith("/orgs/hr/messages"),
     },
     {
       name: "Profile",
-      href: "/hr/profile",
+      href: "/orgs/hr/profile",
       icon: UserCircleIcon,
       activeIcon: UserSolid,
-      active: pathname.startsWith("/hr/profile"),
+      active: pathname.startsWith("/orgs/hr/profile"),
     },
   ];
 
@@ -208,8 +208,12 @@ export default function NavComponent() {
         transition={{ duration: 0.3 }} // Animation duration
         className="hidden md:block h-full bg-md-surface w-72 shadow-sm" // Styling: hidden on mobile, visible on desktop, background, width, shadow
       >
-        <div className="flex flex-col text-xl h-full py-8"> {/* Flex container for sidebar content */}
-          <div className="flex flex-col flex-1 space-y-2 px-2"> {/* Container for nav items with spacing */}
+        <div className="flex flex-col text-xl h-full py-8">
+          {" "}
+          {/* Flex container for sidebar content */}
+          <div className="flex flex-col flex-1 space-y-2 px-2">
+            {" "}
+            {/* Container for nav items with spacing */}
             {navItems.map((item, index) => {
               // Determine which icon to use (active or inactive)
               const Icon = item.active ? item.activeIcon : item.icon;
@@ -222,16 +226,22 @@ export default function NavComponent() {
                   animate={{ opacity: 1, y: 0 }} // Animate item to final state
                   transition={{ delay: 0.1 * index, duration: 0.3 }} // Staggered animation delay
                 >
-                  <Link href={item.href} onClick={triggerVibration}> {/* Link component for navigation */}
+                  <Link href={item.href} onClick={triggerVibration}>
+                    {" "}
+                    {/* Link component for navigation */}
                     <div
-                      className={`flex items-center px-4 py-3 rounded-full transition-all duration-200 relative ${ // Styling for the link container
+                      className={`flex items-center px-4 py-3 rounded-full transition-all duration-200 relative ${
+                        // Styling for the link container
                         activeItem
                           ? "bg-md-primary-container text-md-primary" // Active state styles
                           : "text-md-on-surface-variant hover:bg-md-surface-variant/60" // Inactive state styles
                       }`}
                     >
                       <Icon className="h-6 w-6" /> {/* Icon */}
-                      <span className={`ml-3 font-medium`}>{item.name}</span> {/* Text Label */}
+                      <span className={`ml-3 font-medium`}>
+                        {item.name}
+                      </span>{" "}
+                      {/* Text Label */}
                       {/* Optional: Small dot indicator for active item (desktop) */}
                       {activeItem && (
                         <motion.div
@@ -257,7 +267,9 @@ export default function NavComponent() {
         // Styling: visible only on mobile, fixed position, background, z-index, shadow
         className="md:hidden fixed bottom-0 left-0 right-0 bg-md-surface-container h-20 z-40 shadow-[0_-1px_3px_rgba(0,0,0,0.1)]"
       >
-        <div className="flex justify-around h-full items-center px-2"> {/* Flex container to distribute items evenly */}
+        <div className="flex justify-around h-full items-center px-2">
+          {" "}
+          {/* Flex container to distribute items evenly */}
           {navItems.map((item) => {
             // Determine icon and active state
             const Icon = item.active ? item.activeIcon : item.icon;
@@ -275,13 +287,16 @@ export default function NavComponent() {
                   whileTap={{ scale: 0.95 }} // Scale down effect on tap
                 >
                   {/* Material 3 Style Active Indicator (Pill Shape) */}
-                  <div className="relative flex justify-center items-center h-8 w-16 mb-0.5"> {/* Container for the icon and its active indicator */}
+                  <div className="relative flex justify-center items-center h-8 w-16 mb-0.5">
+                    {" "}
+                    {/* Container for the icon and its active indicator */}
                     {activeItem && (
                       <motion.div
                         layoutId="activeMobileIndicator" // Shared layout ID for animation
                         // Styling for the active pill indicator
                         className="absolute inset-0 bg-md-secondary-container rounded-full z-0"
-                        transition={{ // Animation transition for the indicator
+                        transition={{
+                          // Animation transition for the indicator
                           type: "spring",
                           stiffness: 400,
                           damping: 35,
@@ -290,7 +305,8 @@ export default function NavComponent() {
                     )}
                     {/* Icon */}
                     <Icon
-                      className={`relative z-10 h-6 w-6 transition-colors duration-200 ${ // Icon styling with z-index to be above indicator
+                      className={`relative z-10 h-6 w-6 transition-colors duration-200 ${
+                        // Icon styling with z-index to be above indicator
                         activeItem
                           ? "text-md-on-secondary-container" // Active icon color
                           : "text-md-on-surface-variant" // Inactive icon color
@@ -300,7 +316,8 @@ export default function NavComponent() {
 
                   {/* Text Label */}
                   <span
-                    className={`text-[11px] transition-colors duration-200 ${ // Text label styling
+                    className={`text-[11px] transition-colors duration-200 ${
+                      // Text label styling
                       activeItem
                         ? "text-md-on-surface font-medium" // Active text color and weight
                         : "text-md-on-surface-variant" // Inactive text color

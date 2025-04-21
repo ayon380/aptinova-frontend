@@ -118,6 +118,7 @@ const Page = () => {
       const data = await response.json();
       setUserdata(data.user);
       setuserType(data.userType);
+      console.log("User data:", data.user, "User type:", data.userType);
 
       // Route based on user type
       if (data.userType === "candidate") {

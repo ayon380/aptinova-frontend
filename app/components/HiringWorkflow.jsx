@@ -574,7 +574,7 @@ const HiringWorkflow = ({
   return (
     <div className="mt-6 relative">
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex overflow-x-auto pb-4 gap-4 min-h-[600px]">
+        <div className="flex flex-col md:flex-row overflow-y-auto md:overflow-x-auto pb-4 gap-4 min-h-[600px]">
           {sortedStages.map((columnId) => {
             const column = columns[columnId];
             const stage =
@@ -594,7 +594,7 @@ const HiringWorkflow = ({
             return (
               <div
                 key={columnId}
-                className="flex-shrink-0  flex flex-col bg-md-surface-container rounded-xl shadow-sm overflow-hidden border border-md-outline-variant"
+                className="flex-shrink-0 w-full md:w-auto flex flex-col bg-md-surface-container rounded-xl shadow-sm overflow-hidden border border-md-outline-variant mb-4 md:mb-0"
               >
                 <div
                   className={`px-4 py-3 flex items-center justify-between ${colorClass}`}

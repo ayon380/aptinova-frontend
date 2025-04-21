@@ -4,19 +4,12 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import useStore from "../../../../store";
-import { RefreshCw, Loader } from "lucide-react";
-//v0.31
-
+//v0.29
 export default function JobDetailsPage() {
   const router = useRouter();
   const { jobid } = useParams();
   const [job, setJob] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const SearchParams = useSearchParams();
-  const { getCache, setCache, setTitle } = useStore();
-
   const token = SearchParams.get("authToken");
   if (token) {
     localStorage.setItem("authToken", token);
@@ -25,71 +18,35 @@ export default function JobDetailsPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isApplying, setIsApplying] = useState(false);
 
-  const fetchJobDetails = async (skipCache = false) => {
-    try {
-      setIsLoading(true);
-
-      // Create a cache key based on the job ID
-      const cacheKey = `job-${jobid}`;
-
-      // Check if we have cached data and skipCache is false
-      if (!skipCache) {
-        const cachedJob = getCache(cacheKey);
-        if (cachedJob) {
-          console.log("Using cached job data");
-          setJob(cachedJob);
-          setIsLoading(false);
-          return;
-        }
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+        if (!response.ok) throw new Error("Failed to fetch job details");
+        const jobData = await response.json();
+        setJob(jobData);
+      } catch (error) {
+        console.error("Error fetching job:", error);
+        alert("Failed to load job details");
       }
+    };
 
-      // If no cache or skipCache is true, fetch from API
-      console.log("Fetching job data from API");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobid}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch job details");
-
-      const jobData = await response.json();
-
-      // Cache the fetched job data
-      setCache(cacheKey, jobData);
-
-      setJob(jobData);
-    } catch (error) {
-      console.error("Error fetching job:", error);
-      alert("Failed to load job details");
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  };
-
-  // Function to refresh job data from API
-  const refreshJobDetails = () => {
-    setIsRefreshing(true);
-    fetchJobDetails(true); // Skip cache when refreshing
-  };
-  useEffect(() => {
-    setTitle("Job Details");
-    // Fetch job details when the component mounts or jobid changes
-  }, []);
-  useEffect(() => {
     fetchJobDetails();
   }, [jobid]);
 
-  if (isLoading && !job)
+  if (!job)
     return (
-      <div className="container mx-auto p-4 flex justify-center items-center min-h-[80vh]">
-        <div className="bg-md-surface-container p-4 sm:p-8 rounded-3xl shadow-sm flex items-center gap-3 sm:gap-4">
-          <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-t-2 border-b-2 border-md-primary"></div>
-          <span className="text-sm sm:text-base text-md-on-surface-variant font-medium">
+      <div className="container mx-auto p-4 flex justify-center items-center h-screen">
+        <div className="bg-md-surface-container p-8 rounded-3xl shadow-sm flex items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-md-primary"></div>
+          <span className="text-md-on-surface-variant font-medium">
             Loading job details...
           </span>
         </div>
@@ -97,74 +54,53 @@ export default function JobDetailsPage() {
     );
 
   // Parse hiring process steps if available
-  const hiringProcess = job?.hiringProcess ? JSON.parse(job.hiringProcess) : [];
+  const hiringProcess = job.hiringProcess ? JSON.parse(job.hiringProcess) : [];
 
   return (
-    <div className="container mx-auto md:bg-md-surface-container min-h-screen w-full px-3 py-4 md:p-6 lg:p-10 md:py-8 rounded-tl-3xl">
-      {/* Back Button and Refresh Button */}
-      <div className="flex justify-between items-center mb-3 md:mb-6">
-        <button
-          onClick={() => router.back()}
-          className="text-md-primary hover:text-md-primary-hover flex items-center gap-1.5 sm:gap-2 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 hover:bg-md-surface-variant transition-all duration-200 text-sm sm:text-base"
+    <div className="container mx-auto md:bg-md-surface-container h-full rounded-tl-3xl w-full px-4 md:p-10 py-8">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="mb-6 text-md-primary hover:text-md-primary-hover flex items-center gap-2 rounded-full px-4 py-2 hover:bg-md-surface-variant transition-all duration-200"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"
-              fill="currentColor"
-            />
-          </svg>
-          Back to Jobs
-        </button>
-
-        <button
-          onClick={refreshJobDetails}
-          disabled={isRefreshing}
-          className="text-md-primary hover:text-md-primary-hover flex items-center gap-1.5 sm:gap-2 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 hover:bg-md-surface-variant transition-all duration-200 text-sm sm:text-base disabled:opacity-50"
-          title="Refresh job data"
-        >
-          {isRefreshing ? (
-            <>
-              <Loader className="w-4 h-4 animate-spin" />
-              <span>Refreshing...</span>
-            </>
-          ) : (
-            <>
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh</span>
-            </>
-          )}
-        </button>
-      </div>
+          <path
+            d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"
+            fill="currentColor"
+          />
+        </svg>
+        Back to Jobs
+      </button>
 
       {/* Header */}
-      <div className="bg-md-surface rounded-2xl sm:rounded-3xl shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 border border-md-outline-variant transition-all duration-200 hover:shadow-md">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 sm:gap-4 md:gap-6">
+      <div className="bg-md-surface rounded-3xl shadow-sm p-6 mb-6 border border-md-outline-variant transition-all duration-200 hover:shadow-md">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
           <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-md-on-surface mb-2">
+            <h1 className="text-3xl font-bold text-md-on-surface mb-2">
               {job.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-sm text-md-on-surface-variant mb-3 sm:mb-4">
+            <div className="flex flex-wrap items-center gap-2 text-md-on-surface-variant mb-4">
               <span className="font-medium">{job.OrgName}</span>
               <span className="text-md-outline">•</span>
               <span>{job.location}</span>
               <span className="text-md-outline">•</span>
               <span>{job.jobType}</span>
             </div>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-md-primary-container text-md-on-primary-container rounded-full text-xs sm:text-sm">
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 bg-md-primary-container text-md-on-primary-container rounded-full text-sm">
                 {job.employmentType}
               </span>
-              <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-md-secondary-container text-md-on-secondary-container rounded-full text-xs sm:text-sm">
+              <span className="px-3 py-1 bg-md-secondary-container text-md-on-secondary-container rounded-full text-sm">
                 {job.status}
               </span>
               {job.visaSponsorshipAvailable && (
-                <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-md-tertiary-container text-md-on-tertiary-container rounded-full text-xs sm:text-sm">
+                <span className="px-3 py-1 bg-md-tertiary-container text-md-on-tertiary-container rounded-full text-sm">
                   Visa Sponsorship
                 </span>
               )}
@@ -174,14 +110,14 @@ export default function JobDetailsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-md-outline-variant mb-4 sm:mb-6">
-        <nav className="flex gap-2 sm:gap-4 overflow-x-auto pb-1 scrollbar-none">
+      <div className="border-b border-md-outline-variant mb-6">
+        <nav className="flex gap-4 overflow-x-auto pb-1">
           {["overview", "requirements", "benefits", "hiring process"].map(
             (tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 font-medium text-xs sm:text-sm border-b-2 transition-colors whitespace-nowrap
+                className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors whitespace-nowrap
                 ${
                   activeTab === tab
                     ? "border-md-primary text-md-primary"
@@ -196,18 +132,18 @@ export default function JobDetailsPage() {
       </div>
 
       {/* Content */}
-      <div className="bg-md-surface rounded-2xl sm:rounded-3xl shadow-sm p-3 sm:p-4 md:p-6 border border-md-outline-variant">
+      <div className="bg-md-surface rounded-3xl shadow-sm p-6 border border-md-outline-variant">
         {activeTab === "overview" && (
-          <div className="prose max-w-none prose-md-primary prose-sm sm:prose-base">
-            <div className="mb-3 sm:mb-4 md:mb-6 p-3 sm:p-4 bg-md-surface-container rounded-xl sm:rounded-2xl">
-              <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2 text-md-on-surface">
+          <div className="prose max-w-none prose-md-primary">
+            <div className="mb-6 p-4 bg-md-surface-container rounded-2xl">
+              <h3 className="text-xl font-semibold mb-2 text-md-on-surface">
                 Salary
               </h3>
-              <p className="text-md-on-surface-variant flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base">
-                <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
+              <p className="text-md-on-surface-variant flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-8 h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
                   <svg
-                    width="16"
-                    height="16"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -221,19 +157,19 @@ export default function JobDetailsPage() {
                 {job.salaryCurrency} {job.salary.toLocaleString()} per year
               </p>
             </div>
-            <div className="bg-md-surface-container text-md-on-surface p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl markdown-body text-sm sm:text-base">
+            <div className="bg-md-surface-container text-md-on-surface p-6 rounded-2xl markdown-body">
               <ReactMarkdown>{job.description}</ReactMarkdown>
             </div>
           </div>
         )}
 
         {activeTab === "requirements" && (
-          <div className="prose max-w-none prose-md-primary prose-sm sm:prose-base">
-            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-md-on-surface flex items-center gap-1.5 sm:gap-2">
-              <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-secondary-container text-md-on-secondary-container rounded-full">
+          <div className="prose max-w-none prose-md-primary">
+            <h3 className="text-xl font-semibold mb-4 text-md-on-surface flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-8 h-8 bg-md-secondary-container text-md-on-secondary-container rounded-full">
                 <svg
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -246,16 +182,16 @@ export default function JobDetailsPage() {
               </span>
               Qualifications
             </h3>
-            <div className="bg-md-surface-container p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl markdown-body text-sm sm:text-base">
+            <div className="bg-md-surface-container p-6 rounded-2xl markdown-body">
               <ReactMarkdown>{job.qualifications}</ReactMarkdown>
             </div>
-            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-md-surface-variant rounded-xl sm:rounded-2xl">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <div className="flex items-center gap-1.5 sm:gap-2 text-md-on-surface-variant text-sm sm:text-base">
-                  <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-primary-container text-md-on-primary-container rounded-full">
+            <div className="mt-4 p-4 bg-md-surface-variant rounded-2xl">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center gap-2 text-md-on-surface-variant">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-md-primary-container text-md-on-primary-container rounded-full">
                     <svg
-                      width="16"
-                      height="16"
+                      width="18"
+                      height="18"
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -273,11 +209,11 @@ export default function JobDetailsPage() {
                     </span>
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2 text-md-on-surface-variant text-sm sm:text-base">
-                  <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
+                <div className="flex items-center gap-2 text-md-on-surface-variant">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
                     <svg
-                      width="16"
-                      height="16"
+                      width="18"
+                      height="18"
                       viewBox="0 0 24 24"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -301,12 +237,12 @@ export default function JobDetailsPage() {
         )}
 
         {activeTab === "benefits" && (
-          <div className="prose max-w-none prose-md-primary prose-sm sm:prose-base">
-            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-md-on-surface flex items-center gap-1.5 sm:gap-2">
-              <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
+          <div className="prose max-w-none prose-md-primary">
+            <h3 className="text-xl font-semibold mb-4 text-md-on-surface flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-8 h-8 bg-md-tertiary-container text-md-on-tertiary-container rounded-full">
                 <svg
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -319,19 +255,19 @@ export default function JobDetailsPage() {
               </span>
               Benefits & Perks
             </h3>
-            <div className="bg-md-surface-container p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl markdown-body text-sm sm:text-base">
+            <div className="bg-md-surface-container p-6 rounded-2xl markdown-body">
               <ReactMarkdown>{job.benefits}</ReactMarkdown>
             </div>
           </div>
         )}
 
         {activeTab === "hiring process" && (
-          <div className="prose max-w-none prose-md-primary prose-sm sm:prose-base">
-            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-md-on-surface flex items-center gap-1.5 sm:gap-2">
-              <span className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-md-primary-container text-md-on-primary-container rounded-full">
+          <div className="prose max-w-none  prose-md-primary">
+            <h3 className="text-xl font-semibold mb-4 text-md-on-surface flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-8 h-8 bg-md-primary-container text-md-on-primary-container rounded-full">
                 <svg
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -345,21 +281,18 @@ export default function JobDetailsPage() {
               Hiring Process Timeline
             </h3>
 
-            <div className="max-h-[50vh] md:max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
               {hiringProcess.length > 0 ? (
                 <div className="relative">
-                  <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-md-outline-variant"></div>
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-md-outline-variant"></div>
                   {hiringProcess.map((step, index) => (
-                    <div
-                      key={index}
-                      className="relative pl-8 sm:pl-10 md:pl-12 pb-4 sm:pb-6 md:pb-8 last:pb-0"
-                    >
-                      <div className="absolute left-0 top-1 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center z-10">
+                    <div key={index} className="relative pl-12 pb-8 last:pb-0">
+                      <div className="absolute left-0 w-8 h-8 rounded-full flex items-center justify-center z-10">
                         {step.type === "Shortlist" && (
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-md-tertiary-container text-md-on-tertiary-container flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-md-tertiary-container text-md-on-tertiary-container flex items-center justify-center">
                             <svg
-                              width="14"
-                              height="14"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
@@ -372,10 +305,10 @@ export default function JobDetailsPage() {
                           </div>
                         )}
                         {step.type === "Test" && (
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-md-secondary-container text-md-on-secondary-container flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-md-secondary-container text-md-on-secondary-container flex items-center justify-center">
                             <svg
-                              width="14"
-                              height="14"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
@@ -388,10 +321,10 @@ export default function JobDetailsPage() {
                           </div>
                         )}
                         {step.type === "Interview" && (
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-md-primary-container text-md-on-primary-container flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-md-primary-container text-md-on-primary-container flex items-center justify-center">
                             <svg
-                              width="14"
-                              height="14"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
@@ -404,10 +337,10 @@ export default function JobDetailsPage() {
                           </div>
                         )}
                         {step.type === "Onboard" && (
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-md-success-container text-md-on-success-container flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-md-success-container text-md-on-success-container flex items-center justify-center">
                             <svg
-                              width="14"
-                              height="14"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
@@ -421,27 +354,27 @@ export default function JobDetailsPage() {
                         )}
                       </div>
 
-                      <div className="bg-md-surface-container rounded-xl sm:rounded-2xl p-2.5 sm:p-3 md:p-4">
-                        <div className="flex flex-wrap items-center gap-2 mb-1.5 sm:mb-2">
-                          <h4 className="text-sm sm:text-base md:text-lg font-medium text-md-on-surface m-0">
+                      <div className="bg-md-surface-container rounded-2xl p-4">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h4 className="text-lg font-medium text-md-on-surface m-0">
                             {step.name}
                           </h4>
-                          <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-md-surface-variant text-md-on-surface-variant rounded-full text-xs">
+                          <span className="px-3 py-1 bg-md-surface-variant text-md-on-surface-variant rounded-full text-xs">
                             {step.type}
                           </span>
                         </div>
 
                         {step.description && (
-                          <p className="text-md-on-surface-variant mb-3 sm:mb-4 text-xs sm:text-sm">
+                          <p className="text-md-on-surface-variant mb-4">
                             {step.description}
                           </p>
                         )}
 
-                        <div className="flex flex-col sm:flex-row flex-wrap gap-1.5 sm:gap-2 text-xs">
+                        <div className="flex flex-wrap gap-4 text-sm">
                           <div className="flex items-center gap-1 text-md-on-surface-variant">
                             <svg
-                              width="14"
-                              height="14"
+                              width="16"
+                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
@@ -467,8 +400,8 @@ export default function JobDetailsPage() {
                           {step.completedDate && (
                             <div className="flex items-center gap-1 text-md-success">
                               <svg
-                                width="14"
-                                height="14"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -496,7 +429,7 @@ export default function JobDetailsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-md-surface-container rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center text-md-on-surface-variant text-sm sm:text-base">
+                <div className="bg-md-surface-container rounded-2xl p-6 text-center text-md-on-surface-variant">
                   No hiring process details available for this position.
                 </div>
               )}
@@ -506,11 +439,11 @@ export default function JobDetailsPage() {
       </div>
 
       {/* Footer Info */}
-      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-md-surface-variant rounded-xl sm:rounded-2xl text-md-on-surface-variant flex flex-col sm:flex-row sm:flex-wrap sm:justify-between items-start sm:items-center gap-2 text-xs sm:text-sm">
-        <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="mt-6 p-4 bg-md-surface-variant rounded-2xl text-md-on-surface-variant flex flex-wrap justify-between items-center">
+        <div className="flex items-center gap-2">
           <svg
-            width="16"
-            height="16"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -531,10 +464,10 @@ export default function JobDetailsPage() {
         </div>
 
         {job.deadline && (
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-2 mt-2 sm:mt-0">
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -554,44 +487,7 @@ export default function JobDetailsPage() {
             </span>
           </div>
         )}
-
-        {/* Add cache status indicator */}
-        <div className="text-xs opacity-70 ml-auto">
-          {isRefreshing
-            ? "Updating..."
-            : "Last updated: " + new Date().toLocaleTimeString()}
-        </div>
       </div>
-
-      {/* Add style for horizontal scrollbars */}
-      <style jsx global>{`
-        .scrollbar-none::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-none {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 4px;
-        }
-        .markdown-body {
-          word-break: break-word;
-        }
-        @media (max-width: 640px) {
-          .markdown-body pre {
-            max-width: calc(100vw - 3rem);
-            overflow-x: auto;
-          }
-        }
-      `}</style>
     </div>
   );
 }

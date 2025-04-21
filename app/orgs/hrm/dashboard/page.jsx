@@ -25,7 +25,9 @@ export default function HRMDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { setTitle } = useStore();
+  const { setTitle, getCache, setCache } = useStore(); // Get cache functions
+
+  const hrmDashboardCacheKey = "hrmDashboardData"; // Define cache key
 
   useEffect(() => {
     setTitle("Dashboard");
@@ -33,8 +35,19 @@ export default function HRMDashboard() {
   }, []);
 
   const fetchDashboardData = async () => {
+    // Check cache first
+    const cachedData = getCache(hrmDashboardCacheKey);
+    if (cachedData) {
+      console.log("Loading dashboard data from cache");
+      setDashboardData(cachedData);
+      setLoading(false);
+      return; // Skip API call if cache exists
+    }
+
+    console.log("Fetching dashboard data from API");
     try {
       setLoading(true);
+      setError(null); // Reset error state on new fetch attempt
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/hrm/dashboard`,
         {
@@ -45,11 +58,15 @@ export default function HRMDashboard() {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch dashboard data");
+        const errorData = await response.json().catch(() => ({})); // Try to parse error response
+        throw new Error(
+          errorData.message || `Failed to fetch dashboard data (${response.status})`
+        );
       }
 
       const data = await response.json();
       setDashboardData(data);
+      setCache(hrmDashboardCacheKey, data); // Store fetched data in cache
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       setError(error.message);

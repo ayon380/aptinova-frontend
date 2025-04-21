@@ -9,7 +9,7 @@ import { generateMaterialYouTheme } from "@/utils/colourgenerator";
 
 export default function CandidateProfile() {
   const [isRegistering, setIsRegistering] = useState(false);
-  const { userdata, setUserdata } = useStore();
+  const { userdata, setUserdata, setCache, getCache } = useStore();
   const [passkeys, setPasskeys] = useState([]);
   const [profile, setProfile] = useState({
     firstName: "",
@@ -76,6 +76,33 @@ export default function CandidateProfile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
+      
+      // Check cache first
+      const cachedProfile = getCache('userProfile');
+      if (cachedProfile) {
+        console.log('Using cached profile data');
+        setProfile(cachedProfile);
+        setUserdata(cachedProfile);
+        if (cachedProfile.profilePicture) {
+          setPreviewImage(cachedProfile.profilePicture);
+        }
+        setLoading(false);
+        
+        // Fetch fresh data in background
+        refreshProfileData();
+        return;
+      }
+      
+      // No cache, fetch from API
+      await refreshProfileData();
+    } catch (error) {
+      toast.error("Failed to load profile");
+      setLoading(false);
+    }
+  };
+  
+  const refreshProfileData = async () => {
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/user`,
         {
@@ -86,15 +113,20 @@ export default function CandidateProfile() {
       );
       if (!response.ok) throw new Error("Failed to fetch profile");
       const data = await response.json();
+      
+      // Update state with fresh data
       setProfile(data.user);
       setUserdata(data.user);
-      if (data.profilePicture) {
-        setPreviewImage(data.profilePicture);
+      if (data.user.profilePicture) {
+        setPreviewImage(data.user.profilePicture);
       }
-    } catch (error) {
-      toast.error("Failed to load profile");
-    } finally {
+      
+      // Cache the fresh data
+      setCache('userProfile', data.user);
       setLoading(false);
+    } catch (error) {
+      console.error("Background profile refresh failed:", error);
+      // Don't show error toast for background refresh
     }
   };
 
@@ -331,6 +363,9 @@ export default function CandidateProfile() {
 
       if (!response.ok) throw new Error("Failed to update profile");
 
+      // Update cache after successful update
+      setCache('userProfile', profile);
+      
       toast.success("Profile updated successfully");
 
       fetchProfile(); // Refresh profile data
@@ -343,6 +378,26 @@ export default function CandidateProfile() {
 
   const fetchPasskeys = async () => {
     try {
+      // Check cache first
+      const cachedPasskeys = getCache('userPasskeys');
+      if (cachedPasskeys) {
+        console.log('Using cached passkeys data');
+        setPasskeys(cachedPasskeys);
+        
+        // Refresh passkeys in background
+        refreshPasskeysData();
+        return;
+      }
+      
+      // No cache, fetch from API
+      await refreshPasskeysData();
+    } catch (error) {
+      toast.error("Failed to load passkeys");
+    }
+  };
+  
+  const refreshPasskeysData = async () => {
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/passkeys`,
         {
@@ -354,8 +409,12 @@ export default function CandidateProfile() {
       if (!response.ok) throw new Error("Failed to fetch passkeys");
       const data = await response.json();
       setPasskeys(data);
+      
+      // Cache the fresh data
+      setCache('userPasskeys', data);
     } catch (error) {
-      toast.error("Failed to load passkeys");
+      console.error("Background passkeys refresh failed:", error);
+      // Don't show error toast for background refresh
     }
   };
 
@@ -372,7 +431,10 @@ export default function CandidateProfile() {
       );
       if (!response.ok) throw new Error("Failed to delete passkey");
       toast.success("Passkey deleted successfully");
-      fetchPasskeys(); // Refresh the list
+      
+      // Clear cache to force fresh fetch
+      setCache('userPasskeys', null);
+      fetchPasskeys();
     } catch (error) {
       toast.error(error.message || "Failed to delete passkey");
     }
@@ -471,6 +533,10 @@ export default function CandidateProfile() {
       }
 
       toast.success("Passkey registered successfully");
+      
+      // Clear cache to force fresh fetch
+      setCache('userPasskeys', null);
+      fetchPasskeys();
     } catch (error) {
       console.error(error);
       toast.error(error.message || "Failed to register passkey");
@@ -508,7 +574,7 @@ export default function CandidateProfile() {
   ];
 
   return (
-    <div className=" text-xl h-full w-full">
+    <div className="text-xl h-full w-full">
       {/* Main content with sidebar for larger screens */}
 
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -526,15 +592,15 @@ export default function CandidateProfile() {
                 setActiveTab={setActiveTab}
               >
                 {/* Form content - shown based on active tab */}
-                <div className="px-4 py-4">
+                <div className="px-2 sm:px-4 py-2 sm:py-4">
                   {/* Personal Information */}
                   {activeTab === "personal" && (
-                    <div className="p-6 sm:p-8 rounded-3xl shadow-sm">
-                      <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                    <div className="p-4 sm:p-6 rounded-3xl shadow-sm">
+                      <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-md-on-surface">
                         Personal Information
                       </h2>
 
-                      <div className="flex flex-col sm:flex-row gap-6 mb-6">
+                      <div className="flex flex-col gap-4 sm:gap-6 mb-4 sm:mb-6">
                         <div className="w-full">
                           <div className="relative">
                             <input
@@ -2592,14 +2658,14 @@ export default function CandidateProfile() {
       <motion.button
         onClick={handleSubmit}
         disabled={saving}
-        className="fixed right-6 bottom-24 z-40 h-14 px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
+        className="fixed right-4 sm:right-6 bottom-16 sm:bottom-24 z-40 h-12 sm:h-14 px-4 sm:px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
       >
         {saving ? (
           <div className="flex items-center">
             <svg
-              className="animate-spin h-5 w-5 mr-2"
+              className="animate-spin h-4 w-4 sm:h-5 sm:w-5 mr-2"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -2618,14 +2684,14 @@ export default function CandidateProfile() {
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span>Saving</span>
+            <span className="text-sm sm:text-base">Saving</span>
           </div>
         ) : (
           <div className="flex items-center">
-            <span>Save</span>
+            <span className="text-sm sm:text-base">Save</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 ml-2"
+              className="h-4 w-4 sm:h-5 sm:w-5 ml-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -2655,18 +2721,18 @@ export default function CandidateProfile() {
             exit={{ y: "100%", x: "0%", opacity: 1 }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
           >
-            <div className="p-4 flex justify-between items-center border-b border-md-outline">
-              <div className="flex-grow-0 w-8"></div>
-              <h3 className="flex-grow text-center text-lg font-medium text-md-on-surface">
+            <div className="p-3 sm:p-4 flex justify-between items-center border-b border-md-outline">
+              <div className="flex-grow-0 w-6 sm:w-8"></div>
+              <h3 className="flex-grow text-center text-base sm:text-lg font-medium text-md-on-surface">
                 Resume Preview
               </h3>
               <button
                 onClick={() => setShowResumePreview(false)}
-                className="flex-grow-0 p-2 text-md-on-surface-variant hover:bg-md-surface-variant rounded-full"
+                className="flex-grow-0 p-1 sm:p-2 text-md-on-surface-variant hover:bg-md-surface-variant rounded-full"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -2687,12 +2753,12 @@ export default function CandidateProfile() {
                 title="Resume Preview"
               ></iframe>
             </div>
-            <div className="p-4 border-t border-md-outline flex justify-end">
+            <div className="p-3 sm:p-4 border-t border-md-outline flex justify-end">
               <a
                 href={profile.resume}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm sm:text-base"
               >
                 Download
               </a>

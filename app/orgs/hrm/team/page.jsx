@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import useStore from "../../../store"; // Import the store
 
 export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,11 +12,26 @@ export default function TeamPage() {
   const [newHR, setNewHR] = useState({ name: "", email: "", department: "" });
   const [error, setError] = useState("");
 
+  // Get cache functions from the store
+  const { getCache, setCache } = useStore();
+
   useEffect(() => {
     fetchTeamMembers();
-  }, [page, searchTerm]);
+  }, [page, searchTerm]); // Dependencies remain the same
 
   const fetchTeamMembers = async () => {
+    const cacheKey = `team-members-${page}-${searchTerm}`;
+    const cachedData = getCache(cacheKey);
+
+    if (cachedData) {
+      console.log("Using cached data for:", cacheKey);
+      setTeamMembers(cachedData.hrs);
+      setPagination(cachedData.pagination);
+      setLoading(false);
+      return; // Exit if cache hit
+    }
+
+    console.log("Fetching data for:", cacheKey);
     try {
       setLoading(true);
       const res = await fetch(
@@ -27,10 +43,19 @@ export default function TeamPage() {
         }
       );
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.msg || "Failed to fetch team members");
+      }
+
       setTeamMembers(data.hrs);
       setPagination(data.pagination);
+      setCache(cacheKey, { hrs: data.hrs, pagination: data.pagination }); // Store fetched data in cache
+      setError(""); // Clear previous errors on success
     } catch (err) {
-      setError("Failed to fetch team members");
+      setError(err.message || "Failed to fetch team members");
+      // Optionally clear cache on error or handle differently
+      // setCache(cacheKey, null); // Example: invalidate cache on error
     } finally {
       setLoading(false);
     }
@@ -58,7 +83,9 @@ export default function TeamPage() {
 
       setShowAddModal(false);
       setNewHR({ name: "", email: "", department: "" });
+      // Refetching will update the cache automatically via fetchTeamMembers
       fetchTeamMembers();
+      setError(""); // Clear error on success
     } catch (err) {
       setError(err.message);
     }
@@ -79,7 +106,9 @@ export default function TeamPage() {
       );
 
       if (!res.ok) throw new Error("Failed to delete HR");
+      // Refetching will update the cache automatically via fetchTeamMembers
       fetchTeamMembers();
+      setError(""); // Clear error on success
     } catch (err) {
       setError("Failed to delete HR");
     }

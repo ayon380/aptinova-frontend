@@ -27,6 +27,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import useStore from "@/app/store";
 
 // Dynamically import components to reduce initial load time
 const HiringTestForm = dynamic(
@@ -72,6 +73,7 @@ export default function ApplicantsPage() {
   const [selectedApplicants, setSelectedApplicants] = useState([]);
   const [showHiringTestModal, setShowHiringTestModal] = useState(false);
   const [showInterviewModal, setShowInterviewModal] = useState(false);
+  const { setTitle } = useStore();
   const [showApplicantDetailsModal, setShowApplicantDetailsModal] =
     useState(false);
   const [selectedApplicantDetails, setSelectedApplicantDetails] =
@@ -115,7 +117,9 @@ export default function ApplicantsPage() {
     fetchJobDetails();
     fetchApplicants();
   }, [currentPage, itemsPerPage, searchTerm, filterStatus]);
-
+  useEffect(() => {
+    setTitle("Applicant Management");
+  }, []);
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -509,9 +513,9 @@ export default function ApplicantsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex  flex-col h-full overflow-y-scroll w-full">
       <div className="md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container md:p-10 flex-grow overflow-auto flex flex-col">
-        <div className="container mx-auto px-4 py-8 relative flex flex-col flex-grow">
+        <div className="container  h-full overflow-y-scroll mx-auto px-4 py-8 relative flex flex-col flex-grow">
           <Link
             href={`/orgs/hrm/jobs/${params.jobid}`}
             className="inline-flex items-center gap-2 mb-6 text-md-on-surface-variant hover:text-md-primary transition-colors p-2 rounded-lg hover:bg-md-surface-container-high"
@@ -586,10 +590,42 @@ export default function ApplicantsPage() {
           )}
 
           <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-            <h1 className="text-2xl font-bold text-md-on-surface">
-              Applicant Management
-            </h1>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between">
+              <Link
+                href={`/orgs/hrm/jobs`}
+                className="text-md-on-surface-variant hover:text-md-primary transition-colors px-2 py-1 rounded-lg hover:bg-md-surface-container-high"
+              >
+                <ArrowLeft className="w-5 h-5 sm:hidden" />
+                <span className="hidden sm:inline">View All Jobs</span>
+              </Link>
+              
+              <div className="flex bg-md-surface-container-high rounded-full border border-md-outline overflow-hidden">
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`px-3 py-1.5 flex items-center gap-1 text-sm ${
+                    viewMode === "list"
+                      ? "bg-md-primary text-md-on-primary"
+                      : "bg-transparent text-md-on-surface-variant hover:bg-md-surface-variant"
+                  }`}
+                >
+                  <LayoutList className="w-4 h-4" />
+                  <span className="hidden sm:inline">List</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("kanban")}
+                  className={`px-3 py-1.5 flex items-center gap-1 text-sm ${
+                    viewMode === "kanban"
+                      ? "bg-md-primary text-md-on-primary"
+                      : "bg-transparent text-md-on-surface-variant hover:bg-md-surface-variant"
+                  }`}
+                >
+                  <KanbanSquare className="w-4 h-4" />
+                  <span className="hidden sm:inline">Kanban</span>
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 w-full sm:w-auto justify-end">
               {selectedApplicants.length > 0 ? (
                 <>
                   <div className="px-3 py-1 rounded-full bg-md-primary-container text-md-on-primary-container text-sm flex items-center gap-1 mr-2">
@@ -598,7 +634,7 @@ export default function ApplicantsPage() {
                   </div>
                   <motion.button
                     onClick={() => setShowHiringTestModal(true)}
-                    className="px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200 flex items-center gap-2"
+                    className="px-3 sm:px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors duration-200 flex items-center gap-2"
                     whileTap={{ scale: 0.95 }}
                     disabled={isActioning}
                   >
@@ -607,11 +643,12 @@ export default function ApplicantsPage() {
                     ) : (
                       <FileText className="w-4 h-4" />
                     )}
-                    Create Test
+                    <span className="hidden sm:inline">Create Test</span>
+                    <span className="sm:hidden">Test</span>
                   </motion.button>
                   <motion.button
                     onClick={() => setShowInterviewModal(true)}
-                    className="px-6 py-2 rounded-full bg-md-primary-container text-md-on-primary-container hover:bg-md-secondary-container hover:text-md-on-secondary-container transition-colors duration-200 flex items-center gap-2"
+                    className="px-3 sm:px-6 py-2 rounded-full bg-md-primary-container text-md-on-primary-container hover:bg-md-secondary-container hover:text-md-on-secondary-container transition-colors duration-200 flex items-center gap-2"
                     whileTap={{ scale: 0.95 }}
                     disabled={isActioning}
                   >
@@ -620,7 +657,8 @@ export default function ApplicantsPage() {
                     ) : (
                       <Calendar className="w-4 h-4" />
                     )}
-                    Schedule Interview
+                    <span className="hidden sm:inline">Schedule Interview</span>
+                    <span className="sm:hidden">Interview</span>
                   </motion.button>
                 </>
               ) : (
@@ -631,46 +669,8 @@ export default function ApplicantsPage() {
             </div>
           </div>
 
-          <AnimatePresence>
-            {actionSuccess && (
-              <motion.div
-                className="mb-4 p-4 bg-md-success-container text-md-on-success-container rounded-xl flex items-center gap-3"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <CheckCircle className="w-5 h-5" />
-                <span>{actionSuccess}</span>
-                <button
-                  onClick={() => setActionSuccess(null)}
-                  className="ml-auto text-md-on-success-container hover:bg-md-success-container-high rounded-full p-1"
-                >
-                  <XCircle className="w-4 h-4" />
-                </button>
-              </motion.div>
-            )}
-
-            {actionError && (
-              <motion.div
-                className="mb-4 p-4 bg-md-error-container text-md-on-error-container rounded-xl flex items-center gap-3"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <AlertCircle className="w-5 h-5" />
-                <span>{actionError}</span>
-                <button
-                  onClick={() => setActionError(null)}
-                  className="ml-auto text-md-on-error-container hover:bg-md-error-container-high rounded-full p-1"
-                >
-                  <XCircle className="w-4 h-4" />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <div className="bg-md-surface-container p-4 rounded-xl mb-6 flex flex-col sm:flex-row gap-4 items-center">
-            <div className="relative flex-1">
+            <div className="relative flex-1 w-full">
               <div className="relative">
                 <input
                   type="text"
@@ -733,31 +733,6 @@ export default function ApplicantsPage() {
                 </select>
               </div>
             )}
-
-            <div className="flex bg-md-surface-container-high rounded-full border border-md-outline overflow-hidden">
-              <button
-                onClick={() => setViewMode("list")}
-                className={`px-4 py-2 flex items-center gap-1 text-sm ${
-                  viewMode === "list"
-                    ? "bg-md-primary text-md-on-primary"
-                    : "bg-transparent text-md-on-surface-variant hover:bg-md-surface-variant"
-                }`}
-              >
-                <LayoutList className="w-4 h-4" />
-                <span className="hidden sm:inline">List</span>
-              </button>
-              <button
-                onClick={() => setViewMode("kanban")}
-                className={`px-4 py-2 flex items-center gap-1 text-sm ${
-                  viewMode === "kanban"
-                    ? "bg-md-primary text-md-on-primary"
-                    : "bg-transparent text-md-on-surface-variant hover:bg-md-surface-variant"
-                }`}
-              >
-                <KanbanSquare className="w-4 h-4" />
-                <span className="hidden sm:inline">Kanban</span>
-              </button>
-            </div>
           </div>
 
           {viewMode === "kanban" ? (
@@ -814,516 +789,551 @@ export default function ApplicantsPage() {
                   )}
                 </div>
               ) : (
-                <div className="overflow-auto flex-grow">
-                  <table className="min-w-full divide-y divide-md-outline-variant">
-                    <thead className="bg-md-surface-container">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary focus:ring-2"
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedApplicants(
-                                    applicants.map((a) => a.id)
-                                  );
-                                } else {
-                                  setSelectedApplicants([]);
+                <>
+                  {/* Desktop Table View */}
+                  <div className="overflow-auto flex-grow hidden md:block">
+                    <table className="min-w-full divide-y divide-md-outline-variant">
+                      <thead className="bg-md-surface-container">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary focus:ring-2"
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedApplicants(
+                                      applicants.map((a) => a.id)
+                                    );
+                                  } else {
+                                    setSelectedApplicants([]);
+                                  }
+                                }}
+                                checked={
+                                  applicants.length > 0 &&
+                                  selectedApplicants.length === applicants.length
                                 }
-                              }}
-                              checked={
-                                applicants.length > 0 &&
-                                selectedApplicants.length === applicants.length
-                              }
-                            />
-                            <span className="ml-2 hidden md:inline-block">
-                              Select All
-                            </span>
-                          </div>
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          Candidate
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          Applied Date
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          Score
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-md-surface divide-y divide-md-outline-variant">
+                              />
+                              <span className="ml-2">
+                                Select All
+                              </span>
+                            </div>
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            Candidate
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            Applied Date
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            Score
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-md-surface divide-y divide-md-outline-variant">
+                        {filteredApplicants.map((applicant) => (
+                          <motion.tr
+                            key={applicant.id}
+                            className={`hover:bg-md-surface-variant ${
+                              selectedApplicants.includes(applicant.id)
+                                ? "bg-md-primary-container/20"
+                                : ""
+                            }`}
+                            whileHover={{
+                              backgroundColor:
+                                "rgba(var(--md-surface-variant-rgb), 1)",
+                            }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <td className="px-6 py-5 whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={selectedApplicants.includes(
+                                  applicant.id
+                                )}
+                                onChange={() =>
+                                  handleShortlistToggle(applicant.id)
+                                }
+                                className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary focus:ring-2"
+                              />
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="h-12 w-12 rounded-full overflow-hidden bg-md-surface-container-high border border-md-outline flex-shrink-0">
+                                  <img
+                                    src={applicant.avatar}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.src = "/default-avatar.png";
+                                    }}
+                                  />
+                                </div>
+                                <div className="ml-4">
+                                  <div
+                                    className="text-base font-medium text-md-on-surface hover:text-md-primary cursor-pointer"
+                                    onClick={() =>
+                                      handleViewDetails(applicant.id)
+                                    }
+                                  >
+                                    {applicant.name}
+                                  </div>
+                                  <div className="text-sm text-md-on-surface-variant">
+                                    {applicant.email}
+                                  </div>
+                                  {applicant.tags &&
+                                    applicant.tags.length > 0 && (
+                                      <div className="flex gap-1 mt-1 flex-wrap">
+                                        {applicant.tags
+                                          .slice(0, 2)
+                                          .map((tag, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full"
+                                            >
+                                              {tag}
+                                            </span>
+                                          ))}
+                                        {applicant.tags.length > 2 && (
+                                          <span className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full">
+                                            +{applicant.tags.length - 2}
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap">
+                              <span
+                                className={`px-3 py-1.5 inline-flex text-sm leading-5 font-medium rounded-full ${getStatusBadgeClass(
+                                  applicant.status
+                                )}`}
+                              >
+                                {applicant.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm text-md-on-surface">
+                              {new Date(applicant.createdAt).toLocaleDateString(
+                                undefined,
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap">
+                              {applicant.score ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-16 h-2 bg-md-surface-container-high rounded-full overflow-hidden">
+                                    <div
+                                      className={`h-full ${
+                                        applicant.score >= 70
+                                          ? "bg-md-success"
+                                          : applicant.score >= 40
+                                          ? "bg-md-warning"
+                                          : "bg-md-error"
+                                      }`}
+                                      style={{ width: `${applicant.score}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-sm font-medium text-md-on-surface">
+                                    {applicant.score}%
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-sm text-md-on-surface-variant">
+                                  -
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-5 whitespace-nowrap text-sm relative">
+                              <button
+                                className="p-2 hover:bg-md-surface-container-high rounded-full text-md-on-surface-variant transition-colors"
+                                onClick={() =>
+                                  setOpenStatusDropdown(
+                                    openStatusDropdown === applicant.id
+                                      ? null
+                                      : applicant.id
+                                  )
+                                }
+                              >
+                                <MoreVertical className="w-5 h-5" />
+                              </button>
+
+                              {openStatusDropdown === applicant.id && (
+                                <div
+                                  ref={dropdownRef}
+                                  className="absolute right-0 mt-2 w-60 rounded-xl shadow-lg bg-md-surface z-10 border border-md-outline overflow-hidden"
+                                >
+                                  {/* ...existing dropdown content... */}
+                                </div>
+                              )}
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="md:hidden overflow-auto flex-grow">
+                    <div className="flex items-center justify-between px-4 pt-3 pb-2 bg-md-surface-container">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedApplicants(
+                                applicants.map((a) => a.id)
+                              );
+                            } else {
+                              setSelectedApplicants([]);
+                            }
+                          }}
+                          checked={
+                            applicants.length > 0 &&
+                            selectedApplicants.length === applicants.length
+                          }
+                        />
+                        <span className="ml-2 text-xs font-medium text-md-on-surface-variant">
+                          Select All
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="divide-y divide-md-outline-variant">
                       {filteredApplicants.map((applicant) => (
-                        <motion.tr
+                        <motion.div
                           key={applicant.id}
-                          className={`hover:bg-md-surface-variant ${
+                          className={`p-4 ${
                             selectedApplicants.includes(applicant.id)
-                              ? "bg-md-primary-container/20"
+                              ? "bg-md-primary-container/10"
                               : ""
                           }`}
-                          whileHover={{
-                            backgroundColor:
-                              "rgba(var(--md-surface-variant-rgb), 1)",
-                          }}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          transition={{ duration: 0.3 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <input
-                              type="checkbox"
-                              checked={selectedApplicants.includes(
-                                applicant.id
-                              )}
-                              onChange={() =>
-                                handleShortlistToggle(applicant.id)
-                              }
-                              className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary focus:ring-2"
-                            />
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
+                          <div className="flex items-start justify-between">
                             <div className="flex items-center">
-                              <div className="h-12 w-12 rounded-full overflow-hidden bg-md-surface-container-high border border-md-outline flex-shrink-0">
-                                <img
-                                  src={applicant.avatar}
-                                  alt=""
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    e.target.src = "/default-avatar.png";
-                                  }}
-                                />
-                              </div>
-                              <div className="ml-4">
-                                <div
-                                  className="text-base font-medium text-md-on-surface hover:text-md-primary cursor-pointer"
-                                  onClick={() =>
-                                    handleViewDetails(applicant.id)
-                                  }
-                                >
-                                  {applicant.name}
+                              <input
+                                type="checkbox"
+                                checked={selectedApplicants.includes(applicant.id)}
+                                onChange={() => handleShortlistToggle(applicant.id)}
+                                className="h-5 w-5 text-md-primary border-md-outline rounded focus:ring-md-primary mr-3"
+                              />
+                              <div 
+                                className="flex-shrink-0"
+                                onClick={() => handleViewDetails(applicant.id)}
+                              >
+                                <div className="h-12 w-12 rounded-full overflow-hidden bg-md-surface-container-high border border-md-outline">
+                                  <img
+                                    src={applicant.avatar}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      e.target.src = "/default-avatar.png";
+                                    }}
+                                  />
                                 </div>
-                                <div className="text-sm text-md-on-surface-variant">
-                                  {applicant.email}
-                                </div>
-                                {applicant.tags &&
-                                  applicant.tags.length > 0 && (
-                                    <div className="flex gap-1 mt-1 flex-wrap">
-                                      {applicant.tags
-                                        .slice(0, 2)
-                                        .map((tag, i) => (
-                                          <span
-                                            key={i}
-                                            className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full"
-                                          >
-                                            {tag}
-                                          </span>
-                                        ))}
-                                      {applicant.tags.length > 2 && (
-                                        <span className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full">
-                                          +{applicant.tags.length - 2}
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
                               </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            <span
-                              className={`px-3 py-1.5 inline-flex text-sm leading-5 font-medium rounded-full ${getStatusBadgeClass(
-                                applicant.status
-                              )}`}
-                            >
-                              {applicant.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm text-md-on-surface">
-                            {new Date(applicant.createdAt).toLocaleDateString(
-                              undefined,
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              }
-                            )}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap">
-                            {applicant.score ? (
-                              <div className="flex items-center gap-2">
-                                <div className="w-16 h-2 bg-md-surface-container-high rounded-full overflow-hidden">
-                                  <div
-                                    className={`h-full ${
-                                      applicant.score >= 70
-                                        ? "bg-md-success"
-                                        : applicant.score >= 40
-                                        ? "bg-md-warning"
-                                        : "bg-md-error"
-                                    }`}
-                                    style={{ width: `${applicant.score}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-sm font-medium text-md-on-surface">
-                                  {applicant.score}%
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-sm text-md-on-surface-variant">
-                                -
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-5 whitespace-nowrap text-sm relative">
-                            <button
-                              className="p-2 hover:bg-md-surface-container-high rounded-full text-md-on-surface-variant transition-colors"
-                              onClick={() =>
-                                setOpenStatusDropdown(
-                                  openStatusDropdown === applicant.id
-                                    ? null
-                                    : applicant.id
-                                )
-                              }
-                            >
-                              <MoreVertical className="w-5 h-5" />
-                            </button>
-
-                            {openStatusDropdown === applicant.id && (
-                              <div
-                                ref={dropdownRef}
-                                className="absolute right-0 mt-2 w-60 rounded-xl shadow-lg bg-md-surface z-10 border border-md-outline overflow-hidden"
+                            
+                            <div className="flex items-center">
+                              <span
+                                className={`inline-flex text-xs leading-5 font-medium rounded-full px-2 py-1 ${getStatusBadgeClass(
+                                  applicant.status
+                                )}`}
                               >
-                                <div className="py-1 rounded-md bg-md-surface shadow-xs">
-                                  <div className="px-4 py-2 text-sm font-medium text-md-on-surface border-b border-md-outline-variant">
-                                    Actions
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      handleViewDetails(applicant.id);
+                                {applicant.status}
+                              </span>
+                              <button
+                                className="ml-2 p-2 hover:bg-md-surface-container-high rounded-full text-md-on-surface-variant"
+                                onClick={() =>
+                                  setOpenStatusDropdown(
+                                    openStatusDropdown === applicant.id
+                                      ? null
+                                      : applicant.id
+                                  )
+                                }
+                              >
+                                <MoreVertical className="w-5 h-5" />
+                              </button>
+                              
+                              {openStatusDropdown === applicant.id && (
+                                <div
+                                  ref={dropdownRef}
+                                  className="fixed inset-0 z-50 bg-black/30 flex items-end justify-center"
+                                  onClick={(e) => {
+                                    if (e.target === e.currentTarget) {
                                       setOpenStatusDropdown(null);
-                                    }}
-                                    className="block px-4 py-2 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <User className="w-4 h-4" />
-                                    View Details
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedApplicants([applicant.id]);
-                                      setShowInterviewModal(true);
-                                      setOpenStatusDropdown(null);
-                                    }}
-                                    className="block px-4 py-2 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <Calendar className="w-4 h-4" />
-                                    Schedule Interview
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedApplicants([applicant.id]);
-                                      setShowHiringTestModal(true);
-                                      setOpenStatusDropdown(null);
-                                    }}
-                                    className="block px-4 py-2 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <FileText className="w-4 h-4" />
-                                    Create Assessment
-                                  </button>
-                                  <div className="px-4 py-2 text-sm font-medium text-md-on-surface border-b border-t border-md-outline-variant">
-                                    Change status
-                                  </div>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Applied"
-                                      )
                                     }
-                                    className="block px-4 py-3 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
+                                  }}
+                                >
+                                  <motion.div 
+                                    className="bg-md-surface rounded-t-xl w-full max-h-[80vh] overflow-auto"
+                                    initial={{ y: "100%" }}
+                                    animate={{ y: 0 }}
+                                    exit={{ y: "100%" }}
                                   >
-                                    <div className="w-3 h-3 rounded-full bg-md-secondary-container"></div>
-                                    Applied
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Shortlisted"
-                                      )
-                                    }
-                                    className="block px-4 py-3 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <div className="w-3 h-3 rounded-full bg-md-tertiary-container"></div>
-                                    Shortlisted
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Assessment"
-                                      )
-                                    }
-                                    className="block px-4 py-3 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <div className="w-3 h-3 rounded-full bg-md-primary-container"></div>
-                                    Assessment
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Interview"
-                                      )
-                                    }
-                                    className="block px-4 py-3 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <div className="w-3 h-3 rounded-full bg-md-info-container"></div>
-                                    Interview
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Offer"
-                                      )
-                                    }
-                                    className="block px-4 py-3 text-sm text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <div className="w-3 h-3 rounded-full bg-md-success-container"></div>
-                                    Offer
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      updateApplicantStatus(
-                                        applicant.id,
-                                        "Rejected"
-                                      )
-                                    }
-                                    className="block px-4 py-3 text-sm text-md-error hover:bg-md-surface-variant w-full text-left flex items-center gap-2"
-                                  >
-                                    <div className="w-3 h-3 rounded-full bg-md-error-container"></div>
-                                    Rejected
-                                  </button>
+                                    <div className="px-4 py-3 text-md font-medium text-md-on-surface border-b border-md-outline-variant sticky top-0 bg-md-surface z-10 flex justify-between items-center">
+                                      <div>Actions for {applicant.name}</div>
+                                      <button 
+                                        onClick={() => setOpenStatusDropdown(null)}
+                                        className="rounded-full p-1 hover:bg-md-surface-variant"
+                                      >
+                                        <XCircle className="w-5 h-5" />
+                                      </button>
+                                    </div>
+                                    <div className="p-2">
+                                      <button
+                                        onClick={() => {
+                                          handleViewDetails(applicant.id);
+                                          setOpenStatusDropdown(null);
+                                        }}
+                                        className="block px-4 py-3 text-md text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-3 rounded-lg"
+                                      >
+                                        <User className="w-5 h-5" />
+                                        View Details
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSelectedApplicants([applicant.id]);
+                                          setShowInterviewModal(true);
+                                          setOpenStatusDropdown(null);
+                                        }}
+                                        className="block px-4 py-3 text-md text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-3 rounded-lg"
+                                      >
+                                        <Calendar className="w-5 h-5" />
+                                        Schedule Interview
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSelectedApplicants([applicant.id]);
+                                          setShowHiringTestModal(true);
+                                          setOpenStatusDropdown(null);
+                                        }}
+                                        className="block px-4 py-3 text-md text-md-on-surface hover:bg-md-surface-variant w-full text-left flex items-center gap-3 rounded-lg"
+                                      >
+                                        <FileText className="w-5 h-5" />
+                                        Create Assessment
+                                      </button>
+                                    </div>
+                                    <div className="px-4 py-2 text-md font-medium text-md-on-surface border-b border-t border-md-outline-variant">
+                                      Change status
+                                    </div>
+                                    <div className="p-2 grid grid-cols-2 gap-2">
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Applied")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-secondary-container mb-1"></div>
+                                        <span className="text-sm">Applied</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Shortlisted")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-tertiary-container mb-1"></div>
+                                        <span className="text-sm">Shortlisted</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Assessment")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-primary-container mb-1"></div>
+                                        <span className="text-sm">Assessment</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Interview")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-info-container mb-1"></div>
+                                        <span className="text-sm">Interview</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Offer")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-success-container mb-1"></div>
+                                        <span className="text-sm">Offer</span>
+                                      </button>
+                                      <button
+                                        onClick={() => updateApplicantStatus(applicant.id, "Rejected")}
+                                        className="flex flex-col items-center justify-center py-3 px-2 rounded-lg hover:bg-md-surface-variant"
+                                      >
+                                        <div className="w-3 h-3 rounded-full bg-md-error-container mb-1"></div>
+                                        <span className="text-sm text-md-error">Rejected</span>
+                                      </button>
+                                    </div>
+                                  </motion.div>
                                 </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 pl-10">
+                            <div
+                              className="text-base font-medium text-md-on-surface"
+                              onClick={() => handleViewDetails(applicant.id)}
+                            >
+                              {applicant.name}
+                            </div>
+                            <div className="text-sm text-md-on-surface-variant">
+                              {applicant.email}
+                            </div>
+                            
+                            <div className="flex justify-between items-center mt-2">
+                              <div className="text-xs text-md-on-surface-variant">
+                                Applied {new Date(applicant.createdAt).toLocaleDateString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </div>
+                              
+                              {applicant.score ? (
+                                <div className="flex items-center gap-1">
+                                  <div className="w-12 h-2 bg-md-surface-container-high rounded-full overflow-hidden">
+                                    <div
+                                      className={`h-full ${
+                                        applicant.score >= 70
+                                          ? "bg-md-success"
+                                          : applicant.score >= 40
+                                          ? "bg-md-warning"
+                                          : "bg-md-error"
+                                      }`}
+                                      style={{ width: `${applicant.score}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-xs font-medium text-md-on-surface">
+                                    {applicant.score}%
+                                  </span>
+                                </div>
+                              ) : null}
+                            </div>
+                            
+                            {applicant.tags && applicant.tags.length > 0 && (
+                              <div className="flex gap-1 mt-2 flex-wrap">
+                                {applicant.tags.slice(0, 3).map((tag, i) => (
+                                  <span
+                                    key={i}
+                                    className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                                {applicant.tags.length > 3 && (
+                                  <span className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full">
+                                    +{applicant.tags.length - 3}
+                                  </span>
+                                )}
                               </div>
                             )}
-                          </td>
-                        </motion.tr>
+                          </div>
+                        </motion.div>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           )}
 
-          {viewMode === "list" &&
-            !isLoading &&
-            filteredApplicants.length > 0 && (
-              <div className="mt-4 px-6 py-4 flex items-center justify-between border-t border-md-outline-variant bg-md-surface-container-high shadow-md rounded-xl">
-                <div className="flex-1 flex justify-between sm:hidden">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1 || isLoading}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                      currentPage === 1 || isLoading
-                        ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
-                        : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
-                    }`}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages || isLoading}
-                    className={`ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                      currentPage === totalPages || isLoading
-                        ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
-                        : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
-                    }`}
-                  >
-                    Next
-                  </button>
+          {viewMode === "list" && !isLoading && filteredApplicants.length > 0 && (
+            <div className="mt-4 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-t border-md-outline-variant bg-md-surface-container-high shadow-md rounded-xl">
+              <div className="flex justify-between w-full sm:hidden">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || isLoading}
+                  className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    currentPage === 1 || isLoading
+                      ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
+                      : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
+                  }`}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <div className="text-sm text-md-on-surface-variant">
+                  Page {currentPage} of {totalPages}
                 </div>
-                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm text-md-on-surface-variant">
-                      Showing{" "}
-                      <span className="font-medium">
-                        {(currentPage - 1) * itemsPerPage + 1}
-                      </span>{" "}
-                      to{" "}
-                      <span className="font-medium">
-                        {Math.min(currentPage * itemsPerPage, totalItems)}
-                      </span>{" "}
-                      of <span className="font-medium">{totalItems}</span>{" "}
-                      results
-                    </p>
-                  </div>
-                  <div>
-                    <nav
-                      className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                      aria-label="Pagination"
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || isLoading}
+                  className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                    currentPage === totalPages || isLoading
+                      ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
+                      : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
+                  }`}
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-md-on-surface-variant">
+                    Showing{" "}
+                    <span className="font-medium">
+                      {(currentPage - 1) * itemsPerPage + 1}
+                    </span>{" "}
+                    to{" "}
+                    <span className="font-medium">
+                      {Math.min(currentPage * itemsPerPage, totalItems)}
+                    </span>{" "}
+                    of <span className="font-medium">{totalItems}</span>{" "}
+                    results
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1 || isLoading}
+                      className={`relative inline-flex items-center px-3 py-2 rounded-l-md border border-md-outline-variant ${
+                        currentPage === 1 || isLoading
+                          ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
+                          : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
+                      }`}
                     >
-                      <button
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1 || isLoading}
-                        className={`relative inline-flex items-center px-3 py-2 rounded-l-md border border-md-outline-variant ${
-                          currentPage === 1 || isLoading
-                            ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
-                            : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
-                        }`}
-                      >
-                        <span className="sr-only">Previous</span>
-                        <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-                      </button>
+                      <span className="sr-only">Previous</span>
+                      <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                    </button>
 
-                      {Array.from({ length: totalPages }).map((_, i) => {
-                        const pageNum = i + 1;
+                    {/* ...existing pagination buttons... */}
 
-                        if (
-                          pageNum === 1 ||
-                          pageNum === totalPages ||
-                          (pageNum >= currentPage - 1 &&
-                            pageNum <= currentPage + 1) ||
-                          totalPages <= 5
-                        ) {
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() => handlePageChange(pageNum)}
-                              disabled={isLoading}
-                              className={`relative inline-flex items-center px-4 py-2 border border-md-outline-variant ${
-                                currentPage === pageNum
-                                  ? "z-10 bg-md-primary text-md-on-primary"
-                                  : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
-                              }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        }
-
-                        if (
-                          (pageNum === 2 && currentPage > 3) ||
-                          (pageNum === totalPages - 1 &&
-                            currentPage < totalPages - 2)
-                        ) {
-                          return (
-                            <span
-                              key={`ellipsis-${pageNum}`}
-                              className="relative inline-flex items-center px-4 py-2 border border-md-outline-variant bg-md-surface-container-high text-md-on-surface-variant"
-                            >
-                              ...
-                            </span>
-                          );
-                        }
-
-                        return null;
-                      })}
-
-                      <button
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages || isLoading}
-                        className={`relative inline-flex items-center px-3 py-2 rounded-r-md border border-md-outline-variant ${
-                          currentPage === totalPages || isLoading
-                            ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
-                            : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
-                        }`}
-                      >
-                        <span className="sr-only">Next</span>
-                        <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                      </button>
-                    </nav>
-                  </div>
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages || isLoading}
+                      className={`relative inline-flex items-center px-3 py-2 rounded-r-md border border-md-outline-variant ${
+                        currentPage === totalPages || isLoading
+                          ? "text-md-on-surface-variant bg-md-surface-variant cursor-not-allowed"
+                          : "text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-variant"
+                      }`}
+                    >
+                      <span className="sr-only">Next</span>
+                      <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </nav>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-          <AnimatePresence>
-            {showHiringTestModal && (
-              <motion.div
-                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <motion.div
-                  className="md:max-w-4xl w-full h-full md:h-auto md:rounded-3xl bg-md-surface overflow-hidden shadow-lg"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                >
-                  <HiringTestForm
-                    onSubmit={handleCreateHiringTest}
-                    onCancel={() => setShowHiringTestModal(false)}
-                    isSubmitting={isActioning}
-                    selectedCount={selectedApplicants.length}
-                  />
-                </motion.div>
-              </motion.div>
-            )}
-
-            {showInterviewModal && (
-              <motion.div
-                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <motion.div
-                  className="md:max-w-lg w-full md:h-auto md:rounded-3xl bg-md-surface overflow-hidden shadow-lg"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
-                >
-                  <InterviewForm
-                    onSubmit={handleScheduleInterview}
-                    onCancel={() => setShowInterviewModal(false)}
-                    isSubmitting={isActioning}
-                    jobId={params.jobid}
-                    attendees={applicants
-                      .filter((a) => selectedApplicants.includes(a.id))
-                      .map((a) => ({
-                        id: a.id,
-                        email: a.email || a.Candidate?.email,
-                        name:
-                          a.name ||
-                          `${a.Candidate?.firstName || ""} ${
-                            a.Candidate?.lastName || ""
-                          }`,
-                      }))}
-                  />
-                </motion.div>
-              </motion.div>
-            )}
-
-            {showApplicantDetailsModal && selectedApplicantDetails && (
-              <ApplicantDetailsModal
-                applicant={selectedApplicantDetails}
-                onClose={() => setShowApplicantDetailsModal(false)}
-                onScheduleInterview={(applicantIds) => {
-                  setSelectedApplicants(applicantIds);
-                  setShowInterviewModal(true);
-                  setShowApplicantDetailsModal(false);
-                }}
-                onCreateTest={(applicantIds) => {
-                  setSelectedApplicants(applicantIds);
-                  setShowHiringTestModal(true);
-                  setShowApplicantDetailsModal(false);
-                }}
-                onUpdateStatus={(newStatus) => {
-                  updateApplicantStatus(selectedApplicantDetails.id, newStatus);
-                }}
-                jobDetails={jobDetails}
-              />
-            )}
-          </AnimatePresence>
+          {/* ...existing code for modals... */}
         </div>
       </div>
     </div>
