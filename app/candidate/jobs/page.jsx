@@ -82,7 +82,7 @@ const JobBoard = () => {
     setIsApplying(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BackendURL}/jobs/${jobId}/apply`,
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs/${jobId}/apply`,
         {
           method: "POST",
           headers: {
@@ -179,7 +179,7 @@ const JobBoard = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BackendURL}/jobs/all?${queryParams}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs/all?${queryParams}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
