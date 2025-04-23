@@ -76,23 +76,23 @@ export default function CandidateProfile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      
+
       // Check cache first
-      const cachedProfile = getCache('userProfile');
+      const cachedProfile = getCache("userProfile");
       if (cachedProfile) {
-        console.log('Using cached profile data');
+        console.log("Using cached profile data");
         setProfile(cachedProfile);
         setUserdata(cachedProfile);
         if (cachedProfile.profilePicture) {
           setPreviewImage(cachedProfile.profilePicture);
         }
         setLoading(false);
-        
+
         // Fetch fresh data in background
         refreshProfileData();
         return;
       }
-      
+
       // No cache, fetch from API
       await refreshProfileData();
     } catch (error) {
@@ -100,7 +100,7 @@ export default function CandidateProfile() {
       setLoading(false);
     }
   };
-  
+
   const refreshProfileData = async () => {
     try {
       const response = await fetch(
@@ -113,16 +113,16 @@ export default function CandidateProfile() {
       );
       if (!response.ok) throw new Error("Failed to fetch profile");
       const data = await response.json();
-      
+
       // Update state with fresh data
       setProfile(data.user);
       setUserdata(data.user);
       if (data.user.profilePicture) {
         setPreviewImage(data.user.profilePicture);
       }
-      
+
       // Cache the fresh data
-      setCache('userProfile', data.user);
+      setCache("userProfile", data.user);
       setLoading(false);
     } catch (error) {
       console.error("Background profile refresh failed:", error);
@@ -364,8 +364,8 @@ export default function CandidateProfile() {
       if (!response.ok) throw new Error("Failed to update profile");
 
       // Update cache after successful update
-      setCache('userProfile', profile);
-      
+      setCache("userProfile", profile);
+
       toast.success("Profile updated successfully");
 
       fetchProfile(); // Refresh profile data
@@ -379,23 +379,23 @@ export default function CandidateProfile() {
   const fetchPasskeys = async () => {
     try {
       // Check cache first
-      const cachedPasskeys = getCache('userPasskeys');
+      const cachedPasskeys = getCache("userPasskeys");
       if (cachedPasskeys) {
-        console.log('Using cached passkeys data');
+        console.log("Using cached passkeys data");
         setPasskeys(cachedPasskeys);
-        
+
         // Refresh passkeys in background
         refreshPasskeysData();
         return;
       }
-      
+
       // No cache, fetch from API
       await refreshPasskeysData();
     } catch (error) {
       toast.error("Failed to load passkeys");
     }
   };
-  
+
   const refreshPasskeysData = async () => {
     try {
       const response = await fetch(
@@ -409,9 +409,9 @@ export default function CandidateProfile() {
       if (!response.ok) throw new Error("Failed to fetch passkeys");
       const data = await response.json();
       setPasskeys(data);
-      
+
       // Cache the fresh data
-      setCache('userPasskeys', data);
+      setCache("userPasskeys", data);
     } catch (error) {
       console.error("Background passkeys refresh failed:", error);
       // Don't show error toast for background refresh
@@ -431,9 +431,9 @@ export default function CandidateProfile() {
       );
       if (!response.ok) throw new Error("Failed to delete passkey");
       toast.success("Passkey deleted successfully");
-      
+
       // Clear cache to force fresh fetch
-      setCache('userPasskeys', null);
+      setCache("userPasskeys", null);
       fetchPasskeys();
     } catch (error) {
       toast.error(error.message || "Failed to delete passkey");
@@ -533,9 +533,9 @@ export default function CandidateProfile() {
       }
 
       toast.success("Passkey registered successfully");
-      
+
       // Clear cache to force fresh fetch
-      setCache('userPasskeys', null);
+      setCache("userPasskeys", null);
       fetchPasskeys();
     } catch (error) {
       console.error(error);

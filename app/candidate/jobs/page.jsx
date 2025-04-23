@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import Image from "next/image";
+import useStore from "@/app/store"; // Import the store for caching
 
 const JobBoard = () => {
   // State management
@@ -53,6 +54,9 @@ const JobBoard = () => {
   const bottomSheetRef = useRef(null);
   const [isApplying, setIsApplying] = useState(false);
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
+
+  // Get cache methods from the store
+  const { getCache, setCache, setTitle } = useStore();
 
   // Close bottom sheet when clicking outside
   const handleClickOutside = (e) => {
@@ -108,6 +112,7 @@ const JobBoard = () => {
 
   // Load initial data
   useEffect(() => {
+    setTitle("Job Board");
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setDarkMode(true);
     }
@@ -133,26 +138,46 @@ const JobBoard = () => {
 
   const fetchJobs = async () => {
     setLoading(true);
-    try {
-      const queryParams = new URLSearchParams({
-        page: pagination.currentPage,
-        limit: 10,
-        sort: sortBy,
-        ...(filters.search && { search: filters.search }),
-        ...(filters.location && { location: filters.location }),
-        ...(filters.employmentType && {
-          employmentType: filters.employmentType,
-        }),
-        ...(filters.salaryRange && {
-          ...(filters.salaryRange === "0-50k" && { maxSalary: 50000 }),
-          ...(filters.salaryRange === "50k-100k" && {
-            minSalary: 50000,
-            maxSalary: 100000,
-          }),
-          ...(filters.salaryRange === "100k+" && { minSalary: 100000 }),
-        }),
-      });
 
+    // Create query params for API call and cache key
+    const queryParams = new URLSearchParams({
+      page: pagination.currentPage,
+      limit: 10,
+      sort: sortBy,
+      ...(filters.search && { search: filters.search }),
+      ...(filters.location && { location: filters.location }),
+      ...(filters.employmentType && {
+        employmentType: filters.employmentType,
+      }),
+      ...(filters.salaryRange && {
+        ...(filters.salaryRange === "0-50k" && { maxSalary: 50000 }),
+        ...(filters.salaryRange === "50k-100k" && {
+          minSalary: 50000,
+          maxSalary: 100000,
+        }),
+        ...(filters.salaryRange === "100k+" && { minSalary: 100000 }),
+      }),
+    });
+
+    // Create a unique cache key based on the current query
+    const cacheKey = `jobs-${queryParams.toString()}`;
+
+    // Check if data exists in cache
+    const cachedData = getCache(cacheKey);
+
+    if (cachedData) {
+      console.log("Using cached job data");
+      setJobs(cachedData.jobs || []);
+      setPagination({
+        currentPage: cachedData.currentPage || 1,
+        totalPages: cachedData.totalPages || 1,
+        totalItems: cachedData.totalItems || 0,
+      });
+      setLoading(false);
+      return;
+    }
+
+    try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BackendURL}/jobs/all?${queryParams}`,
         {
@@ -162,6 +187,10 @@ const JobBoard = () => {
         }
       );
       const data = await response.json();
+
+      // Store data in cache
+      setCache(cacheKey, data);
+
       setJobs(data.jobs || []);
       setPagination({
         currentPage: data.currentPage || 1,
@@ -416,18 +445,19 @@ const JobBoard = () => {
   );
 
   return (
-    <div className="h-full w-full md:bg-md-surface-container overflow-scroll rounded-tl-3xl md:p-10  text-md-on-background">
+    // Responsive padding for mobile and desktop
+    <div className="h-full w-full overflow-x-hidden  sm:px-4 md:px-0 md:bg-md-surface-container rounded-tl-3xl md:p-6 lg:p-10 text-md-on-background">
       {/* Search and Filter Header */}
-      <div className="sticky top-0 z-30  pt-4 w-full pb-3 shadow-sm">
-        <div className="w-full mx-auto px-2">
+      <div className="sticky top-0 z-30 bg-md-surface md:bg-transparent pt-4 w-screen md:w-full pb-3 shadow-sm md:shadow-none px-2 sm:px-4 md:px-2">
+        <div className="relative w-full max-w-full">
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="w-5 h-5 text-md-on-surface-variant" />
             </div>
             <input
               type="text"
-              placeholder="Search jobs, companies, or skills..."
-              className="w-full pl-12 pr-12 py-3 sm:py-3.5 bg-md-surface-container rounded-full text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary border border-md-outline"
+              placeholder="Search jobs..."
+              className="w-full max-w-full pl-10 pr-10 py-2 text-sm sm:py-2.5 bg-md-surface-container rounded-full text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary border border-md-outline md:pl-12 md:pr-12 md:py-3 md:text-base"
               value={filters.search}
               onChange={(e) =>
                 setFilters({ ...filters, search: e.target.value })
@@ -438,14 +468,14 @@ const JobBoard = () => {
             />
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-md-surface-variant transition-all text-md-on-surface-variant"
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-md-surface-variant transition-all text-md-on-surface-variant md:right-2"
             >
               <Filter className="w-5 h-5" />
             </button>
           </div>
 
           {/* Quick Filter Pills */}
-          <div className="flex gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
+          <div className="flex gap-1.5 md:gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide no-scrollbar">
             {[
               "Full-time",
               "Part-time",
@@ -456,10 +486,10 @@ const JobBoard = () => {
             ].map((type) => (
               <button
                 key={type}
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm whitespace-nowrap ${
+                className={`px-2 py-1 sm:px-2.5 sm:py-1 md:px-4 md:py-2 rounded-full text-xs sm:text-xs md:text-sm whitespace-nowrap transition-colors flex-shrink-0 ${
                   filters.employmentType === type
                     ? "bg-md-primary text-md-on-primary"
-                    : "bg-md-surface-container-low text-md-on-surface hover:bg-md-surface-container transition-colors"
+                    : "bg-md-surface-container-low text-md-on-surface hover:bg-md-surface-container"
                 }`}
                 onClick={() => applyQuickFilter(type)}
               >
@@ -470,12 +500,12 @@ const JobBoard = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 bg-md-surface-container-low rounded-full text-xs sm:text-sm text-md-on-surface border-none appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-md-primary"
+              className="px-2 py-1 sm:px-2.5 sm:py-1 md:px-4 md:py-2 bg-md-surface-container-low rounded-full text-xs sm:text-xs md:text-sm text-md-on-surface border-none appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-md-primary whitespace-nowrap flex-shrink-0"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                 backgroundRepeat: "no-repeat",
-                backgroundPosition: "right 0.75rem center",
-                backgroundSize: "1rem",
+                backgroundPosition: "right 0.5rem center",
+                backgroundSize: "0.8rem",
               }}
             >
               <option value="newest">Newest</option>
@@ -494,13 +524,13 @@ const JobBoard = () => {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className="bg-md-surface-container-high mt-3 p-4 rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-md-surface-container-high mt-3 p-2 sm:p-3 md:p-4 rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-5 h-5 text-md-on-surface-variant" />
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-md-on-surface-variant" />
                     <input
                       type="text"
                       placeholder="Location"
-                      className="w-full pl-10 pr-4 py-2.5 bg-md-surface-container rounded-full focus:outline-none focus:ring-2 focus:ring-md-primary border border-md-outline text-md-on-surface"
+                      className="w-full pl-9 md:pl-10 pr-3 md:pr-4 py-2 md:py-2.5 text-sm md:text-base bg-md-surface-container rounded-full focus:outline-none focus:ring-2 focus:ring-md-primary border border-md-outline text-md-on-surface"
                       value={filters.location}
                       onChange={(e) =>
                         setFilters({ ...filters, location: e.target.value })
@@ -508,48 +538,57 @@ const JobBoard = () => {
                     />
                   </div>
 
-                  <select
-                    className="w-full px-4 py-2.5 bg-md-surface-container rounded-full border border-md-outline focus:outline-none focus:ring-2 focus:ring-md-primary appearance-none cursor-pointer text-md-on-surface pl-10 pr-4"
-                    value={filters.employmentType}
-                    onChange={(e) =>
-                      setFilters({ ...filters, employmentType: e.target.value })
-                    }
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0.75rem center",
-                      backgroundSize: "1rem",
-                    }}
-                  >
-                    <option value="">Job Type</option>
-                    <option value="full-time">Full-time</option>
-                    <option value="part-time">Part-time</option>
-                    <option value="contract">Contract</option>
-                    <option value="temporary">Temporary</option>
-                    <option value="internship">Internship</option>
-                    <option value="remote">Remote</option>
-                  </select>
+                  <div className="relative">
+                    <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-md-on-surface-variant" />
+                    <select
+                      className="w-full pl-9 md:pl-10 pr-8 py-2 md:py-2.5 text-sm md:text-base bg-md-surface-container rounded-full border border-md-outline focus:outline-none focus:ring-2 focus:ring-md-primary appearance-none cursor-pointer text-md-on-surface"
+                      value={filters.employmentType}
+                      onChange={(e) =>
+                        setFilters({
+                          ...filters,
+                          employmentType: e.target.value,
+                        })
+                      }
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 0.5rem center",
+                        backgroundSize: "0.8rem",
+                      }}
+                    >
+                      <option value="">Job Type</option>
+                      <option value="full-time">Full-time</option>
+                      <option value="part-time">Part-time</option>
+                      <option value="contract">Contract</option>
+                      <option value="temporary">Temporary</option>
+                      <option value="internship">Internship</option>
+                      <option value="remote">Remote</option>
+                    </select>
+                  </div>
 
-                  <select
-                    className="w-full px-4 py-2.5 bg-md-surface-container rounded-full border border-md-outline focus:outline-none focus:ring-2 focus:ring-md-primary appearance-none cursor-pointer text-md-on-surface pl-10 pr-4"
-                    value={filters.salaryRange}
-                    onChange={(e) =>
-                      setFilters({ ...filters, salaryRange: e.target.value })
-                    }
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0.75rem center",
-                      backgroundSize: "1rem",
-                    }}
-                  >
-                    <option value="">Salary Range</option>
-                    <option value="0-50k">$0 - $50k</option>
-                    <option value="50k-100k">$50k - $100k</option>
-                    <option value="100k+">$100k+</option>
-                  </select>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-md-on-surface-variant" />
+                    <select
+                      className="w-full pl-9 md:pl-10 pr-8 py-2 md:py-2.5 text-sm md:text-base bg-md-surface-container rounded-full border border-md-outline focus:outline-none focus:ring-2 focus:ring-md-primary appearance-none cursor-pointer text-md-on-surface"
+                      value={filters.salaryRange}
+                      onChange={(e) =>
+                        setFilters({ ...filters, salaryRange: e.target.value })
+                      }
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 0.5rem center",
+                        backgroundSize: "0.8rem",
+                      }}
+                    >
+                      <option value="">Salary Range</option>
+                      <option value="0-50k">$0 - $50k</option>
+                      <option value="50k-100k">$50k - $100k</option>
+                      <option value="100k+">$100k+</option>
+                    </select>
+                  </div>
 
-                  <div className="md:col-span-3 flex justify-between mt-2">
+                  <div className="md:col-span-3 flex flex-col sm:flex-row gap-2 justify-end mt-2">
                     <button
                       onClick={() => {
                         setFilters({
@@ -559,7 +598,7 @@ const JobBoard = () => {
                           salaryRange: "",
                         });
                       }}
-                      className="px-5 py-2.5 rounded-full hover:bg-md-surface-variant text-md-on-surface-variant transition-colors"
+                      className="px-4 py-2 w-full sm:w-auto rounded-full text-sm md:text-base hover:bg-md-surface-variant text-md-on-surface-variant transition-colors"
                     >
                       Reset
                     </button>
@@ -568,7 +607,7 @@ const JobBoard = () => {
                         fetchJobs();
                         setShowFilters(false);
                       }}
-                      className="px-6 py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary/90 transition-colors"
+                      className="px-5 py-2 w-full sm:w-auto text-sm md:text-base bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary/90 transition-colors"
                     >
                       Apply Filters
                     </button>
@@ -581,13 +620,15 @@ const JobBoard = () => {
       </div>
 
       {/* Job Results */}
-      <div className="px-4 pt-4 pb-20  mx-auto">
-        <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-md-on-surface">
+      <div className="pt-4 pb-20 md:pb-10 mx-auto overflow-y-auto">
+        <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h2 className="text-base p-2 sm:text-base md:text-lg font-medium text-md-on-surface">
             {loading
               ? "Searching..."
-              : jobs.length > 0
-              ? `${jobs.length} jobs found`
+              : pagination.totalItems > 0
+              ? `${pagination.totalItems} job${
+                  pagination.totalItems !== 1 ? "s" : ""
+                } found`
               : "No jobs found"}
           </h2>
         </div>
@@ -597,88 +638,96 @@ const JobBoard = () => {
           <div className="space-y-4">
             {[1, 2, 3, 4].map((n) => (
               <div key={n} className="animate-pulse">
-                <div className="h-36 bg-md-surface-container rounded-3xl"></div>
+                <div className="h-28 md:h-36 bg-md-surface-container rounded-3xl"></div>
               </div>
             ))}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid p-2 grid-cols-1 gap-4 max-w-full">
             <AnimatePresence>
               {jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
             </AnimatePresence>
 
-            {/* Pagination */}
+            {/* Pagination - Mobile friendly version */}
             {pagination.totalPages > 1 && (
-              <div className="mt-8 flex justify-center items-center gap-2">
+              <div className="mt-6 md:mt-8 flex justify-center items-center gap-1 md:gap-2">
                 <button
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1}
-                  className={`p-3 rounded-full ${
+                  className={`p-2 md:p-3 rounded-full ${
                     pagination.currentPage === 1
                       ? "text-md-on-surface-variant/50 cursor-not-allowed"
-                      : "bg-md-surface-container hover:bg-md-surface-container-high text-md-on-surface relative overflow-hidden after:absolute after:inset-0 after:bg-md-on-surface/5 after:opacity-0 hover:after:opacity-100 after:transition-opacity"
+                      : "bg-md-surface-container hover:bg-md-surface-container-high text-md-on-surface"
                   }`}
                 >
-                  <ChevronDown className="w-5 h-5 rotate-90" />
+                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5 rotate-90" />
                 </button>
 
+                {/* Mobile simplified pagination */}
                 <div className="flex items-center">
-                  {Array.from(
-                    { length: pagination.totalPages },
-                    (_, i) => i + 1
-                  )
-                    .filter(
-                      (page) =>
-                        page === 1 ||
-                        page === pagination.totalPages ||
-                        Math.abs(page - pagination.currentPage) <= 1
+                  <span className="text-sm md:hidden">
+                    {pagination.currentPage} / {pagination.totalPages}
+                  </span>
+
+                  {/* Desktop full pagination */}
+                  <div className="hidden md:flex items-center">
+                    {Array.from(
+                      { length: pagination.totalPages },
+                      (_, i) => i + 1
                     )
-                    .map((page, idx, arr) => (
-                      <React.Fragment key={page}>
-                        {idx > 0 && arr[idx - 1] !== page - 1 && (
-                          <span className="mx-1 text-md-on-surface-variant">
-                            •••
-                          </span>
-                        )}
-                        <button
-                          onClick={() => handlePageChange(page)}
-                          className={`w-10 h-10 mx-1 rounded-full flex items-center justify-center transition-all relative overflow-hidden ${
-                            pagination.currentPage === page
-                              ? "bg-md-primary text-md-on-primary font-medium"
-                              : "text-md-on-surface hover:bg-md-surface-container-high after:absolute after:inset-0 after:bg-md-on-surface/5 after:opacity-0 hover:after:opacity-100 after:transition-opacity"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      </React.Fragment>
-                    ))}
+                      .filter(
+                        (page) =>
+                          page === 1 ||
+                          page === pagination.totalPages ||
+                          Math.abs(page - pagination.currentPage) <= 1
+                      )
+                      .map((page, idx, arr) => (
+                        <React.Fragment key={page}>
+                          {idx > 0 && arr[idx - 1] !== page - 1 && (
+                            <span className="mx-1 text-md-on-surface-variant">
+                              •••
+                            </span>
+                          )}
+                          <button
+                            onClick={() => handlePageChange(page)}
+                            className={`w-8 h-8 md:w-10 md:h-10 mx-1 rounded-full flex items-center justify-center ${
+                              pagination.currentPage === page
+                                ? "bg-md-primary text-md-on-primary font-medium"
+                                : "text-md-on-surface hover:bg-md-surface-container-high"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </React.Fragment>
+                      ))}
+                  </div>
                 </div>
 
                 <button
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className={`p-3 rounded-full ${
+                  className={`p-2 md:p-3 rounded-full ${
                     pagination.currentPage === pagination.totalPages
                       ? "text-md-on-surface-variant/50 cursor-not-allowed"
-                      : "bg-md-surface-container hover:bg-md-surface-container-high text-md-on-surface relative overflow-hidden after:absolute after:inset-0 after:bg-md-on-surface/5 after:opacity-0 hover:after:opacity-100 after:transition-opacity"
+                      : "bg-md-surface-container hover:bg-md-surface-container-high text-md-on-surface"
                   }`}
                 >
-                  <ChevronDown className="w-5 h-5 -rotate-90" />
+                  <ChevronDown className="w-4 h-4 md:w-5 md:h-5 -rotate-90" />
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <div className="text-center py-16 bg-md-surface-container rounded-3xl">
-            <div className="inline-flex justify-center items-center w-20 h-20 bg-md-surface-variant rounded-full mb-6">
-              <Search className="w-10 h-10 text-md-on-surface-variant" />
+          <div className="text-center py-10 md:py-16 bg-md-surface-container rounded-3xl">
+            <div className="inline-flex justify-center items-center w-16 h-16 md:w-20 md:h-20 bg-md-surface-variant rounded-full mb-4 md:mb-6">
+              <Search className="w-8 h-8 md:w-10 md:h-10 text-md-on-surface-variant" />
             </div>
-            <h3 className="text-xl font-semibold text-md-on-surface mb-3">
+            <h3 className="text-lg md:text-xl font-semibold text-md-on-surface mb-2 md:mb-3">
               No jobs found
             </h3>
-            <p className="text-md-on-surface-variant max-w-md mx-auto mb-8">
+            <p className="text-sm md:text-base text-md-on-surface-variant max-w-md mx-auto mb-6 md:mb-8 px-4">
               We couldn't find any jobs matching your search criteria. Try
               adjusting your filters or search terms.
             </p>
@@ -693,7 +742,7 @@ const JobBoard = () => {
                 setSortBy("newest");
                 fetchJobs();
               }}
-              className="px-8 py-3 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary/90 transition-colors"
+              className="px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary/90 transition-colors"
             >
               Clear All Filters
             </button>

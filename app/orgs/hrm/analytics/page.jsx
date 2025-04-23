@@ -1505,12 +1505,12 @@ export default function AnalyticsPage() {
   );
 
   return (
-    <div className="container overflow-y-scroll h-full mx-auto py-8 px-4 bg-md-surface-container">
+    <div className="container overflow-y-scroll h-full mx-auto py-8 px-4 bg-md-surface-container [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-between items-center mb-6"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
       >
         <h1 className="text-3xl font-bold text-md-on-surface">
           Analytics & Reports
@@ -1519,7 +1519,7 @@ export default function AnalyticsPage() {
           <select
             value={timeFrame}
             onChange={(e) => setTimeFrame(e.target.value)}
-            className="border border-md-outline rounded-xl px-3 py-2 bg-md-surface text-md-on-surface"
+            className="border border-md-outline rounded-lg px-3 py-2 bg-md-surface-container-highest text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary"
           >
             <option value="week">Last Week</option>
             <option value="month">Last Month</option>
@@ -1530,7 +1530,7 @@ export default function AnalyticsPage() {
       </motion.div>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto space-x-4 pb-4 mb-6">
+      <div className="flex overflow-x-auto space-x-2 sm:space-x-4 pb-4 mb-6 border-b border-md-outline-variant">
         <Tab
           active={activeTab === "overview"}
           icon={<BarChartIcon size={16} />}
@@ -1540,19 +1540,19 @@ export default function AnalyticsPage() {
         <Tab
           active={activeTab === "predictive"}
           icon={<TrendingUp size={16} />}
-          label="Predictive Analytics"
+          label="Predictive" // Shortened label for smaller screens if needed
           onClick={() => setActiveTab("predictive")}
         />
         <Tab
           active={activeTab === "quality"}
           icon={<Award size={16} />}
-          label="Candidate Quality"
+          label="Quality" // Shortened label
           onClick={() => setActiveTab("quality")}
         />
         <Tab
           active={activeTab === "efficiency"}
           icon={<Clock size={16} />}
-          label="Efficiency & ROI"
+          label="Efficiency" // Shortened label
           onClick={() => setActiveTab("efficiency")}
         />
       </div>
@@ -1591,19 +1591,19 @@ export default function AnalyticsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
-        className="mt-8 p-4 bg-md-primary-container rounded-xl"
+        className="mt-8 p-6 bg-md-tertiary-container rounded-2xl" // Changed background for variety
       >
-        <h3 className="text-lg font-medium mb-2 text-md-on-primary-container">
+        <h3 className="text-lg font-medium mb-2 text-md-on-tertiary-container">
           Custom Reports
         </h3>
-        <p className="mb-4 text-md-on-primary-container">
+        <p className="mb-4 text-md-on-tertiary-container">
           Need a specific report not listed above? Our team can generate custom
           analytics based on your requirements.
         </p>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="bg-md-primary text-md-on-primary px-4 py-2 rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+          className="bg-md-tertiary text-md-on-tertiary px-5 py-2.5 rounded-full text-sm font-medium hover:shadow-md transition-shadow" // Adjusted padding/shape
         >
           Request Custom Report
         </motion.button>
