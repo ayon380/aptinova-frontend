@@ -26,7 +26,6 @@ import OfflineWarning from "@/components/tests/OfflineWarning";
 import useProctoring from "@/hooks/useProctoring";
 import useTestTimer from "@/hooks/useTestTimer";
 import useOnlineStatus from "@/hooks/useOnlineStatus";
-import { useTheme } from "@/contexts/ThemeContext";
 import { isMobile } from "react-device-detect";
 import IdentityVerification from "@/components/tests/IdentityVerification";
 import LiveMonitoring from "@/components/tests/LiveMonitoring";
@@ -40,7 +39,6 @@ export default function TestPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [testStarted, setTestStarted] = useState(false);
-  const { theme } = useTheme();
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [mediaPermissionsGranted, setMediaPermissionsGranted] = useState(false);
   const [showPermissionRequest, setShowPermissionRequest] = useState(false);

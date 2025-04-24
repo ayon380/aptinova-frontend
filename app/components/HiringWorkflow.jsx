@@ -1,38 +1,26 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react"; // Import React and memo
 import { motion, AnimatePresence } from "framer-motion";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
-  Calendar,
-  FileText,
-  MoreVertical,
-  CheckCircle,
-  XCircle,
-  ChevronRight,
-  MessageSquare,
-  Clock,
-  Award,
-  Star,
-  StarHalf,
-  ThumbsUp,
-  ThumbsDown,
-  User,
-  Loader2,
-  CalendarClock,
-  PenLine,
+  User, // Ensure User is imported
+  FileText, // Ensure FileText is imported
+  VideoIcon, // Ensure VideoIcon is imported
+  Award, // Ensure Award is imported
+  XCircle, // Ensure XCircle is imported
   Eye,
-  Users,
-  ClipboardList,
-  BarChart,
-  VideoIcon,
-  Trophy,
-  Medal,
-  Mail,
-  CheckSquare,
+  MoreVertical,
+  Clock,
+  Star,
+  CalendarClock,
+  MessageSquare,
+  Loader2,
   AlertCircle,
-  Briefcase,
   X,
-} from "lucide-react";
+  Mail,
+  Trophy,
+  BarChart,
+} from "lucide-react"; // Add missing icons here
 import Image from "next/image";
 
 // Define stage type to icon mapping
@@ -56,9 +44,8 @@ const StageTypeColors = {
 const HiringWorkflow = ({
   applicants = [],
   onMoveApplicant,
-  onViewDetails,
-  onScheduleInterview,
-  onCreateTest,
+  onViewDetails, // This is the function to open the modal
+  handleInitiateMove,
   jobDetails,
   isLoading,
   isTopCandidatesMode = false,
@@ -66,16 +53,11 @@ const HiringWorkflow = ({
 }) => {
   const [columns, setColumns] = useState({});
   const [showActionMenu, setShowActionMenu] = useState(null);
-  const [expandedCard, setExpandedCard] = useState(null);
   const [showRejectConfirm, setShowRejectConfirm] = useState(null);
   const [showOfferConfirm, setShowOfferConfirm] = useState(null);
   const [offerNotes, setOfferNotes] = useState("");
   const [markJobFilled, setMarkJobFilled] = useState(false);
-  const [dragSourceColumn, setDragSourceColumn] = useState(null);
-  const [draggedApplicant, setDraggedApplicant] = useState(null);
   const [processStages, setProcessStages] = useState([]);
-  const [interviewSchedulingId, setInterviewSchedulingId] = useState(null);
-  const [testCreationId, setTestCreationId] = useState(null);
 
   // Parse hiring process from job details
   useEffect(() => {
@@ -140,9 +122,9 @@ const HiringWorkflow = ({
     }
   }, [jobDetails]);
 
-  // Initialize columns based on process stages
+  // Initialize columns based on process stages and applicants
   useEffect(() => {
-    if (processStages.length > 0) {
+    if (processStages.length > 0 && applicants.length > 0) {
       const initialColumns = processStages.reduce(
         (acc, stage) => ({
           ...acc,
@@ -159,54 +141,45 @@ const HiringWorkflow = ({
       // Distribute applicants to their proper columns
       applicants.forEach((applicant) => {
         let placed = false;
+        const applicantStageName = applicant.status;
 
-        // Try to determine current stage from applicant data
-        if (applicant.hiringProcess) {
-          try {
-            const process =
-              typeof applicant.hiringProcess === "string"
-                ? JSON.parse(applicant.hiringProcess)
-                : applicant.hiringProcess;
+        // Find the column matching the applicant's status
+        const matchingStage = processStages.find(
+          (stage) =>
+            stage.title === applicantStageName ||
+            stage.id === applicantStageName
+        );
 
-            // Find the current stage (the one that's not completed yet)
-            const currentStage = process.find(
-              (step) => step.completedDate === ""
-            );
-            if (currentStage) {
-              const stageColumn = processStages.find(
-                (stage) => stage.title === currentStage.name
-              );
-              if (stageColumn && initialColumns[stageColumn.id]) {
-                initialColumns[stageColumn.id].applicantIds.push(applicant.id);
-                placed = true;
-              }
-            }
-          } catch (e) {
-            console.error("Error parsing applicant hiring process:", e);
-          }
+        if (matchingStage && initialColumns[matchingStage.id]) {
+          initialColumns[matchingStage.id].applicantIds.push(applicant.id);
+          placed = true;
         }
 
-        // If we couldn't determine stage from process data, use status
+        // Fallback to the first stage if no match found
         if (!placed) {
-          const status = applicant.status || "Resume Screening";
-
-          // Find a matching column based on status
-          const matchingStage = processStages.find(
-            (stage) => stage.title === status || stage.id === status
-          );
-
-          if (matchingStage && initialColumns[matchingStage.id]) {
-            initialColumns[matchingStage.id].applicantIds.push(applicant.id);
-          } else {
-            // Default to first stage if no match
-            const firstStage = processStages[0];
-            if (firstStage && initialColumns[firstStage.id]) {
-              initialColumns[firstStage.id].applicantIds.push(applicant.id);
-            }
+          const firstStage = processStages[0];
+          if (firstStage && initialColumns[firstStage.id]) {
+            initialColumns[firstStage.id].applicantIds.push(applicant.id);
+          } else if (initialColumns["Resume Screening"]) {
+            initialColumns["Resume Screening"].applicantIds.push(applicant.id);
           }
         }
       });
 
+      setColumns(initialColumns);
+    } else if (processStages.length > 0) {
+      const initialColumns = processStages.reduce(
+        (acc, stage) => ({
+          ...acc,
+          [stage.id]: {
+            id: stage.id,
+            title: stage.title,
+            type: stage.type,
+            applicantIds: [],
+          },
+        }),
+        {}
+      );
       setColumns(initialColumns);
     }
   }, [processStages, applicants]);
@@ -276,20 +249,6 @@ const HiringWorkflow = ({
     return destIndex < sourceIndex;
   };
 
-  // Function to trigger appropriate action based on destination stage
-  const triggerStageAction = (applicantId, stageId) => {
-    const stage = processStages.find((s) => s.id === stageId);
-    if (!stage) return;
-
-    if (stage.type === "Test") {
-      setTestCreationId(applicantId);
-      onCreateTest([applicantId]);
-    } else if (stage.type === "Interview") {
-      setInterviewSchedulingId(applicantId);
-      onScheduleInterview([applicantId]);
-    }
-  };
-
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
@@ -302,87 +261,84 @@ const HiringWorkflow = ({
       return;
     }
 
-    // Check if this move would be a downgrade
+    // Prevent downgrades (except to Rejected)
     if (isDowngrade(source.droppableId, destination.droppableId)) {
-      // Revert the drag - not allowing downgrades
+      console.warn(
+        "Downgrading applicant stage is not allowed (except to Rejected)."
+      );
       return;
     }
 
-    const startColumn = columns[source.droppableId];
-    const endColumn = columns[destination.droppableId];
+    const targetStageId = destination.droppableId;
+    const sourceStageId = source.droppableId;
+    const stageDefinition = processStages.find(
+      (stage) => stage.id === targetStageId
+    );
 
-    // Store the source column and applicant ID for potential revert
-    setDragSourceColumn(source.droppableId);
-    setDraggedApplicant(draggableId);
-
-    if (startColumn === endColumn) {
-      const newApplicantIds = Array.from(startColumn.applicantIds);
+    // Update UI optimistically for smoother drag feel *only* for non-modal moves or within same column
+    if (source.droppableId === destination.droppableId) {
+      const column = columns[source.droppableId];
+      const newApplicantIds = Array.from(column.applicantIds);
       newApplicantIds.splice(source.index, 1);
       newApplicantIds.splice(destination.index, 0, draggableId);
+      setColumns((prev) => ({
+        ...prev,
+        [source.droppableId]: { ...column, applicantIds: newApplicantIds },
+      }));
+      return;
+    }
 
-      const newColumn = {
-        ...startColumn,
-        applicantIds: newApplicantIds,
-      };
-
-      setColumns({
-        ...columns,
-        [newColumn.id]: newColumn,
+    // Handle moves based on target stage type
+    if (
+      stageDefinition?.type === "Test" ||
+      stageDefinition?.type === "Interview"
+    ) {
+      handleInitiateMove(draggableId, targetStageId, sourceStageId);
+    } else if (targetStageId === "Offer") {
+      setShowOfferConfirm({
+        applicantId: draggableId,
+        sourceStage: sourceStageId,
       });
+      const startColumn = columns[sourceStageId];
+      const endColumn = columns[targetStageId];
+      const startApplicantIds = startColumn.applicantIds.filter(
+        (id) => id !== draggableId
+      );
+      const endApplicantIds = [draggableId, ...endColumn.applicantIds];
+      setColumns((prev) => ({
+        ...prev,
+        [sourceStageId]: { ...startColumn, applicantIds: startApplicantIds },
+        [targetStageId]: { ...endColumn, applicantIds: endApplicantIds },
+      }));
+    } else if (targetStageId === "Rejected") {
+      setShowRejectConfirm({
+        applicantId: draggableId,
+        sourceStage: sourceStageId,
+      });
+      const startColumn = columns[sourceStageId];
+      const endColumn = columns[targetStageId];
+      const startApplicantIds = startColumn.applicantIds.filter(
+        (id) => id !== draggableId
+      );
+      const endApplicantIds = [draggableId, ...endColumn.applicantIds];
+      setColumns((prev) => ({
+        ...prev,
+        [sourceStageId]: { ...startColumn, applicantIds: startApplicantIds },
+        [targetStageId]: { ...endColumn, applicantIds: endApplicantIds },
+      }));
     } else {
-      const startApplicantIds = Array.from(startColumn.applicantIds);
-      startApplicantIds.splice(source.index, 1);
-      const newStartColumn = {
-        ...startColumn,
-        applicantIds: startApplicantIds,
-      };
-
-      const endApplicantIds = Array.from(endColumn.applicantIds);
-      endApplicantIds.splice(destination.index, 0, draggableId);
-      const newEndColumn = {
-        ...endColumn,
-        applicantIds: endApplicantIds,
-      };
-
-      if (isTopCandidatesMode && endColumn) {
-        const sortedIds = sortApplicantsByScore(
-          endColumn.applicantIds,
-          endColumn.id
-        );
-
-        const newEndColumnSorted = {
-          ...newEndColumn,
-          applicantIds: sortedIds,
-        };
-
-        setColumns({
-          ...columns,
-          [newStartColumn.id]: newStartColumn,
-          [newEndColumnSorted.id]: newEndColumnSorted,
-        });
-      } else {
-        setColumns({
-          ...columns,
-          [newStartColumn.id]: newStartColumn,
-          [newEndColumn.id]: newEndColumn,
-        });
-      }
-
-      if (destination.droppableId === "Rejected") {
-        setShowRejectConfirm(draggableId);
-      } else if (destination.droppableId === "Offer") {
-        setShowOfferConfirm(draggableId);
-      } else {
-        // For other stages, advance immediately and trigger appropriate action
-        onMoveApplicant(draggableId, destination.droppableId);
-
-        // Trigger test creation or interview scheduling based on destination stage
-        triggerStageAction(draggableId, destination.droppableId);
-
-        // Clear source tracking if we're confirming the move immediately
-        setDragSourceColumn(null);
-        setDraggedApplicant(null);
-      }
+      onMoveApplicant(draggableId, targetStageId);
+      const startColumn = columns[sourceStageId];
+      const endColumn = columns[targetStageId];
+      const startApplicantIds = startColumn.applicantIds.filter(
+        (id) => id !== draggableId
+      );
+      const endApplicantIds = [draggableId, ...endColumn.applicantIds];
+      setColumns((prev) => ({
+        ...prev,
+        [sourceStageId]: { ...startColumn, applicantIds: startApplicantIds },
+        [targetStageId]: { ...endColumn, applicantIds: endApplicantIds },
+      }));
     }
   };
 
@@ -448,17 +404,16 @@ const HiringWorkflow = ({
 
   const handleRejectConfirm = () => {
     if (showRejectConfirm) {
-      onMoveApplicant(showRejectConfirm, "Rejected");
+      onMoveApplicant(showRejectConfirm.applicantId, "Rejected");
       setShowRejectConfirm(null);
-      // Clear source tracking
-      setDragSourceColumn(null);
-      setDraggedApplicant(null);
     }
   };
 
   const handleOfferConfirm = () => {
     if (showOfferConfirm) {
-      onMoveApplicant(showOfferConfirm, "Offer", offerNotes);
+      onMoveApplicant(showOfferConfirm.applicantId, "Offer", {
+        offerNotes: offerNotes,
+      });
 
       if (markJobFilled) {
         onUpdateJobStatus("Filled");
@@ -467,98 +422,64 @@ const HiringWorkflow = ({
       setShowOfferConfirm(null);
       setOfferNotes("");
       setMarkJobFilled(false);
-      // Clear source tracking
-      setDragSourceColumn(null);
-      setDraggedApplicant(null);
     }
   };
 
   const handleCancelAction = (type) => {
-    // Revert the applicant to its original column
-    if (dragSourceColumn && draggedApplicant) {
-      const currentColumns = { ...columns };
+    let applicantIdToRevert = null;
+    let sourceStageId = null;
+    let targetStageId = null;
 
-      // Find which column currently has the applicant
-      let currentColumnId = null;
-      Object.keys(currentColumns).forEach((colId) => {
-        if (currentColumns[colId].applicantIds.includes(draggedApplicant)) {
-          currentColumnId = colId;
-        }
-      });
-
-      if (currentColumnId && currentColumnId !== dragSourceColumn) {
-        // Remove from current column
-        const currentColumn = currentColumns[currentColumnId];
-        const updatedCurrentIds = currentColumn.applicantIds.filter(
-          (id) => id !== draggedApplicant
-        );
-
-        // Add back to source column
-        const sourceColumn = currentColumns[dragSourceColumn];
-        const updatedSourceIds = [
-          ...sourceColumn.applicantIds,
-          draggedApplicant,
-        ];
-
-        // Update columns
-        setColumns({
-          ...currentColumns,
-          [currentColumnId]: {
-            ...currentColumn,
-            applicantIds: updatedCurrentIds,
-          },
-          [dragSourceColumn]: {
-            ...sourceColumn,
-            applicantIds: updatedSourceIds,
-          },
-        });
-      }
-    }
-
-    // Close modals and clear tracking
-    if (type === "reject") {
+    if (type === "reject" && showRejectConfirm) {
+      applicantIdToRevert = showRejectConfirm.applicantId;
+      sourceStageId = showRejectConfirm.sourceStage;
+      targetStageId = "Rejected";
       setShowRejectConfirm(null);
-    } else if (type === "offer") {
+    } else if (type === "offer" && showOfferConfirm) {
+      applicantIdToRevert = showOfferConfirm.applicantId;
+      sourceStageId = showOfferConfirm.sourceStage;
+      targetStageId = "Offer";
       setShowOfferConfirm(null);
       setOfferNotes("");
       setMarkJobFilled(false);
-    } else if (type === "interview") {
-      setInterviewSchedulingId(null);
-    } else if (type === "test") {
-      setTestCreationId(null);
     }
 
-    setDragSourceColumn(null);
-    setDraggedApplicant(null);
+    if (applicantIdToRevert && sourceStageId && targetStageId) {
+      // Use a functional update to ensure we're working with the latest state
+      setColumns((prevColumns) => {
+        // Get the current source and target columns
+        const sourceColumn = prevColumns[sourceStageId];
+        const targetColumn = prevColumns[targetStageId];
+
+        // Check if the applicant is already in the source column
+        const applicantAlreadyInSource = sourceColumn.applicantIds.includes(applicantIdToRevert);
+        
+        // Create new applicantIds arrays
+        const newSourceApplicantIds = applicantAlreadyInSource 
+          ? sourceColumn.applicantIds 
+          : [applicantIdToRevert, ...sourceColumn.applicantIds];
+        
+        const newTargetApplicantIds = targetColumn.applicantIds.filter(
+          id => id !== applicantIdToRevert
+        );
+        
+        // Return the updated columns state
+        return {
+          ...prevColumns,
+          [sourceStageId]: { 
+            ...sourceColumn, 
+            applicantIds: newSourceApplicantIds 
+          },
+          [targetStageId]: { 
+            ...targetColumn, 
+            applicantIds: newTargetApplicantIds 
+          }
+        };
+      });
+    }
   };
 
-  // Modify the button click handler for advancing a candidate
-  const handleAdvanceCandidate = (applicantId, currentColumnId) => {
-    // Find the next stage in the workflow
-    const currentStageIndex = processStages.findIndex(
-      (stage) => stage.id === currentColumnId
-    );
-    if (
-      currentStageIndex === -1 ||
-      currentStageIndex >= processStages.length - 2
-    )
-      return; // -2 to exclude Rejected
-
-    const nextStage = processStages[currentStageIndex + 1];
-    if (!nextStage) return;
-
-    // Store source for potential revert
-    setDragSourceColumn(currentColumnId);
-    setDraggedApplicant(applicantId);
-
-    // Move applicant to next stage
-    onMoveApplicant(applicantId, nextStage.id);
-
-    // Trigger appropriate action
-    triggerStageAction(applicantId, nextStage.id);
-  };
-
-  if (isLoading || Object.keys(columns).length === 0) {
+  if (isLoading || (Object.keys(columns).length === 0 && processStages.length > 0)) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="w-8 h-8 text-md-primary animate-spin" />
@@ -577,60 +498,43 @@ const HiringWorkflow = ({
         <div className="flex flex-col md:flex-row overflow-y-auto md:overflow-x-auto pb-4 gap-4 min-h-[600px]">
           {sortedStages.map((columnId) => {
             const column = columns[columnId];
+            if (!column) {
+              return (
+                <div
+                  key={columnId}
+                  className="flex-shrink-0 w-full md:w-80 flex flex-col bg-md-surface-container rounded-xl shadow-sm border border-md-outline-variant mb-4 md:mb-0 p-4 items-center justify-center"
+                >
+                  <Loader2 className="w-6 h-6 text-md-primary animate-spin" />
+                  <span className="mt-2 text-sm text-md-on-surface-variant">
+                    Loading stage...
+                  </span>
+                </div>
+              );
+            }
             const stage =
               processStages.find((stage) => stage.id === columnId) || {};
-            const Icon = StageTypeIcons[stage.type] || User;
-            const colorClass =
-              StageTypeColors[stage.type] ||
-              "bg-md-surface-variant text-md-on-surface-variant";
-            const applicantsInStage = column.applicantIds
-              .map((id) => applicantsById[id])
-              .filter(Boolean);
-
-            const sortedApplicantIds = isTopCandidatesMode
-              ? sortApplicantsByScore(column.applicantIds, columnId)
-              : column.applicantIds;
 
             return (
               <div
                 key={columnId}
-                className="flex-shrink-0 w-full md:w-auto flex flex-col bg-md-surface-container rounded-xl shadow-sm overflow-hidden border border-md-outline-variant mb-4 md:mb-0"
+                className="flex-shrink-0 w-full md:w-80 flex flex-col bg-md-surface-container rounded-xl shadow-sm overflow-hidden border border-md-outline-variant mb-4 md:mb-0"
               >
                 <div
-                  className={`px-4 py-3 flex items-center justify-between ${colorClass}`}
+                  className={`px-4 py-3 flex items-center justify-between ${
+                    StageTypeColors[stage.type] ||
+                    "bg-md-surface-variant text-md-on-surface-variant"
+                  }`}
                 >
                   <div className="flex items-center">
-                    <Icon className="w-5 h-5 mr-2" />
+                    {/* {(StageTypeIcons[stage.type] || User)({
+                      className: "w-5 h-5 mr-2",
+                    })} */}
                     <h3 className="font-medium">{column.title}</h3>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="rounded-full bg-white/20 px-2 py-0.5 text-sm font-medium">
                       {column.applicantIds.length}
                     </div>
-
-                    {columnId === "Assessment" &&
-                      column.applicantIds.length > 0 && (
-                        <button
-                          onClick={() => onCreateTest(column.applicantIds)}
-                          className="p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                          title="Create assessment for all candidates"
-                        >
-                          <ClipboardList className="w-4 h-4" />
-                        </button>
-                      )}
-
-                    {columnId === "Interview" &&
-                      column.applicantIds.length > 0 && (
-                        <button
-                          onClick={() =>
-                            onScheduleInterview(column.applicantIds)
-                          }
-                          className="p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                          title="Schedule interview for all candidates"
-                        >
-                          <Calendar className="w-4 h-4" />
-                        </button>
-                      )}
                   </div>
                 </div>
 
@@ -639,7 +543,7 @@ const HiringWorkflow = ({
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex-grow p-2 overflow-y-auto min-h-[400px] ${
+                      className={`flex-grow p-2 overflow-y-auto min-h-[500px] ${
                         snapshot.isDraggingOver
                           ? "bg-md-surface-container-high"
                           : "bg-md-surface-container-low"
@@ -653,7 +557,7 @@ const HiringWorkflow = ({
                         </div>
                       )}
 
-                      {sortedApplicantIds.map((applicantId, index) => {
+                      {column.applicantIds.map((applicantId, index) => {
                         const applicant = applicantsById[applicantId];
                         if (!applicant) return null;
 
@@ -673,21 +577,23 @@ const HiringWorkflow = ({
                             draggableId={applicantId}
                             index={index}
                           >
-                            {(provided, snapshot) => (
+                            {(providedDraggable, snapshotDraggable) => (
                               <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`mb-2 p-3 bg-md-surface rounded-lg border ${
-                                  snapshot.isDragging
+                                ref={providedDraggable.innerRef}
+                                {...providedDraggable.draggableProps}
+                                {...providedDraggable.dragHandleProps}
+                                onClick={(e) => {
+                                  // Prevent click handling if dragging
+                                  if (!snapshotDraggable.isDragging) {
+                                    onViewDetails(applicantId);
+                                  }
+                                }}
+                                className={`mb-2 p-3 bg-md-surface rounded-lg border cursor-pointer ${
+                                  snapshotDraggable.isDragging
                                     ? "border-md-primary shadow-md"
                                     : isTopThree
                                     ? "border-md-tertiary shadow-sm"
-                                    : "border-md-outline-variant"
-                                } ${
-                                  expandedCard === applicantId
-                                    ? "ring-2 ring-md-primary"
-                                    : ""
+                                    : "border-md-outline-variant hover:border-md-outline" // Add hover effect
                                 } ${isTopThree ? "relative" : ""}`}
                               >
                                 {rank && rank <= 5 && (
@@ -707,14 +613,16 @@ const HiringWorkflow = ({
                                 )}
 
                                 <div className="flex justify-between items-start">
-                                  <div className="flex items-center">
+                                  <div className="flex items-center overflow-hidden mr-2">
                                     <div className="relative h-10 w-10 rounded-full overflow-hidden bg-md-surface-container-high border border-md-outline flex-shrink-0">
-                                      {applicant.Candidate ? (
+                                      {applicant.Candidate?.profilePicture ? (
                                         <Image
                                           src={
                                             applicant.Candidate.profilePicture
                                           }
-                                          alt=""
+                                          alt={`${
+                                            applicant.Candidate.firstName || ""
+                                          } profile picture`}
                                           layout="fill"
                                           objectFit="cover"
                                           onError={(e) => {
@@ -727,111 +635,100 @@ const HiringWorkflow = ({
                                       )}
                                     </div>
                                     <div className="ml-2 overflow-hidden">
-                                      <h4 className="font-medium text-md-on-surface truncate max-w-[180px]">
-                                        {applicant.Candidate.firstName}
+                                      <h4 className="font-medium text-md-on-surface truncate">
+                                        {applicant.Candidate?.firstName ||
+                                          "N/A"}{" "}
+                                        {applicant.Candidate?.lastName || ""}
                                       </h4>
-                                      <p className="text-xs text-md-on-surface-variant truncate max-w-[180px]">
-                                        {applicant.Candidate.email}
+                                      <p className="text-xs text-md-on-surface-variant truncate">
+                                        {applicant.Candidate?.email || "N/A"}
                                       </p>
                                     </div>
                                   </div>
 
                                   <div className="relative">
                                     <button
-                                      onClick={() =>
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click when opening menu
                                         setShowActionMenu(
                                           showActionMenu === applicantId
                                             ? null
                                             : applicantId
-                                        )
-                                      }
-                                      className="p-1 hover:bg-md-surface-container-high rounded-full text-md-on-surface-variant"
+                                        );
+                                      }}
+                                      className="p-1 hover:bg-md-surface-container-high rounded-full text-md-on-surface-variant flex-shrink-0"
                                     >
                                       <MoreVertical className="w-4 h-4" />
                                     </button>
 
                                     {showActionMenu === applicantId && (
                                       <div className="absolute right-0 mt-1 w-48 bg-md-surface rounded-lg shadow-lg z-10 border border-md-outline-variant overflow-hidden">
-                                        <button
-                                          onClick={() => {
-                                            onViewDetails(applicantId);
-                                            setShowActionMenu(null);
-                                          }}
-                                          className="w-full text-left px-4 py-2 text-sm hover:bg-md-surface-variant flex items-center gap-2"
-                                        >
-                                          <Eye className="w-4 h-4" />
-                                          View Details
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            onScheduleInterview([applicantId]);
-                                            setShowActionMenu(null);
-                                          }}
-                                          className="w-full text-left px-4 py-2 text-sm hover:bg-md-surface-variant flex items-center gap-2"
-                                        >
-                                          <Calendar className="w-4 h-4" />
-                                          Schedule Interview
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            onCreateTest([applicantId]);
-                                            setShowActionMenu(null);
-                                          }}
-                                          className="w-full text-left px-4 py-2 text-sm hover:bg-md-surface-variant flex items-center gap-2"
-                                        >
-                                          <FileText className="w-4 h-4" />
-                                          Create Assessment
-                                        </button>
-                                        {columnId === "Interview" && (
+                                        {stage?.type === "Interview" &&
+                                          processStages[
+                                            processStages.findIndex(
+                                              (s) => s.id === columnId
+                                            ) + 1
+                                          ]?.type === "Onboard" && (
+                                            <button
+                                              onClick={(e) => { // Add stopPropagation
+                                                e.stopPropagation();
+                                                setShowOfferConfirm({
+                                                  applicantId: applicantId,
+                                                  sourceStage: columnId,
+                                                });
+                                                setShowActionMenu(null);
+                                              }}
+                                              className="w-full text-left px-4 py-2 text-sm text-md-success hover:bg-md-success-container/20 flex items-center gap-2"
+                                            >
+                                              <Award className="w-4 h-4" />
+                                              Make Offer
+                                            </button>
+                                          )}
+                                        {columnId !== "Rejected" && (
                                           <button
-                                            onClick={() => {
-                                              setShowOfferConfirm(applicantId);
+                                            onClick={(e) => { // Add stopPropagation
+                                              e.stopPropagation();
+                                              setShowRejectConfirm({
+                                                applicantId: applicantId,
+                                                sourceStage: columnId,
+                                              });
                                               setShowActionMenu(null);
                                             }}
-                                            className="w-full text-left px-4 py-2 text-sm text-md-success hover:bg-md-success-container/20 flex items-center gap-2"
+                                            className="w-full text-left px-4 py-2 text-sm text-md-error hover:bg-md-error-container/20 flex items-center gap-2"
                                           >
-                                            <Award className="w-4 h-4" />
-                                            Make Offer
+                                            <XCircle className="w-4 h-4" />
+                                            Reject Applicant
                                           </button>
                                         )}
-                                        <button
-                                          onClick={() => {
-                                            setShowRejectConfirm(applicantId);
-                                            setShowActionMenu(null);
-                                          }}
-                                          className="w-full text-left px-4 py-2 text-sm text-md-error hover:bg-md-error-container/20 flex items-center gap-2"
-                                        >
-                                          <XCircle className="w-4 h-4" />
-                                          Reject Applicant
-                                        </button>
                                       </div>
                                     )}
                                   </div>
                                 </div>
 
                                 <div className="mt-2">
-                                  {applicant.Candidate.skills && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {applicant.Candidate.skills
-                                        .slice(0, 2)
-                                        .map((tag, i) => (
-                                          <span
-                                            key={i}
-                                            className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full"
-                                          >
-                                            {tag}
+                                  {applicant.Candidate?.skills &&
+                                    applicant.Candidate.skills.length > 0 && (
+                                      <div className="flex flex-wrap gap-1 mt-2">
+                                        {applicant.Candidate.skills
+                                          .slice(0, 3)
+                                          .map((tag, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full"
+                                            >
+                                              {tag}
+                                            </span>
+                                          ))}
+                                        {applicant.Candidate.skills.length >
+                                          3 && (
+                                          <span className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full">
+                                            +
+                                            {applicant.Candidate.skills.length -
+                                              3}
                                           </span>
-                                        ))}
-                                      {applicant.Candidate.skills.length >
-                                        2 && (
-                                        <span className="px-2 py-0.5 bg-md-surface-container-high text-md-on-surface-variant text-xs rounded-full">
-                                          +
-                                          {applicant.Candidate.skills.length -
-                                            2}
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
+                                        )}
+                                      </div>
+                                    )}
 
                                   {isTopThree && (
                                     <div className="mt-2 flex items-center gap-1 text-xs bg-md-tertiary-container/30 rounded-full px-2 py-0.5">
@@ -877,139 +774,29 @@ const HiringWorkflow = ({
                                       </span>
                                     </div>
                                   )}
-
-                                  <div
-                                    className="mt-2 cursor-pointer"
-                                    onClick={() =>
-                                      setExpandedCard(
-                                        expandedCard === applicantId
-                                          ? null
-                                          : applicantId
-                                      )
-                                    }
-                                  >
-                                    <div className="flex justify-between text-xs text-md-on-surface-variant">
-                                      <span className="flex items-center gap-1">
-                                        <Clock className="w-3.5 h-3.5" />
-                                        {formatDate(applicant.createdAt)}
-                                      </span>
-
-                                      {getApplicantScore(applicant) !==
-                                        null && (
-                                        <span className="flex items-center gap-1">
-                                          <Star
-                                            className={`w-3.5 h-3.5 ${
-                                              applicant.score >= 70
-                                                ? "text-md-success"
-                                                : applicant.score >= 40
-                                                ? "text-md-warning"
-                                                : "text-md-error"
-                                            }`}
-                                          />
-                                          {applicant.score}%
-                                        </span>
-                                      )}
-
-                                      <ChevronRight
-                                        className={`w-3.5 h-3.5 transition-transform ${
-                                          expandedCard === applicantId
-                                            ? "rotate-90"
-                                            : ""
-                                        }`}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  {expandedCard === applicantId && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.2 }}
-                                      className="mt-3 pt-3 border-t border-md-outline-variant"
-                                    >
-                                      {applicant.interviewDetails && (
-                                        <div className="mb-2">
-                                          <div className="text-xs font-medium text-md-on-surface mb-1 flex items-center gap-1">
-                                            <CalendarClock className="w-3.5 h-3.5" />
-                                            Interview Scheduled
-                                          </div>
-                                          <p className="text-xs text-md-on-surface-variant">
-                                            {new Date(
-                                              applicant.interviewDetails.scheduledAt
-                                            ).toLocaleString()}
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {interviewComments && (
-                                        <div className="mb-2">
-                                          <div className="text-xs font-medium text-md-on-surface mb-1 flex items-center gap-1">
-                                            <MessageSquare className="w-3.5 h-3.5" />
-                                            Feedback
-                                          </div>
-                                          <p className="text-xs text-md-on-surface-variant bg-md-surface-container-high p-2 rounded-md">
-                                            {interviewComments}
-                                          </p>
-                                        </div>
-                                      )}
-
-                                      {applicant.hiringTestId && (
-                                        <div className="mb-2">
-                                          <div className="text-xs font-medium text-md-on-surface mb-1 flex items-center gap-1">
-                                            <FileText className="w-3.5 h-3.5" />
-                                            Assessment Assigned
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      <div className="flex mt-2 gap-2">
-                                        <button
-                                          onClick={() => {
-                                            onViewDetails(applicantId);
-                                          }}
-                                          className="flex-1 py-1 text-xs rounded-full bg-md-surface-variant text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center justify-center gap-1"
-                                        >
-                                          <Eye className="w-3 h-3" />
-                                          Details
-                                        </button>
-                                        <button
-                                          onClick={() => {
-                                            onScheduleInterview([applicantId]);
-                                          }}
-                                          className="flex-1 py-1 text-xs rounded-full bg-md-surface-variant text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center justify-center gap-1"
-                                        >
-                                          <Calendar className="w-3 h-3" />
-                                          Interview
-                                        </button>
-                                        {column.id === "Interview" ? (
-                                          <button
-                                            onClick={() => {
-                                              setShowOfferConfirm(applicantId);
-                                            }}
-                                            className="flex-1 py-1 text-xs rounded-full bg-md-success text-md-on-success hover:bg-md-success-container hover:text-md-on-success-container transition-colors flex items-center justify-center gap-1"
-                                          >
-                                            <Award className="w-3 h-3" />
-                                            Offer
-                                          </button>
-                                        ) : (
-                                          <button
-                                            onClick={() =>
-                                              handleAdvanceCandidate(
-                                                applicantId,
-                                                column.id
-                                              )
-                                            }
-                                            className="flex-1 py-1 text-xs rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center justify-center gap-1"
-                                          >
-                                            <ChevronRight className="w-3 h-3" />
-                                            Advance
-                                          </button>
-                                        )}
-                                      </div>
-                                    </motion.div>
-                                  )}
                                 </div>
+
+                                <div className="mt-2 flex justify-between text-xs text-md-on-surface-variant">
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="w-3.5 h-3.5" />
+                                      {formatDate(applicant.createdAt)}
+                                    </span>
+                                    {getApplicantScore(applicant) !== null && (
+                                      <span
+                                        className={`flex items-center gap-1 font-medium ${
+                                          applicant.score >= 70
+                                            ? "text-md-success"
+                                            : applicant.score >= 40
+                                            ? "text-md-warning"
+                                            : "text-md-error"
+                                        }`}
+                                      >
+                                        <Star className="w-3.5 h-3.5" />
+                                        {applicant.score}%
+                                      </span>
+                                    )}
+                                </div>
+
                               </div>
                             )}
                           </Draggable>
@@ -1033,6 +820,7 @@ const HiringWorkflow = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => handleCancelAction("reject")}
           >
             <motion.div
               className="bg-md-surface rounded-3xl shadow-xl max-w-md w-full overflow-hidden"
@@ -1040,6 +828,7 @@ const HiringWorkflow = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-md-error-container p-6">
                 <div className="flex justify-between items-start">
@@ -1068,13 +857,13 @@ const HiringWorkflow = ({
 
                 <div className="bg-md-surface-container-low rounded-xl p-4 mb-6">
                   <div className="flex items-center gap-3">
-                    {applicantsById[showRejectConfirm]?.Candidate
+                    {applicantsById[showRejectConfirm?.applicantId]?.Candidate
                       ?.profilePicture ? (
                       <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-md-outline">
                         <Image
                           src={
-                            applicantsById[showRejectConfirm].Candidate
-                              .profilePicture
+                            applicantsById[showRejectConfirm?.applicantId]
+                              .Candidate.profilePicture
                           }
                           alt=""
                           layout="fill"
@@ -1091,12 +880,14 @@ const HiringWorkflow = ({
                     )}
                     <div>
                       <p className="font-medium text-md-on-surface">
-                        {applicantsById[showRejectConfirm]?.Candidate
-                          ?.firstName || "Applicant"}
+                        {applicantsById[showRejectConfirm?.applicantId]
+                          ?.Candidate?.firstName || "Applicant"}{" "}
+                        {applicantsById[showRejectConfirm?.applicantId]
+                          ?.Candidate?.lastName || ""}
                       </p>
                       <p className="text-sm text-md-on-surface-variant">
-                        {applicantsById[showRejectConfirm]?.Candidate?.email ||
-                          ""}
+                        {applicantsById[showRejectConfirm?.applicantId]
+                          ?.Candidate?.email || ""}
                       </p>
                     </div>
                   </div>
@@ -1133,6 +924,7 @@ const HiringWorkflow = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => handleCancelAction("offer")}
           >
             <motion.div
               className="bg-md-surface rounded-3xl shadow-xl max-w-lg w-full overflow-hidden"
@@ -1140,6 +932,7 @@ const HiringWorkflow = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-md-success-container p-6">
                 <div className="flex justify-between items-start">
@@ -1163,13 +956,13 @@ const HiringWorkflow = ({
               <div className="p-6">
                 <div className="bg-md-surface-container-low rounded-xl p-4 mb-6">
                   <div className="flex items-center gap-3">
-                    {applicantsById[showOfferConfirm]?.Candidate
+                    {applicantsById[showOfferConfirm?.applicantId]?.Candidate
                       ?.profilePicture ? (
                       <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-md-outline">
                         <Image
                           src={
-                            applicantsById[showOfferConfirm].Candidate
-                              .profilePicture
+                            applicantsById[showOfferConfirm?.applicantId]
+                              .Candidate.profilePicture
                           }
                           alt=""
                           layout="fill"
@@ -1186,14 +979,14 @@ const HiringWorkflow = ({
                     )}
                     <div>
                       <p className="font-medium text-md-on-surface">
-                        {applicantsById[showOfferConfirm]?.Candidate
-                          ?.firstName || "Applicant"}{" "}
-                        {applicantsById[showOfferConfirm]?.Candidate
-                          ?.lastName || ""}
+                        {applicantsById[showOfferConfirm?.applicantId]
+                          ?.Candidate?.firstName || "Applicant"}{" "}
+                        {applicantsById[showOfferConfirm?.applicantId]
+                          ?.Candidate?.lastName || ""}
                       </p>
                       <p className="text-sm text-md-on-surface-variant">
-                        {applicantsById[showOfferConfirm]?.Candidate?.email ||
-                          ""}
+                        {applicantsById[showOfferConfirm?.applicantId]
+                          ?.Candidate?.email || ""}
                       </p>
                     </div>
                   </div>
@@ -1266,54 +1059,8 @@ const HiringWorkflow = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AnimatePresence>
-        {interviewSchedulingId && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="absolute top-4 right-4">
-              <button
-                onClick={() => handleCancelAction("interview")}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="bg-md-surface p-4 rounded-xl shadow-lg max-w-lg w-full">
-              <h3 className="text-lg font-medium mb-4">Schedule Interview</h3>
-              <p className="text-md-on-surface-variant mb-4">
-                Complete the interview setup or cancel to revert the candidate.
-              </p>
-              {/* We're assuming onScheduleInterview has its own UI, this is just a container */}
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {testCreationId && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div class="absolute top-4 right-4">
-              <button
-                onClick={() => handleCancelAction("test")}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="bg-md-surface p-4 rounded-xl shadow-lg max-w-lg w-full">
-              <h3 className="text-lg font-medium mb-4">
-                Create Technical Test
-              </h3>
-              <p className="text-md-on-surface-variant mb-4">
-                Complete the test setup or cancel to revert the candidate.
-              </p>
-              {/* We're assuming onCreateTest has its own UI, this is just a container */}
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
 
-export default HiringWorkflow;
+export default memo(HiringWorkflow);

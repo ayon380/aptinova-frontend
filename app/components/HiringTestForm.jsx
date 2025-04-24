@@ -69,6 +69,7 @@ export default function HiringTestForm({ onSubmit, onCancel }) {
   const [loadingTests, setLoadingTests] = useState(false);
   const [showReadyMade, setShowReadyMade] = useState(true);
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state if needed
   
   // Fetch ready-made tests when component mounts
   useEffect(() => {
@@ -122,13 +123,35 @@ export default function HiringTestForm({ onSubmit, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // If a ready-made test is selected, just send its ID
-    if (selectedReadyMadeTest) {
-      onSubmit({ readyMadeTestId: selectedReadyMadeTest.id });
-    } else {
-      // Otherwise, send the custom test data
-      onSubmit(formData);
+    setIsSubmitting(true); // Indicate submission start
+
+    try {
+        let dataToSubmit;
+        if (selectedReadyMadeTest) {
+          dataToSubmit = { readyMadeTestId: selectedReadyMadeTest.id };
+        } else if (showCustomForm && formData.questions.length > 0) {
+          // Basic validation: ensure custom form has required fields if shown
+          if (!formData.testName || !formData.duration || !formData.passingScore) {
+              alert("Please fill in Test Name, Duration, and Passing Score for custom tests.");
+              setIsSubmitting(false);
+              return;
+          }
+          dataToSubmit = formData;
+        } else {
+            alert("Please select a ready-made test or add questions to a custom test.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        onSubmit(dataToSubmit); // Pass data to parent handler
+        // Parent component (ApplicantsPage) will handle closing the modal on success
+    } catch (error) {
+        console.error("Error preparing test data:", error);
+        // Optionally show an error message within the form
+        setIsSubmitting(false); // Reset submission state on error
+    } finally {
+        // Let parent control submission state if API call is there
+        // setIsSubmitting(false);
     }
   };
 
@@ -155,13 +178,14 @@ export default function HiringTestForm({ onSubmit, onCancel }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onCancel}>
       <motion.div 
         className="bg-md-surface rounded-3xl shadow-lg w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 border-b border-md-outline">
           <h2 className="text-2xl font-semibold text-md-on-surface">Create Hiring Test</h2>
@@ -687,10 +711,10 @@ export default function HiringTestForm({ onSubmit, onCancel }) {
               type="button"
               onClick={handleSubmit}
               className="px-6 py-2.5 rounded-3xl bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors disabled:opacity-50 disabled:pointer-events-none"
-              disabled={!selectedReadyMadeTest && formData.questions.length === 0}
+              disabled={isSubmitting || (!selectedReadyMadeTest && (!showCustomForm || formData.questions.length === 0))}
               whileTap={{ scale: 0.95 }}
             >
-              Create Test
+              {isSubmitting ? "Creating..." : "Create Test"}
             </motion.button>
           </div>
         </div>

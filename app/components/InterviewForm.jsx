@@ -4,7 +4,7 @@ import { X, Plus, Trash2, Users, AlertCircle } from "lucide-react";
 
 export default function InterviewForm({
   onSubmit,
-  onCancel,
+  onCancel, // Ensure this prop is received
   attendees,
   jobId,
 }) {
@@ -76,65 +76,31 @@ export default function InterviewForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset errors and set submitting state
     setApiError(null);
-
-    // Validate form before submission
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setIsSubmitting(true);
 
     try {
-      // Calculate end date time based on duration
-      const startDateTime = `${formData.date}T${formData.time}:00`;
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/interviews/schedule`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({
-            summary: `Interview for ${attendees.map((a) => a.name).join(", ")}`,
-            description: formData.notes,
-            startDateTime: startDateTime,
-            duration: formData.duration,
-            interviewers: formData.interviewers.filter(
-              (email) => email.trim() !== ""
-            ),
-            jobId: jobId, // Include job ID
-            applicantId: attendees.length === 1 ? attendees[0].id : null, // Only include if single applicant
-            attendees: attendees,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || `Server error: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-
-      onSubmit({
+      // The API call is now handled by the parent component after form submission
+      // We just need to pass the validated data back
+      const dataToSubmit = {
         ...formData,
-        eventId: data.eventId,
-      });
+        // Ensure interviewers array only contains valid, non-empty emails
+        interviewers: formData.interviewers.filter(email => email.trim() !== ""),
+        // No need to calculate eventId here, parent/backend handles it
+      };
+      onSubmit(dataToSubmit); // Pass validated form data to parent handler
+
+      // Parent component (ApplicantsPage) will handle closing the modal on success
     } catch (error) {
-      console.error("Error scheduling interview:", error);
-      setApiError(
-        error.message || "Failed to schedule interview. Please try again."
-      );
+      // This catch block might be less relevant if API call is in parent,
+      // but keep for potential synchronous validation errors if added later.
+      console.error("Error preparing interview data:", error);
+      setApiError("Failed to prepare interview data. Please check inputs.");
+      setIsSubmitting(false); // Ensure submission state is reset on error
     } finally {
-      setIsSubmitting(false);
+       // Let parent control submission state if API call is there
+       // setIsSubmitting(false);
     }
   };
 
@@ -164,13 +130,14 @@ export default function InterviewForm({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      onClick={onCancel} // Call onCancel when clicking the overlay
+    >
       <motion.div
         className="bg-md-surface rounded-3xl shadow-lg max-w-md w-full overflow-hidden"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        // ... animation props ...
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
       >
         <div className="flex justify-between items-center p-6 border-b border-md-outline bg-md-surface-container">
           <div className="flex items-center gap-3">
@@ -182,7 +149,7 @@ export default function InterviewForm({
             </h2>
           </div>
           <button
-            onClick={onCancel}
+            onClick={onCancel} // Call onCancel when clicking the X button
             className="p-2 rounded-full text-md-on-surface-variant hover:bg-md-surface-container-high"
           >
             <X className="w-5 h-5" />
@@ -430,14 +397,14 @@ export default function InterviewForm({
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
-              onClick={onCancel}
+              onClick={onCancel} // Call onCancel for the Cancel button
               className="px-6 py-2.5 rounded-3xl border border-md-outline text-md-on-surface hover:bg-md-surface-variant transition-colors"
             >
               Cancel
             </button>
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting} // State managed by parent now potentially
               className={`px-6 py-2.5 rounded-3xl ${
                 isSubmitting
                   ? "bg-md-surface-variant text-md-on-surface-variant"

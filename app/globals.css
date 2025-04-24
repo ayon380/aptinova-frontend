@@ -49,8 +49,19 @@
     }
   }
 }
+* {
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer */
+}
 
-
+*::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
+body{
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .light {
   --md-sys-color-primary: rgb(143 76 56);
   --md-sys-color-surface-tint: rgb(143 76 56);

@@ -13,16 +13,18 @@ import {
   Download,
   Briefcase,
   GraduationCap,
+  PenLine,
   Star,
   Clock,
   ChevronDown,
   ChevronUp,
-  PenLine,
   MessageSquare,
   CheckCircle,
   XCircle,
   BarChart,
   VideoIcon,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,10 +33,9 @@ import ApplicantProgressBar from "./ApplicantProgressBar";
 const ApplicantDetailsModal = ({
   applicant,
   onClose,
-  onScheduleInterview,
-  onCreateTest,
   onUpdateStatus,
   jobDetails,
+  isLoading = false, // Accept the loading prop with default value
 }) => {
   const [activeTab, setActiveTab] = useState("profile");
   const [showNotes, setShowNotes] = useState(false);
@@ -226,34 +227,6 @@ const ApplicantDetailsModal = ({
                 </div>
               </div>
             )}
-
-            {/* Action buttons based on stage type and status */}
-            {stage.status !== "Completed" && (
-              <div className="flex justify-end mt-2">
-                {stage.type.toLowerCase() === "test" && (
-                  <button
-                    onClick={() => onCreateTest([applicant.id])}
-                    className="px-4 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm flex items-center"
-                  >
-                    <PenLine className="w-4 h-4 mr-1" />
-                    {stage.status === "Pending"
-                      ? "Edit Assessment"
-                      : "Create Assessment"}
-                  </button>
-                )}
-                {stage.type.toLowerCase() === "interview" && (
-                  <button
-                    onClick={() => onScheduleInterview([applicant.id])}
-                    className="px-4 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm flex items-center"
-                  >
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {stage.status === "Pending"
-                      ? "Reschedule"
-                      : "Schedule Interview"}
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
@@ -287,7 +260,12 @@ const ApplicantDetailsModal = ({
           </button>
         </div>
 
-        {profileData && (
+        {isLoading ? (
+          <div className="flex-grow flex items-center justify-center p-12">
+            <Loader2 className="w-10 h-10 text-md-primary animate-spin mb-4" />
+            <p className="text-md-on-surface-variant ml-3">Loading applicant details...</p>
+          </div>
+        ) : profileData ? (
           <div className="flex-grow overflow-y-auto">
             <div className="p-6">
               {/* Applicant Header */}
@@ -373,21 +351,12 @@ const ApplicantDetailsModal = ({
                   </div>
                   <div className="flex gap-2 mt-2">
                     <button
-                      onClick={() => onScheduleInterview([applicant.id])}
-                      className="px-4 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm flex items-center"
+                      onClick={() => onUpdateStatus("Rejected")}
+                      className="px-4 py-2 rounded-full bg-md-surface-variant text-md-on-surface-variant hover:bg-md-error-container hover:text-md-on-error-container transition-colors text-sm flex items-center"
                     >
-                      <Calendar className="w-4 h-4 mr-1" />
-                      Schedule Interview
+                      <XCircle className="w-4 h-4 mr-1" />
+                      Reject
                     </button>
-                    {applicant.status !== "Rejected" && (
-                      <button
-                        onClick={() => onUpdateStatus("Rejected")}
-                        className="px-4 py-2 rounded-full bg-md-surface-variant text-md-on-surface-variant hover:bg-md-error-container hover:text-md-on-error-container transition-colors text-sm flex items-center"
-                      >
-                        <XCircle className="w-4 h-4 mr-1" />
-                        Reject
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -596,30 +565,13 @@ const ApplicantDetailsModal = ({
                         {assessmentStages.map((stage, index) =>
                           renderStage(stage, index)
                         )}
-
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => onCreateTest([applicant.id])}
-                            className="px-4 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm flex items-center"
-                          >
-                            <FileText className="w-4 h-4 mr-1" />
-                            Add Assessment
-                          </button>
-                        </div>
                       </div>
                     ) : (
                       <div className="text-center py-10">
                         <FileText className="w-12 h-12 text-md-on-surface-variant opacity-50 mx-auto mb-2" />
                         <p className="text-md-on-surface-variant mb-4">
-                          No assessment has been assigned yet
+                          No assessment has been assigned yet.
                         </p>
-                        <button
-                          onClick={() => onCreateTest([applicant.id])}
-                          className="px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm inline-flex items-center"
-                        >
-                          <FileText className="w-4 h-4 mr-1" />
-                          Create Assessment
-                        </button>
                       </div>
                     )}
                   </div>
@@ -632,30 +584,13 @@ const ApplicantDetailsModal = ({
                         {interviewStages.map((stage, index) =>
                           renderStage(stage, index)
                         )}
-
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => onScheduleInterview([applicant.id])}
-                            className="px-4 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm flex items-center"
-                          >
-                            <Calendar className="w-4 h-4 mr-1" />
-                            Add Interview
-                          </button>
-                        </div>
                       </div>
                     ) : (
                       <div className="text-center py-10">
                         <Calendar className="w-12 h-12 text-md-on-surface-variant opacity-50 mx-auto mb-2" />
                         <p className="text-md-on-surface-variant mb-4">
-                          No interview has been scheduled yet
+                          No interview has been scheduled yet.
                         </p>
-                        <button
-                          onClick={() => onScheduleInterview([applicant.id])}
-                          className="px-6 py-2 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-sm inline-flex items-center"
-                        >
-                          <Calendar className="w-4 h-4 mr-1" />
-                          Schedule Interview
-                        </button>
                       </div>
                     )}
                   </div>
@@ -725,6 +660,11 @@ const ApplicantDetailsModal = ({
                 )}
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="flex-grow flex items-center justify-center p-12">
+            <AlertCircle className="w-10 h-10 text-md-error mb-4" />
+            <p className="text-md-on-surface-variant ml-3">Failed to load applicant details.</p>
           </div>
         )}
       </motion.div>
