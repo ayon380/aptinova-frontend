@@ -369,7 +369,7 @@ export default function ApplicantsPage() {
             )
           )
         );
-
+        fetchApplicants(); // Refresh applicants after assignment
         setShowHiringTestModal(false);
         setActionSuccess("Hiring test successfully created and assigned!");
         setPendingMove(null); // Clear pending move on success
