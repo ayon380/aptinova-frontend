@@ -1,9 +1,8 @@
 import React from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 
 export default function QuestionNavigation({ questions, currentIndex, answers, onSelect }) {
-  const { theme } = useTheme();
+
   
   // Determine status of each question (answered, current, unanswered)
   const getQuestionStatus = (index) => {

@@ -773,13 +773,13 @@ export default function useProctoring() {
     };
   }, []);
 
-  // // Prevent developer tools
-  // useEffect(() => {
-  //   const cleanupDevToolsDetection = detectDevTools();
-  //   return () => {
-  //     cleanupDevToolsDetection();
-  //   };
-  // }, []);
+  // Prevent developer tools
+  useEffect(() => {
+    const cleanupDevToolsDetection = detectDevTools();
+    return () => {
+      cleanupDevToolsDetection();
+    };
+  }, []);
 
   // Cleanup resources when component unmounts
   useEffect(() => {

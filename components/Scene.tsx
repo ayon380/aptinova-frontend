@@ -1,6 +1,6 @@
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Float, PerspectiveCamera } from '@react-three/drei'
-import { Suspense } from 'react'
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Float, PerspectiveCamera } from "@react-three/drei";
+import { Suspense } from "react";
 
 function HexGrid({ count = 30 }) {
   return Array.from({ length: count }).map((_, i) => (
@@ -18,13 +18,13 @@ function HexGrid({ count = 30 }) {
       <mesh>
         <cylinderGeometry args={[0.3, 0.3, 0.1, 6]} />
         <meshStandardMaterial
-          color={Math.random() > 0.5 ? '#f59e0b' : '#ea580c'}
+          color={Math.random() > 0.5 ? "#f59e0b" : "#ea580c"}
           opacity={0.7}
           transparent
         />
       </mesh>
     </Float>
-  ))
+  ));
 }
 
 export default function Scene() {
@@ -38,5 +38,5 @@ export default function Scene() {
         <HexGrid />
       </Suspense>
     </Canvas>
-  )
+  );
 }

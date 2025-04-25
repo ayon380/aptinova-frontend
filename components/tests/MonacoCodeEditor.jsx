@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
 import { Spinner } from '@/components/common/Spinner';
 
 export default function MonacoCodeEditor({ 
@@ -13,7 +12,6 @@ export default function MonacoCodeEditor({
   const editorRef = useRef(null);
   const containerRef = useRef(null);
   const [isEditorReady, setIsEditorReady] = useState(false);
-  const { theme } = useTheme();
   const [monaco, setMonaco] = useState(null);
 
   useEffect(() => {
@@ -35,7 +33,6 @@ export default function MonacoCodeEditor({
       editorRef.current = monaco.editor.create(containerRef.current, {
         value,
         language,
-        theme: theme === 'dark' ? 'vs-dark' : 'vs',
         automaticLayout: true,
         minimap: { enabled: false },
         scrollBeyondLastLine: false,
@@ -67,12 +64,7 @@ export default function MonacoCodeEditor({
     }
   }, [value]);
 
-  // Update editor theme when app theme changes
-  useEffect(() => {
-    if (editorRef.current && monaco) {
-      monaco.editor.setTheme(theme === 'dark' ? 'vs-dark' : 'vs');
-    }
-  }, [theme, monaco]);
+
 
   // Update language when it changes
   useEffect(() => {

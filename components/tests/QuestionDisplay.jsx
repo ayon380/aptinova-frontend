@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
-import { useTheme } from "@/contexts/ThemeContext";
+
 
 // Dynamically import Monaco editor with no SSR
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
@@ -16,8 +16,7 @@ export default function QuestionDisplay({ question, answer, onAnswerChange }) {
   const [selectedLanguage, setSelectedLanguage] = useState("python");
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testResults, setTestResults] = useState(null);
-  const { theme } = useTheme();
-  
+
   // Initialize code with solution template when question changes
   useEffect(() => {
     if (question.type === "code" && question.solutionTemplate && !answer) {
@@ -167,7 +166,7 @@ export default function QuestionDisplay({ question, answer, onAnswerChange }) {
                 <MonacoEditor
                   height="400px"
                   language={selectedLanguage}
-                  theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                 
                   value={answer || question.solutionTemplate || ""}
                   onChange={(code) => onAnswerChange(question.index || 0, code)}
                   options={{

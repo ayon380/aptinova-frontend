@@ -1,6 +1,5 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { useTheme } from '@/contexts/ThemeContext';
 import React from "react";
 
 // Client-side only wrapper for MDEditor
@@ -19,7 +18,6 @@ const MDEditorComponent = dynamic(
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 export default function CustomMDEditor({ value, onChange, placeholder }) {
-  const { theme } = useTheme();
 
   return (
     <div className="md-editor-wrapper">
@@ -30,7 +28,7 @@ export default function CustomMDEditor({ value, onChange, placeholder }) {
         height={400}
         visibleDragbar={false}
         placeholder={placeholder}
-        theme={theme}
+
       />
       
       <style jsx>{`
