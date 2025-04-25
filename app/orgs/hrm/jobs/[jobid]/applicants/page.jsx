@@ -390,6 +390,7 @@ export default function ApplicantsPage() {
   const handleScheduleInterview = useCallback(
     async (formData) => {
       if (!pendingMove) return; // Ensure there's a pending move
+      console.log("Scheduling interview with formData:", formData); // Debug log
 
       try {
         setIsActioning(true);
@@ -428,8 +429,25 @@ export default function ApplicantsPage() {
                   name:
                     applicants.find((a) => a.id === applicantIdToUpdate)
                       ?.Candidate?.firstName || "applicant",
+                  email: applicants.find((a) => a.id === applicantIdToUpdate)
+                    ?.Candidate?.email,
                 },
               ], // Simplified attendees
+            }),
+          }
+        );
+
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/applicants/${applicantIdToUpdate}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+            body: JSON.stringify({
+              status: targetStage, // Update status to the target stage
+              // status: "Assessment",
             }),
           }
         );

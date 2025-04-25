@@ -2,13 +2,19 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { startRegistration } from "@simplewebauthn/browser";
+// Import cache methods from store
 import useStore from "@/app/store";
 import { motion } from "framer-motion";
 import TabView from "@/app/components/TabView";
 
+// Define cache keys
+const PROFILE_CACHE_KEY = "hrProfileData";
+const PASSKEYS_CACHE_KEY = "hrPasskeysData";
+
 const HR = () => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const { userdata, setUserdata, setTitle } = useStore();
+  // Get cache methods from store
+  const { userdata, setUserdata, setTitle, getCache, setCache } = useStore();
   const [passkeys, setPasskeys] = useState([]);
   const [profile, setProfile] = useState({
     name: "",
@@ -26,9 +32,23 @@ const HR = () => {
     setTitle("HR Profile");
     fetchPasskeys();
     fetchProfile();
-  }, []);
+  }, []); // Removed getCache, setCache from dependency array as they are stable
 
   const fetchProfile = async () => {
+    // Check cache first
+    const cachedProfile = getCache(PROFILE_CACHE_KEY);
+    if (cachedProfile) {
+      console.log("Using cached profile data");
+      setProfile(cachedProfile);
+      setUserdata(cachedProfile);
+      if (cachedProfile.profilePicture) {
+        setPreviewImage(cachedProfile.profilePicture);
+      }
+      setLoading(false); // Ensure loading is false if using cache
+      return; // Exit if cache hit
+    }
+
+    console.log("Fetching profile data from API");
     try {
       setLoading(true);
       const response = await fetch(
@@ -46,6 +66,9 @@ const HR = () => {
       if (data.profilePicture) {
         setPreviewImage(data.profilePicture);
       }
+      // Store fetched data in cache
+      setCache(PROFILE_CACHE_KEY, data);
+      console.log("Profile data cached");
     } catch (error) {
       toast.error("Failed to load profile");
       console.error(error);
@@ -75,10 +98,10 @@ const HR = () => {
 
       // Only handling profile picture updates now
       const formData = new FormData();
-      
+
       if (profilePictureFile) {
         formData.append("profilePicture", profilePictureFile);
-        
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/hr/profile`,
           {
@@ -93,6 +116,9 @@ const HR = () => {
         if (!response.ok) throw new Error("Failed to update profile picture");
 
         toast.success("Profile picture updated successfully");
+        // Clear profile cache after successful update
+        setCache(PROFILE_CACHE_KEY, undefined);
+        console.log("Profile cache cleared after update");
         fetchProfile(); // Refresh profile data
       } else {
         toast.info("No changes to save");
@@ -108,6 +134,15 @@ const HR = () => {
 
   // Passkey Management (similar to candidate profile)
   const fetchPasskeys = async () => {
+    // Check cache first
+    const cachedPasskeys = getCache(PASSKEYS_CACHE_KEY);
+    if (cachedPasskeys) {
+      console.log("Using cached passkeys data");
+      setPasskeys(cachedPasskeys);
+      return; // Exit if cache hit
+    }
+
+    console.log("Fetching passkeys data from API");
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/passkeys`,
@@ -120,6 +155,9 @@ const HR = () => {
       if (!response.ok) throw new Error("Failed to fetch passkeys");
       const data = await response.json();
       setPasskeys(data);
+      // Store fetched data in cache
+      setCache(PASSKEYS_CACHE_KEY, data);
+      console.log("Passkeys data cached");
     } catch (error) {
       toast.error("Failed to load passkeys");
       console.error(error);
@@ -139,6 +177,9 @@ const HR = () => {
       );
       if (!response.ok) throw new Error("Failed to delete passkey");
       toast.success("Passkey deleted successfully");
+      // Clear passkeys cache after successful deletion
+      setCache(PASSKEYS_CACHE_KEY, undefined);
+      console.log("Passkeys cache cleared after deletion");
       fetchPasskeys(); // Refresh the list
     } catch (error) {
       toast.error(error.message || "Failed to delete passkey");
@@ -154,7 +195,8 @@ const HR = () => {
     const getOS = () => {
       if (/Windows NT/i.test(userAgent)) return "Windows";
       if (/Macintosh|MacIntel|MacPPC|Mac68K/i.test(platform)) return "MacOS";
-      if (/Linux/i.test(userAgent) && !/Android/i.test(userAgent)) return "Linux";
+      if (/Linux/i.test(userAgent) && !/Android/i.test(userAgent))
+        return "Linux";
       if (/Android/i.test(userAgent)) return "Android";
       if (/iPhone|iPad|iPod/i.test(userAgent)) return "iOS";
       return "Unknown OS";
@@ -164,7 +206,8 @@ const HR = () => {
     const getBrowser = () => {
       if (/Chrome/i.test(userAgent) && !/Edg/i.test(userAgent)) return "Chrome";
       if (/Firefox/i.test(userAgent)) return "Firefox";
-      if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) return "Safari";
+      if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent))
+        return "Safari";
       if (/Edg/i.test(userAgent)) return "Edge";
       return "Unknown Browser";
     };
@@ -233,6 +276,9 @@ const HR = () => {
       }
 
       toast.success("Passkey registered successfully");
+      // Clear passkeys cache after successful registration
+      setCache(PASSKEYS_CACHE_KEY, undefined);
+      console.log("Passkeys cache cleared after registration");
       fetchPasskeys(); // Refresh the list
     } catch (error) {
       console.error(error);
@@ -285,7 +331,7 @@ const HR = () => {
           >
             {/* Personal Information */}
             {activeTab === "personal" && (
-              <div className="bg-md-surface-container p-6 sm:p-8 rounded-3xl shadow-sm">
+              <div className=" p-6 sm:p-8  shadow-sm">
                 <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
                   Personal Information
                 </h2>

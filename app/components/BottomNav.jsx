@@ -87,13 +87,7 @@ export default function NavComponent() {
       activeIcon: ClipboardSolid,
       active: pathname.startsWith("/candidate/applications"),
     },
-    {
-      name: "Messages",
-      href: "/candidate/messages",
-      icon: ChatBubbleLeftRightIcon,
-      activeIcon: ChatSolid,
-      active: pathname.startsWith("/candidate/messages"),
-    },
+
     {
       name: "Profile",
       href: "/candidate/profile",
@@ -113,26 +107,13 @@ export default function NavComponent() {
       active: pathname === "/orgs/hr/dashboard",
     },
     {
-      name: "Candidates",
-      href: "/orgs/hr/candidates",
-      icon: UsersIcon,
-      activeIcon: UsersSolid,
-      active: pathname.startsWith("/orgs/hr/candidates"),
-    },
-    {
       name: "Jobs",
       href: "/orgs/hr/jobs",
       icon: BriefcaseIcon,
       activeIcon: BriefcaseSolid,
       active: pathname.startsWith("/orgs/hr/jobs"),
     },
-    {
-      name: "Messages",
-      href: "/orgs/hr/messages",
-      icon: ChatBubbleLeftRightIcon,
-      activeIcon: ChatSolid,
-      active: pathname.startsWith("/orgs/hr/messages"),
-    },
+
     {
       name: "Profile",
       href: "/orgs/hr/profile",

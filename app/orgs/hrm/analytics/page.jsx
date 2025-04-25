@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useStore from "@/app/store";
 import {
   BarChart as BarChartIcon,
   LineChart as LineChartIcon,
@@ -128,19 +129,38 @@ export default function AnalyticsPage() {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [predictiveData, setPredictiveData] = useState(null);
   const [candidateQualityData, setCandidateQualityData] = useState(null);
-
+  const { setTitle } = useStore();
   // Fetch analytics data
   useEffect(() => {
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
         // In a real app, these would be actual API calls to your endpoints
-        const mainResponse = await axios.get("/api/orgs/analytics");
-        const predictiveResponse = await axios.get(
-          "/api/orgs/analytics/predictive"
+        const mainResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/hrm/analytics`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Replace `yourTokenVariable` with the actual token variable
+            },
+          }
         );
+
+        const predictiveResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/hrm/analytics/predictive`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Replace `yourTokenVariable` with the actual token variable
+            },
+          }
+        );
+
         const qualityResponse = await axios.get(
-          "/api/orgs/analytics/candidate-quality"
+          `${process.env.NEXT_PUBLIC_API_URL}/hrm/analytics/candidate-quality`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Replace `yourTokenVariable` with the actual token variable
+            },
+          }
         );
 
         setAnalyticsData(mainResponse.data);
@@ -518,6 +538,7 @@ export default function AnalyticsPage() {
 
     mockData(); // Using mock data for the demo
     // fetchAnalytics(); // This would be used in a real app
+    setTitle("Analytics"); // Set the page title
   }, []);
 
   const handleExportReport = (reportType) => {
@@ -548,6 +569,11 @@ export default function AnalyticsPage() {
     const hiringData = analyticsData.hiringFunnel;
     const appliedData = hiringData.find((item) => item.status === "Applied");
     const hiredData = hiringData.find((item) => item.status === "Hired");
+    const timeToHire = predictiveData?.timeToFillPredictions?.overallAverage || "N/A"; // Default value
+
+    // Example trend calculation (replace with actual logic if available)
+    const timeToHireTrend = timeToHire !== "N/A" && parseFloat(timeToHire) < 22 ? "down" : "stable";
+    const timeToHireTrendValue = timeToHire !== "N/A" && parseFloat(timeToHire) < 22 ? "-1.5 days" : "";
 
     return [
       {
@@ -567,24 +593,24 @@ export default function AnalyticsPage() {
         color: "tertiary",
       },
       {
-        title: "Average Time to Hire",
-        value:
-          predictiveData?.timeToFillPredictions?.overallAverage || "0 days",
-        trend: "down",
-        trendValue: "-2 days",
+        title: "Avg Time to Hire",
+        value: timeToHire !== "N/A" ? `${timeToHire} days` : "N/A",
+        trend: timeToHireTrend,
+        trendValue: timeToHireTrendValue,
         icon: <Clock size={18} />,
         color: "secondary",
       },
       {
         title: "Active Jobs",
         value: analyticsData?.jobPerformance?.length || 0,
-        trend: "up",
-        trendValue: "+3 jobs",
+        trend: "up", // Example trend, replace with actual data if available
+        trendValue: "+2 jobs", // Example trend value
         icon: <Briefcase size={18} />,
-        color: "tertiary",
+        color: "tertiary", // Changed color for variety
       },
     ];
   };
+
 
   // Prepare data for the hiring funnel chart
   const getFunnelData = () => {
@@ -696,10 +722,10 @@ export default function AnalyticsPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-6 "
     >
       {/* Top metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"> {/* Adjusted gap */}
         {getOverviewMetrics().map((metric, i) => (
           <AnalyticsCard
             key={i}
@@ -714,40 +740,41 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1   lg:grid-cols-2 gap-6">
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Hiring Funnel
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="h-80">
+              <div className="h-80 "> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={getFunnelData()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Further reduced left/right margins
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                    <YAxis fontSize={10} /> {/* Slightly smaller font */}
                     <Tooltip
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
                       formatter={(value, name, props) => [value, "Candidates"]}
                       labelFormatter={(value) => `Stage: ${value}`}
                     />
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
                     <Bar
                       name="Current Period"
                       dataKey="value"
-                      fill="#6750A4"
-                      radius={[8, 8, 0, 0]}
+                      fill="var(--md-sys-color-primary)" // Use CSS variables
+                      radius={[4, 4, 0, 0]} // Slightly smaller radius
                     />
                     <Bar
                       name="Previous Period"
                       dataKey="previousValue"
-                      fill="#B4A7D6"
-                      radius={[8, 8, 0, 0]}
+                      fill="var(--md-sys-color-primary-container)" // Use CSS variables
+                      radius={[4, 4, 0, 0]} // Slightly smaller radius
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -757,77 +784,51 @@ export default function AnalyticsPage() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Monthly Application Trends
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={getMonthlyTrendsData()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Further reduced left/right margins
                   >
                     <defs>
-                      <linearGradient
-                        id="colorApplications"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#7D5260"
-                          stopOpacity={0.8}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#7D5260"
-                          stopOpacity={0.1}
-                        />
+                      <linearGradient id="colorApplications" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--md-sys-color-secondary)" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="var(--md-sys-color-secondary)" stopOpacity={0.1}/>
                       </linearGradient>
-                      <linearGradient
-                        id="colorHires"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#49454F"
-                          stopOpacity={0.8}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#49454F"
-                          stopOpacity={0.1}
-                        />
+                      <linearGradient id="colorHires" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--md-sys-color-tertiary)" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="var(--md-sys-color-tertiary)" stopOpacity={0.1}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                    <YAxis fontSize={10} /> {/* Slightly smaller font */}
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }} />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
                     <Area
                       type="monotone"
                       name="Applications"
                       dataKey="applications"
-                      stroke="#7D5260"
+                      stroke="var(--md-sys-color-secondary)" // Use CSS variables
                       fillOpacity={1}
                       fill="url(#colorApplications)"
+                      strokeWidth={2}
                     />
                     <Area
                       type="monotone"
                       name="Hires"
                       dataKey="hires"
-                      stroke="#49454F"
+                      stroke="var(--md-sys-color-tertiary)" // Use CSS variables
                       fillOpacity={1}
                       fill="url(#colorHires)"
+                      strokeWidth={2}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -839,61 +840,53 @@ export default function AnalyticsPage() {
 
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <motion.div variants={item} className="lg:col-span-1">
-          <Card className="bg-md-surface">
+        <motion.div variants={item} className="lg:col-span-1"> {/* Stays 1 column */}
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Source Distribution
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="h-72 flex items-center justify-center">
+              <div className="h-72 w-full flex items-center justify-center"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}> {/* Added margins */}
                     <Pie
                       data={getSourceData()}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
                       outerRadius={80}
+                      innerRadius={40} // Add inner radius for Donut chart
                       fill="#8884d8"
                       dataKey="value"
                       nameKey="name"
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
+                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`} // Show only percentage on label
                     >
                       {getSourceData().map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={MD_COLORS[index % MD_COLORS.length]}
-                        />
+                        <Cell key={`cell-${index}`} fill={MD_COLORS[index % MD_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value, name, props) => [value, "Candidates"]}
-                      labelFormatter={(value) => `Source: ${value}`}
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
+                      formatter={(value, name, props) => [`${value} (${(props.payload.percent * 100).toFixed(1)}%)`, name]} // Show count and percentage in tooltip
                     />
+                    {/* <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ fontSize: '12px' }} /> */}
                   </PieChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 space-y-2">
                 {getSourceData().map((source, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between text-sm"
-                  >
+                  <div key={idx} className="flex items-center justify-between text-sm">
                     <div className="flex items-center">
                       <div
                         className="w-3 h-3 rounded-full mr-2"
-                        style={{
-                          backgroundColor: MD_COLORS[idx % MD_COLORS.length],
-                        }}
+                        style={{ backgroundColor: MD_COLORS[idx % MD_COLORS.length] }}
                       />
-                      {source.name}
+                      <span className="text-md-on-surface-variant">{source.name}</span>
                     </div>
-                    <div className="font-medium">
-                      Conversion: {source.conversionRate}
+                    <div className="font-medium text-md-on-surface">
+                      {source.value} ({source.conversionRate}) {/* Show count and conversion */}
                     </div>
                   </div>
                 ))}
@@ -902,36 +895,28 @@ export default function AnalyticsPage() {
           </Card>
         </motion.div>
 
-        <motion.div variants={item} className="lg:col-span-2">
-          <Card className="bg-md-surface">
+        <motion.div variants={item} className="lg:col-span-2"> {/* Spans 2 cols on large screens */}
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Job Performance
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={getJobPerformanceData()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }} // Adjusted margins
                     layout="vertical"
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="name" width={100} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar
-                      name="Applicants"
-                      dataKey="applicants"
-                      fill="#6750A4"
-                    />
-                    <Bar
-                      name="Shortlisted"
-                      dataKey="shortlisted"
-                      fill="#7D5260"
-                    />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis type="number" fontSize={10} /> {/* Slightly smaller font */}
+                    <YAxis type="category" dataKey="name" width={60} fontSize={9} interval={0} tick={{ width: 55 }} /> {/* Adjusted width/fontSize/tick */}
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }} />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                    <Bar name="Applicants" dataKey="applicants" fill="var(--md-sys-color-primary)" radius={[0, 4, 4, 0]} />
+                    <Bar name="Shortlisted" dataKey="shortlisted" fill="var(--md-sys-color-secondary)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -945,60 +930,60 @@ export default function AnalyticsPage() {
         <h2 className="text-xl font-semibold mb-4 text-md-on-surface">
           Available Reports
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"> {/* Adjusted grid and gap */}
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Card
-              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface"
+              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface h-full" // Added h-full
               onClick={() => handleExportReport("Recruitment Funnel")}
             >
-              <CardContent className="flex items-center justify-between pt-6">
+              <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-6 gap-4"> {/* Adjusted flex direction and gap */}
                 <div>
                   <h3 className="font-medium text-md-on-surface">
                     Recruitment Funnel
                   </h3>
-                  <p className="text-sm text-md-on-surface-variant">
+                  <p className="text-sm text-md-on-surface-variant mt-1"> {/* Added margin top */}
                     Applications → Interviews → Offers → Hires
                   </p>
                 </div>
-                <FileSpreadsheet className="text-md-primary" />
+                <FileSpreadsheet className="text-md-primary mt-2 sm:mt-0 flex-shrink-0" size={24} /> {/* Added size and flex-shrink */}
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Card
-              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface"
+              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface h-full" // Added h-full
               onClick={() => handleExportReport("Time Analysis")}
             >
-              <CardContent className="flex items-center justify-between pt-6">
+              <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-6 gap-4"> {/* Adjusted flex direction and gap */}
                 <div>
                   <h3 className="font-medium text-md-on-surface">
                     Time Analysis
                   </h3>
-                  <p className="text-sm text-md-on-surface-variant">
+                  <p className="text-sm text-md-on-surface-variant mt-1"> {/* Added margin top */}
                     Review, interview, and decision timeframes
                   </p>
                 </div>
-                <FilePieChart className="text-md-tertiary" />
+                <FilePieChart className="text-md-tertiary mt-2 sm:mt-0 flex-shrink-0" size={24} /> {/* Added size and flex-shrink */}
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Card
-              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface"
+              className="cursor-pointer hover:bg-md-surface-variant transition-colors bg-md-surface h-full" // Added h-full
               onClick={() => handleExportReport("Source Effectiveness")}
             >
-              <CardContent className="flex items-center justify-between pt-6">
+              <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-6 gap-4"> {/* Adjusted flex direction and gap */}
                 <div>
                   <h3 className="font-medium text-md-on-surface">
                     Source Effectiveness
                   </h3>
-                  <p className="text-sm text-md-on-surface-variant">
+                  <p className="text-sm text-md-on-surface-variant mt-1"> {/* Added margin top */}
                     Quality of candidates by application source
                   </p>
                 </div>
-                <Download className="text-md-secondary" />
+                <Download className="text-md-secondary mt-2 sm:mt-0 flex-shrink-0" size={24} /> {/* Added size and flex-shrink */}
               </CardContent>
             </Card>
           </motion.div>
@@ -1014,11 +999,11 @@ export default function AnalyticsPage() {
       animate="show"
       className="space-y-6"
     >
-      <div className="bg-md-secondary-container rounded-2xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-2 text-md-on-secondary-container">
+      <div className="bg-md-secondary-container rounded-2xl p-4 md:p-6 mb-6"> {/* Adjusted padding */}
+        <h2 className="text-lg md:text-xl font-semibold mb-2 text-md-on-secondary-container"> {/* Adjusted text size */}
           Predictive Hiring Analytics
         </h2>
-        <p className="text-md-on-secondary-container">
+        <p className="text-sm md:text-base text-md-on-secondary-container"> {/* Adjusted text size */}
           Leverage AI-powered insights to optimize your hiring process and
           forecast future needs.
         </p>
@@ -1026,59 +1011,55 @@ export default function AnalyticsPage() {
 
       {/* Hiring Forecast */}
       <motion.div variants={item}>
-        <Card className="bg-md-surface">
+        <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
           <CardHeader>
             <CardTitle className="text-lg text-md-on-surface">
               Hiring Forecast (Next 6 Months)
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6"> {/* Adjusted grid and gap */}
               <div className="bg-md-primary-container p-4 rounded-xl">
-                <div className="text-sm text-md-on-primary-container mb-1">
+                <div className="text-xs md:text-sm text-md-on-primary-container mb-1"> {/* Adjusted text size */}
                   Previous Period
                 </div>
-                <div className="text-2xl font-bold text-md-on-primary-container">
+                <div className="text-xl md:text-2xl font-bold text-md-on-primary-container"> {/* Adjusted text size */}
                   {predictiveData?.hiringForecast?.previousPeriodJobs || 0} jobs
                 </div>
               </div>
 
               <div className="bg-md-tertiary-container p-4 rounded-xl">
-                <div className="text-sm text-md-on-tertiary-container mb-1">
+                <div className="text-xs md:text-sm text-md-on-tertiary-container mb-1"> {/* Adjusted text size */}
                   Forecasted Jobs
                 </div>
-                <div className="text-2xl font-bold text-md-on-tertiary-container">
+                <div className="text-xl md:text-2xl font-bold text-md-on-tertiary-container"> {/* Adjusted text size */}
                   {predictiveData?.hiringForecast?.forecastedJobs || 0} jobs
                 </div>
               </div>
 
               <div className="bg-md-secondary-container p-4 rounded-xl">
-                <div className="text-sm text-md-on-secondary-container mb-1">
+                <div className="text-xs md:text-sm text-md-on-secondary-container mb-1"> {/* Adjusted text size */}
                   Growth Rate
                 </div>
-                <div className="text-2xl font-bold text-md-on-secondary-container">
+                <div className="text-xl md:text-2xl font-bold text-md-on-secondary-container"> {/* Adjusted text size */}
                   {predictiveData?.hiringForecast?.growthRate || "0%"}
                 </div>
               </div>
             </div>
 
-            <div className="h-80">
+            <div className="h-80 w-full"> {/* Added w-full */}
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={getForecastData()}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Adjusted margins
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    name="Previous Period"
-                    dataKey="previous"
-                    fill="#6750A4"
-                  />
-                  <Bar name="Forecast" dataKey="forecast" fill="#7D5260" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                  <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                  <YAxis fontSize={10} /> {/* Slightly smaller font */}
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }} />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                  <Bar name="Previous Period" dataKey="previous" fill="var(--md-sys-color-primary)" radius={[4, 4, 0, 0]} />
+                  <Bar name="Forecast" dataKey="forecast" fill="var(--md-sys-color-secondary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -1088,38 +1069,27 @@ export default function AnalyticsPage() {
 
       {/* Seasonal Patterns */}
       <motion.div variants={item}>
-        <Card className="bg-md-surface">
+        <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
           <CardHeader>
             <CardTitle className="text-lg text-md-on-surface">
               Seasonal Hiring Patterns
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
+            <div className="h-80 w-full"> {/* Added w-full */}
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={getSeasonalData()}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Adjusted margins
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" orientation="left" stroke="#6750A4" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#7D5260" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    yAxisId="left"
-                    name="Hire Count"
-                    dataKey="hireCount"
-                    fill="#6750A4"
-                  />
-                  <Line
-                    yAxisId="right"
-                    name="Percentage"
-                    type="monotone"
-                    dataKey="percentage"
-                    stroke="#7D5260"
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                  <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                  <YAxis yAxisId="left" orientation="left" stroke="var(--md-sys-color-primary)" fontSize={10} /> {/* Slightly smaller font */}
+                  <YAxis yAxisId="right" orientation="right" stroke="var(--md-sys-color-secondary)" fontSize={10} /> {/* Slightly smaller font */}
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }} />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                  <Bar yAxisId="left" name="Hire Count" dataKey="hireCount" fill="var(--md-sys-color-primary)" radius={[4, 4, 0, 0]} />
+                  <Line yAxisId="right" name="Percentage" type="monotone" dataKey="percentage" stroke="var(--md-sys-color-secondary)" strokeWidth={2} dot={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -1130,44 +1100,29 @@ export default function AnalyticsPage() {
       {/* Time to Fill Predictions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Time to Fill by Job Type
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={
-                      predictiveData?.timeToFillPredictions?.byJobType || []
-                    }
-                    margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                    data={predictiveData?.timeToFillPredictions?.byJobType || []}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 20 }} // Adjusted margins
                     layout="vertical"
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      type="number"
-                      label={{
-                        value: "Days",
-                        position: "insideBottom",
-                        offset: -5,
-                      }}
-                    />
-                    <YAxis type="category" dataKey="jobType" width={100} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis type="number" fontSize={10} label={{ value: "Days", position: "insideBottom", offset: -10, fontSize: 9 }} /> {/* Slightly smaller font */}
+                    <YAxis type="category" dataKey="jobType" width={60} fontSize={9} interval={0} tick={{ width: 55 }} /> {/* Adjusted width/fontSize/tick */}
                     <Tooltip
-                      formatter={(value) => [
-                        `${value} days`,
-                        "Avg Time to Fill",
-                      ]}
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
+                      formatter={(value) => [`${value} days`, "Avg Time to Fill"]}
                     />
-                    <Legend />
-                    <Bar
-                      name="Avg Days to Fill"
-                      dataKey="avgDaysToFill"
-                      fill="#6750A4"
-                    />
+                    {/* <Legend wrapperStyle={{ fontSize: '12px' }} /> */}
+                    <Bar name="Avg Days to Fill" dataKey="avgDaysToFill" fill="var(--md-sys-color-primary)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1176,44 +1131,29 @@ export default function AnalyticsPage() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface  overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Time to Fill by Job Level
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={
-                      predictiveData?.timeToFillPredictions?.byJobLevel || []
-                    }
-                    margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                    data={predictiveData?.timeToFillPredictions?.byJobLevel || []}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 20 }} // Adjusted margins
                     layout="vertical"
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      type="number"
-                      label={{
-                        value: "Days",
-                        position: "insideBottom",
-                        offset: -5,
-                      }}
-                    />
-                    <YAxis type="category" dataKey="jobLevel" width={100} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis type="number" fontSize={10} label={{ value: "Days", position: "insideBottom", offset: -10, fontSize: 9 }} /> {/* Slightly smaller font */}
+                    <YAxis type="category" dataKey="jobLevel" width={60} fontSize={9} interval={0} tick={{ width: 55 }} /> {/* Adjusted width/fontSize/tick */}
                     <Tooltip
-                      formatter={(value) => [
-                        `${value} days`,
-                        "Avg Time to Fill",
-                      ]}
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
+                      formatter={(value) => [`${value} days`, "Avg Time to Fill"]}
                     />
-                    <Legend />
-                    <Bar
-                      name="Avg Days to Fill"
-                      dataKey="avgDaysToFill"
-                      fill="#7D5260"
-                    />
+                    {/* <Legend wrapperStyle={{ fontSize: '12px' }} /> */}
+                    <Bar name="Avg Days to Fill" dataKey="avgDaysToFill" fill="var(--md-sys-color-secondary)" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1224,7 +1164,7 @@ export default function AnalyticsPage() {
 
       {/* Pipeline Bottlenecks */}
       <motion.div variants={item}>
-        <Card className="bg-md-surface">
+        <Card className="bg-md-surface"> {/* Keep overflow for table */}
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2 text-md-on-surface">
               Pipeline Bottlenecks
@@ -1232,37 +1172,32 @@ export default function AnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto"> {/* Ensure this div wraps the table directly */}
+              <table className="w-full min-w-[600px]"> 
                 <thead>
                   <tr className="text-left border-b border-md-outline">
-                    <th className="pb-2">Stage</th>
-                    <th className="pb-2">Count</th>
-                    <th className="pb-2">Transition Rate</th>
-                    <th className="pb-2">Drop-off Rate</th>
-                    <th className="pb-2">Status</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Stage</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Count</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Transition Rate</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Drop-off Rate</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Status</th> {/* Adjusted text style */}
                   </tr>
                 </thead>
                 <tbody>
                   {predictiveData?.pipelineBottlenecks?.allStages?.map(
                     (stage, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-md-outline-variant"
-                      >
-                        <td className="py-3">{stage.fromStage}</td>
-                        <td className="py-3">{stage.count}</td>
-                        <td className="py-3">
-                          {stage.transitionRate || "N/A"}
-                        </td>
-                        <td className="py-3">{stage.dropOffRate || "N/A"}</td>
+                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> {/* Removed last border */}
+                        <td className="py-3 text-sm text-md-on-surface">{stage.fromStage}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{stage.count}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{stage.transitionRate || "N/A"}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{stage.dropOffRate || "N/A"}</td> {/* Adjusted text style */}
                         <td className="py-3">
                           {stage.isBottleneck ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-md-error-container text-md-on-error-container">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-md-error-container text-md-on-error-container"> {/* Adjusted padding */}
                               Bottleneck
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-md-tertiary-container text-md-on-tertiary-container">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-md-tertiary-container text-md-on-tertiary-container"> {/* Adjusted padding */}
                               Healthy
                             </span>
                           )}
@@ -1288,7 +1223,7 @@ export default function AnalyticsPage() {
     >
       {/* Test Score Analysis */}
       <motion.div variants={item}>
-        <Card className="bg-md-surface">
+        <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
           <CardHeader>
             <CardTitle className="text-lg text-md-on-surface">
               Candidate Test Performance
@@ -1301,44 +1236,33 @@ export default function AnalyticsPage() {
                   Overall Average Score
                 </div>
                 <div className="text-2xl font-bold text-md-on-surface">
-                  {candidateQualityData?.testScoreAnalysis?.overall?.avgScore ||
-                    "N/A"}
+                  {candidateQualityData?.testScoreAnalysis?.overall?.avgScore || "N/A"}
                 </div>
               </div>
+              {/* Can add more summary stats here if needed */}
             </div>
 
-            <div className="h-80">
+            <div className="h-80 w-full"> {/* Added w-full */}
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={getCandidateQualityData()}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Adjusted margins
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                  <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                  <YAxis fontSize={10} /> {/* Slightly smaller font */}
                   <Tooltip
+                    contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
                     formatter={(value, name) => [
                       name === "candidates" ? value : value.toFixed(1),
-                      name === "candidates"
-                        ? "Candidates"
-                        : name === "avgScore"
-                        ? "Avg Score"
-                        : "Median Score",
+                      name === "candidates" ? "Candidates" : name === "avgScore" ? "Avg Score" : "Median Score",
                     ]}
                   />
-                  <Legend />
-                  <Bar name="avgScore" dataKey="avgScore" fill="#6750A4" />
-                  <Bar
-                    name="medianScore"
-                    dataKey="medianScore"
-                    fill="#7D5260"
-                  />
-                  <Line
-                    name="candidates"
-                    type="monotone"
-                    dataKey="candidates"
-                    stroke="#49454F"
-                  />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                  <Bar name="Avg Score" dataKey="avgScore" fill="var(--md-sys-color-primary)" radius={[4, 4, 0, 0]} />
+                  <Bar name="Median Score" dataKey="medianScore" fill="var(--md-sys-color-secondary)" radius={[4, 4, 0, 0]} />
+                  {/* Consider if Line for candidates makes sense or should be another Bar/Axis */}
+                  {/* <Line name="Candidates" type="monotone" dataKey="candidates" stroke="var(--md-sys-color-tertiary)" strokeWidth={2} /> */}
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -1346,42 +1270,35 @@ export default function AnalyticsPage() {
         </Card>
       </motion.div>
 
-      {/* Source Quality */}
+      {/* Source Quality & Skills */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Source Quality Analysis
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={getSourceQualityData()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 20, right: 10, left: -20, bottom: 5 }} // Adjusted margins
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis dataKey="name" fontSize={10} /> {/* Slightly smaller font */}
+                    <YAxis fontSize={10} /> {/* Slightly smaller font */}
                     <Tooltip
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
                       formatter={(value, name) => [
                         name === "candidates" ? value : value.toFixed(1),
-                        name === "candidates"
-                          ? "Candidates"
-                          : name === "avgScore"
-                          ? "Avg Test Score"
-                          : "Quality Index",
+                        name === "candidates" ? "Candidates" : name === "avgScore" ? "Avg Test Score" : "Quality Index",
                       ]}
                     />
-                    <Legend />
-                    <Bar name="avgScore" dataKey="avgScore" fill="#6750A4" />
-                    <Bar
-                      name="qualityIndex"
-                      dataKey="qualityIndex"
-                      fill="#7D5260"
-                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                    <Bar name="Avg Score" dataKey="avgScore" fill="var(--md-sys-color-primary)" radius={[4, 4, 0, 0]} />
+                    <Bar name="Quality Index" dataKey="qualityIndex" fill="var(--md-sys-color-secondary)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1395,7 +1312,7 @@ export default function AnalyticsPage() {
                     (source, i) => (
                       <div
                         key={i}
-                        className="px-3 py-1 bg-md-tertiary-container text-md-on-tertiary-container rounded-full text-sm font-medium"
+                        className="px-3 py-1 bg-md-tertiary-container text-md-on-tertiary-container rounded-full text-xs md:text-sm font-medium" // Adjusted text size
                       >
                         {source}
                       </div>
@@ -1408,35 +1325,34 @@ export default function AnalyticsPage() {
         </motion.div>
 
         <motion.div variants={item}>
-          <Card className="bg-md-surface">
+          <Card className="bg-md-surface overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader>
               <CardTitle className="text-lg text-md-on-surface">
                 Top Performing Skills
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-80 w-full"> {/* Added w-full */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={getSkillAnalysisData()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }} // Adjusted margins
                     layout="vertical"
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="name" width={100} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--md-sys-color-outline-variant)" />
+                    <XAxis type="number" fontSize={10} /> {/* Slightly smaller font */}
+                    <YAxis type="category" dataKey="name" width={60} fontSize={9} interval={0} tick={{ width: 55 }} /> {/* Adjusted width/fontSize/tick */}
                     <Tooltip
+                      contentStyle={{ backgroundColor: 'var(--md-sys-color-surface-container-high)', border: 'none', borderRadius: '8px' }}
                       formatter={(value, name) => [
                         name === "candidates" ? value : value,
-                        name === "candidates"
-                          ? "Candidates"
-                          : name === "score"
-                          ? "Avg Score"
-                          : "Hire Rate %",
+                        name === "candidates" ? "Candidates" : name === "score" ? "Avg Score" : "Hire Rate %",
                       ]}
                     />
-                    <Legend />
-                    <Bar name="score" dataKey="score" fill="#6750A4" />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Slightly smaller font */}
+                    <Bar name="Avg Score" dataKey="score" fill="var(--md-sys-color-primary)" radius={[0, 4, 4, 0]} />
+                    {/* Consider adding Hire Rate as another bar or on a different axis */}
+                    {/* <Bar name="Hire Rate" dataKey="hireRate" fill="var(--md-sys-color-secondary)" radius={[0, 4, 4, 0]} /> */}
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1447,49 +1363,41 @@ export default function AnalyticsPage() {
 
       {/* Interviewer Analysis */}
       <motion.div variants={item}>
-        <Card className="bg-md-surface">
+        <Card className="bg-md-surface"> {/* Keep overflow for table */}
           <CardHeader>
             <CardTitle className="text-lg text-md-on-surface">
               Interviewer Effectiveness
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto"> {/* Ensure this div wraps the table directly */}
+              <table className="w-full min-w-[700px]"> {/* Added min-width */}
                 <thead>
                   <tr className="text-left border-b border-md-outline">
-                    <th className="pb-2">Interviewer</th>
-                    <th className="pb-2">Interviews</th>
-                    <th className="pb-2">Avg Score</th>
-                    <th className="pb-2">Pass Rate</th>
-                    <th className="pb-2">Effectiveness</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviewer</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviews</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Avg Score</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Pass Rate</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Effectiveness</th> {/* Adjusted text style */}
                   </tr>
                 </thead>
                 <tbody>
                   {candidateQualityData?.interviewerAnalysis?.interviewers?.map(
                     (interviewer, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-md-outline-variant"
-                      >
-                        <td className="py-3">{interviewer.name}</td>
-                        <td className="py-3">{interviewer.interviewCount}</td>
-                        <td className="py-3">{interviewer.avgScore}</td>
-                        <td className="py-3">{interviewer.passRate}</td>
-                        <td className="py-3">
-                          <div className="flex items-center">
-                            <div className="w-full bg-md-surface-variant rounded-full h-2 mr-2">
+                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> {/* Removed last border */}
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.name}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.interviewCount}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.avgScore}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.passRate}</td> {/* Adjusted text style */}
+                        <td className="py-3 text-sm text-md-on-surface"> {/* Adjusted text style */}
+                          <div className="flex items-center gap-2"> {/* Added gap */}
+                            <div className="w-full bg-md-surface-variant rounded-full h-2 flex-1"> {/* Added flex-1 */}
                               <div
                                 className="bg-md-primary rounded-full h-2"
-                                style={{
-                                  width: `${Math.min(
-                                    parseFloat(interviewer.effectivenessScore),
-                                    100
-                                  )}%`,
-                                }}
+                                style={{ width: `${Math.min(parseFloat(interviewer.effectivenessScore), 100)}%` }}
                               ></div>
                             </div>
-                            <span>{interviewer.effectivenessScore}</span>
+                            <span className="w-8 text-right">{interviewer.effectivenessScore}</span> {/* Fixed width span */}
                           </div>
                         </td>
                       </tr>
@@ -1505,32 +1413,12 @@ export default function AnalyticsPage() {
   );
 
   return (
-    <div className="container overflow-y-scroll h-full mx-auto py-8 px-4 bg-md-surface-container [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4"
-      >
-        <h1 className="text-3xl font-bold text-md-on-surface">
-          Analytics & Reports
-        </h1>
-        <div className="flex gap-3">
-          <select
-            value={timeFrame}
-            onChange={(e) => setTimeFrame(e.target.value)}
-            className="border border-md-outline rounded-lg px-3 py-2 bg-md-surface-container-highest text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary"
-          >
-            <option value="week">Last Week</option>
-            <option value="month">Last Month</option>
-            <option value="quarter">Last Quarter</option>
-            <option value="year">Last Year</option>
-          </select>
-        </div>
-      </motion.div>
+    <div className="container overflow-y-scroll w-screen md:w-full h-full mx-auto py-6 px-4 md:px-6 lg:px-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"> {/* Adjusted padding */}
+    
+    
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto space-x-2 sm:space-x-4 pb-4 mb-6 border-b border-md-outline-variant">
+      <div className="flex overflow-x-auto space-x-2 sm:space-x-4 pb-4 mb-6 border-b border-md-outline-variant [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"> {/* Hide scrollbar */}
         <Tab
           active={activeTab === "overview"}
           icon={<BarChartIcon size={16} />}
@@ -1540,19 +1428,19 @@ export default function AnalyticsPage() {
         <Tab
           active={activeTab === "predictive"}
           icon={<TrendingUp size={16} />}
-          label="Predictive" // Shortened label for smaller screens if needed
+          label="Predictive"
           onClick={() => setActiveTab("predictive")}
         />
         <Tab
           active={activeTab === "quality"}
           icon={<Award size={16} />}
-          label="Quality" // Shortened label
+          label="Quality"
           onClick={() => setActiveTab("quality")}
         />
         <Tab
           active={activeTab === "efficiency"}
           icon={<Clock size={16} />}
-          label="Efficiency" // Shortened label
+          label="Efficiency"
           onClick={() => setActiveTab("efficiency")}
         />
       </div>
@@ -1591,19 +1479,19 @@ export default function AnalyticsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
-        className="mt-8 p-6 bg-md-tertiary-container rounded-2xl" // Changed background for variety
+        className="mt-8 p-4 md:p-6 bg-md-tertiary-container rounded-2xl" // Adjusted padding
       >
         <h3 className="text-lg font-medium mb-2 text-md-on-tertiary-container">
           Custom Reports
         </h3>
-        <p className="mb-4 text-md-on-tertiary-container">
+        <p className="mb-4 text-sm md:text-base text-md-on-tertiary-container"> {/* Adjusted text size */}
           Need a specific report not listed above? Our team can generate custom
           analytics based on your requirements.
         </p>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="bg-md-tertiary text-md-on-tertiary px-5 py-2.5 rounded-full text-sm font-medium hover:shadow-md transition-shadow" // Adjusted padding/shape
+          className="bg-md-tertiary text-md-on-tertiary px-5 py-2.5 rounded-full text-sm font-medium hover:shadow-md transition-shadow"
         >
           Request Custom Report
         </motion.button>

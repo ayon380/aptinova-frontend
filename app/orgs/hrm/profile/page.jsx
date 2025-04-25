@@ -353,7 +353,7 @@ const HRManagerProfile = () => {
       <motion.button
         onClick={handleSubmit}
         disabled={saving}
-        className="fixed right-4 sm:right-6 bottom-20 z-40 h-12 sm:h-14 px-4 sm:px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
+        className="fixed right-4 sm:right-6 bottom-24 z-40 h-12 sm:h-14 px-4 sm:px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
       >

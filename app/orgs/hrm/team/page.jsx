@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import useStore from "../../../store"; // Import the store
-
 export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
@@ -11,14 +10,16 @@ export default function TeamPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newHR, setNewHR] = useState({ name: "", email: "", department: "" });
   const [error, setError] = useState("");
-
+  const { setTitle } = useStore(); // Get the setTitle function from the store
   // Get cache functions from the store
   const { getCache, setCache } = useStore();
 
   useEffect(() => {
     fetchTeamMembers();
   }, [page, searchTerm]); // Dependencies remain the same
-
+  useEffect(() => {
+    setTitle("HR Team Management"); // Set the title when the component mounts
+  }, []); // Empty dependency array to run only once
   const fetchTeamMembers = async () => {
     const cacheKey = `team-members-${page}-${searchTerm}`;
     const cachedData = getCache(cacheKey);
@@ -115,30 +116,9 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="p-6 bg-md-surface-container rounded-tl-3xl h-full ">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-md-on-surface">
-          HR Team Management
-        </h1>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="px-6 py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center gap-2 shadow-sm"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Add HR
-        </button>
-      </div>
+    // Add more bottom padding to accommodate FAB and pagination
+    <div className="p-4 sm:p-6 h-full pb-28">
+      {/* Removed the top Add HR button section */}
 
       <div className="mb-6">
         <div className="relative">
@@ -161,7 +141,8 @@ export default function TeamPage() {
             placeholder="Search HR team members..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-md pl-12 pr-4 py-3 bg-md-surface-container-high border border-md-outline rounded-full focus:outline-none focus:border-md-primary focus:ring-1 focus:ring-md-primary text-md-on-surface placeholder:text-md-on-surface-variant"
+            // Make search bar responsive
+            className="w-full md:max-w-md pl-12 pr-4 py-3 bg-md-surface-container-high border border-md-outline rounded-full focus:outline-none focus:border-md-primary focus:ring-1 focus:ring-md-primary text-md-on-surface placeholder:text-md-on-surface-variant"
           />
         </div>
       </div>
@@ -187,7 +168,8 @@ export default function TeamPage() {
       )}
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+        // Adjust grid for responsiveness
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, index) => (
             <div
               key={index}
@@ -209,9 +191,11 @@ export default function TeamPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-20">
+        // Adjust grid for responsiveness
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {teamMembers.length === 0 ? (
-            <div className="col-span-full p-8 flex flex-col items-center justify-center bg-md-surface-container rounded-3xl">
+            // Make no members found section span full width on all screens
+            <div className="sm:col-span-2 lg:col-span-3 p-8 flex flex-col items-center justify-center bg-md-surface-container rounded-3xl">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -251,7 +235,8 @@ export default function TeamPage() {
             teamMembers.map((member) => (
               <div
                 key={member.id || member._id}
-                className="bg-md-surface rounded-3xl shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
+                // Use surface-container for slightly more elevation if desired, or keep surface
+                className="bg-md-surface-container rounded-3xl shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
               >
                 <div className="p-5">
                   <div className="flex items-start gap-4">
@@ -340,9 +325,11 @@ export default function TeamPage() {
       )}
 
       {pagination && (
-        <div className="sticky bottom-4 mx-auto max-w-4xl bg-md-surface-container-high border border-md-outline-variant shadow-md rounded-3xl p-4 z-10">
-          <div className="flex justify-between items-center flex-wrap gap-4">
-            <div className="text-sm text-md-on-surface-variant">
+        // Adjust pagination bar positioning and styling
+        <div className="fixed bottom-24 md:bottom-4 left-4 right-4 mx-auto max-w-4xl bg-md-surface-container-high border border-md-outline-variant shadow-lg rounded-3xl p-4 z-10">
+          {/* Make pagination controls stack on small screens */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+            <div className="text-sm text-md-on-surface-variant text-center sm:text-left">
               Showing {(page - 1) * 10 + 1} to{" "}
               {Math.min(page * 10, pagination.total)} of {pagination.total}{" "}
               results
@@ -391,10 +378,31 @@ export default function TeamPage() {
         </div>
       )}
 
+      {/* Floating Action Button (FAB) */}
+      <button
+        onClick={() => setShowAddModal(true)}
+        className="fixed bottom-24 right-6 sm:bottom-24 sm:right-8 z-20 w-14 h-14 bg-md-primary-container text-md-on-primary-container rounded-2xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-md-primary transition-all duration-300 ease-in-out flex items-center justify-center hover:rounded-xl"
+        aria-label="Add HR Team Member"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            fillRule="evenodd"
+            d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fadeIn">
+          {/* Adjust modal width for responsiveness */}
           <div
-            className="bg-md-surface rounded-3xl w-full max-w-md overflow-hidden shadow-lg animate-scaleIn"
+            className="bg-md-surface rounded-3xl w-full max-w-sm sm:max-w-md overflow-hidden shadow-xl animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-md-outline-variant">
@@ -512,17 +520,19 @@ export default function TeamPage() {
                 </div>
               </div>
 
-              <div className="mt-8 flex justify-end gap-3">
+              <div className="mt-8 flex flex-col sm:flex-row justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-6 py-2.5 border border-md-outline-variant text-md-on-surface rounded-full hover:bg-md-surface-variant transition-colors"
+                  // Use text button style for cancel on mobile? Or outlined.
+                  className="px-6 py-2.5 border border-md-outline text-md-primary rounded-full hover:bg-md-surface-variant transition-colors w-full sm:w-auto"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+                  // Use filled button style
+                  className="px-6 py-2.5 bg-md-primary text-md-on-primary rounded-full hover:bg-opacity-90 transition-colors w-full sm:w-auto"
                 >
                   Add HR
                 </button>

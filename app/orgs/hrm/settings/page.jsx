@@ -291,7 +291,7 @@ const OrganizationSettings = () => {
   ];
 
   return (
-    <div className="flex flex-col w-full bg-md-background">
+    <div className="flex flex-col w-screen p-5 md:w-full bg-md-background ">
       {refreshing && (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pt-2">
           <div className="bg-md-primary-container text-md-on-primary-container py-2 px-4 rounded-full shadow-md flex items-center">
@@ -388,7 +388,7 @@ const OrganizationSettings = () => {
       <motion.button
         onClick={handleSubmit}
         disabled={saveLoading}
-        className="fixed right-4 sm:right-6 bottom-20 z-40 h-12 sm:h-14 px-4 sm:px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
+        className="fixed right-4 sm:right-6 bottom-24 z-40 h-12 sm:h-14 px-4 sm:px-6 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center"
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
       >

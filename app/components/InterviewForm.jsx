@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Trash2, Users, AlertCircle } from "lucide-react";
 
@@ -17,11 +17,27 @@ export default function InterviewForm({
     notes: "",
     interviewers: [""], // Start with one empty interviewer field
   });
+  useEffect(() => {
+    console.log(attendees);
+  }, [attendees]);
 
   // Add error tracking states
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Calculate tomorrow's date for the min attribute
+  const getTomorrowDateString = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    // Format as YYYY-MM-DD
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const tomorrowDateString = getTomorrowDateString();
 
   // Validate form data
   const validateForm = () => {
@@ -33,10 +49,11 @@ export default function InterviewForm({
     } else {
       const selectedDate = new Date(formData.date);
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0); // Set today to the beginning of the day
 
-      if (selectedDate < today) {
-        newErrors.date = "Date cannot be in the past";
+      // Check if the selected date is today or in the past
+      if (selectedDate <= today) {
+        newErrors.date = "Date must be tomorrow or later"; // Updated error message
       }
     }
 
@@ -86,7 +103,9 @@ export default function InterviewForm({
       const dataToSubmit = {
         ...formData,
         // Ensure interviewers array only contains valid, non-empty emails
-        interviewers: formData.interviewers.filter(email => email.trim() !== ""),
+        interviewers: formData.interviewers.filter(
+          (email) => email.trim() !== ""
+        ),
         // No need to calculate eventId here, parent/backend handles it
       };
       onSubmit(dataToSubmit); // Pass validated form data to parent handler
@@ -99,8 +118,8 @@ export default function InterviewForm({
       setApiError("Failed to prepare interview data. Please check inputs.");
       setIsSubmitting(false); // Ensure submission state is reset on error
     } finally {
-       // Let parent control submission state if API call is there
-       // setIsSubmitting(false);
+      // Let parent control submission state if API call is there
+      // setIsSubmitting(false);
     }
   };
 
@@ -168,7 +187,7 @@ export default function InterviewForm({
                     key={index}
                     className="px-3 py-1 bg-md-secondary-container text-md-on-secondary-container text-sm rounded-full"
                   >
-                    {attendee.name}
+                    {attendee.Candidate.firstName}
                   </div>
                 ))}
               </div>
@@ -190,6 +209,7 @@ export default function InterviewForm({
                 type="date"
                 id="date"
                 value={formData.date}
+                min={tomorrowDateString} // Add the min attribute here
                 onChange={(e) => {
                   setFormData({ ...formData, date: e.target.value });
                   if (errors.date) {
