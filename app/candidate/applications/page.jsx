@@ -10,11 +10,13 @@ import {
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const Router = useRouter();
   const [filters, setFilters] = useState({
     status: "all",
@@ -28,28 +30,55 @@ export default function ApplicationsPage() {
     rejected: 0,
   });
 
-  const { setTitle } = useStore();
+  const { setTitle, setCache, getCache } = useStore();
+  
+  const CACHE_KEY = 'candidate_applications';
+
+  const fetchApplications = async (forceRefresh = false) => {
+    try {
+      setRefreshing(forceRefresh);
+      
+      // Check cache if not forcing refresh
+      if (!forceRefresh) {
+        const cachedData = getCache(CACHE_KEY);
+        if (cachedData) {
+          console.log("Using cached applications data");
+          setApplications(cachedData);
+          setLoading(false);
+          setRefreshing(false);
+          return;
+        }
+      }
+      
+      // Cache miss or forced refresh, fetch from API
+      console.log("Fetching applications from API");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/jobs/applications`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      
+      // Update state and cache
+      setApplications(data);
+      setCache(CACHE_KEY, data);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    triggerVibration();
+    fetchApplications(true);
+  };
 
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/jobs/applications`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            },
-          }
-        );
-        const data = await response.json();
-        setApplications(data);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchApplications();
     setTitle("Home");
   }, []);
@@ -125,9 +154,23 @@ export default function ApplicationsPage() {
 
   return (
     <div className="container text-xl bg-md-background mx-auto px-4 sm:px-6 pb-24 md:pb-8">
+      {/* Stats Cards with Refresh Button */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg md:text-2xl font-semibold text-md-on-surface">My Applications</h2>
+        <motion.button
+          onClick={handleRefresh}
+          whileTap={{ scale: 0.95 }}
+          className={`p-2 rounded-full ${refreshing ? 'bg-md-primary-container' : 'bg-md-surface'}`}
+          disabled={refreshing}
+          aria-label="Refresh applications"
+        >
+          <ArrowPathIcon className={`h-5 w-5 ${refreshing ? 'animate-spin text-md-primary' : 'text-md-on-surface-variant'}`} />
+        </motion.button>
+      </div>
+      
       {/* Stats Cards - 2x2 Grid on mobile, 4 columns on desktop */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
-        {[
+        {[ 
           {
             label: "Total",
             value: stats.total,

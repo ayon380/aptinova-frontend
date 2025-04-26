@@ -217,26 +217,38 @@ export default function Home() {
 
   // Toggle mobile menu
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = !mobileMenuOpen ? "hidden" : "auto";
+    const newState = !mobileMenuOpen;
+    setMobileMenuOpen(newState);
+    // Toggle body scroll lock class
+    if (newState) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
   };
 
-  // Close mobile menu when clicking a link
+  // Close mobile menu when clicking a link or the close button
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
-    document.body.style.overflow = "auto";
+    document.body.classList.remove("overflow-hidden");
   };
 
   // Function to scroll to section and close menu
   const scrollToSection = (sectionId) => {
-    closeMobileMenu();
     const section = document.getElementById(sectionId);
     if (section) {
-      window.scrollTo({
-        top: section.offsetTop - 80, // Adjust for header height
-        behavior: "smooth",
-      });
+      // Close menu *before* scrolling
+      closeMobileMenu();
+      // Use setTimeout to allow the menu closing animation to start before scrolling
+      setTimeout(() => {
+        window.scrollTo({
+          top: section.offsetTop - 80, // Adjust for header height
+          behavior: "smooth",
+        });
+      }, 100); // Small delay
+    } else {
+      // Still close the menu even if the section isn't found immediately
+      closeMobileMenu();
     }
   };
 
@@ -358,7 +370,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-md-background overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-md-background overflow-x-hidden">
       {/* Navbar with working mobile responsiveness */}
       <nav className="bg-md-surface/90 backdrop-blur-md px-4 sm:px-6 py-4 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto flex items-center justify-between">
@@ -380,6 +392,7 @@ export default function Home() {
               className="p-2 rounded-full text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary relative"
               onClick={toggleMobileMenu}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? (
                 <svg
@@ -417,38 +430,34 @@ export default function Home() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8 items-center">
-            <a
-              href="#features"
+            <button
               onClick={() => scrollToSection("features")}
               className="text-md-on-surface hover:text-md-primary transition-colors relative group"
             >
               Features
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a
-              href="#how-it-works"
+            </button>
+            <button
               onClick={() => scrollToSection("how-it-works")}
               className="text-md-on-surface hover:text-md-primary transition-colors relative group"
             >
               How It Works
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a
-              href="#pricing"
+            </button>
+            <button
               onClick={() => scrollToSection("pricing")}
               className="text-md-on-surface hover:text-md-primary transition-colors relative group"
             >
               Pricing
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
-            <a
-              href="#testimonials"
+            </button>
+            <button
               onClick={() => scrollToSection("testimonials")}
               className="text-md-on-surface hover:text-md-primary transition-colors relative group"
             >
               Testimonials
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
-            </a>
+            </button>
           </div>
 
           <div className="hidden md:flex space-x-4 items-center">
@@ -470,84 +479,84 @@ export default function Home() {
         </div>
 
         {/* Mobile Menu Overlay */}
-        <div
-          className={`fixed inset-0 bg-md-background/95 backdrop-blur-md z-40 transition-transform duration-300 md:hidden ${
-            mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="container mx-auto px-4 py-8 h-full flex flex-col">
-            <div className="flex justify-end mb-8">
-              <button
-                onClick={closeMobileMenu}
-                className="p-2 rounded-full text-md-on-surface hover:bg-md-surface-variant transition-colors relative"
-                aria-label="Close menu"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+        {mobileMenuOpen && (
+          <div
+            className={`fixed inset-0 bg-md-background/95 backdrop-blur-md z-40 transition-transform duration-300 md:hidden ${
+              mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="container mx-auto px-4 py-8 h-full flex flex-col">
+              <div className="flex justify-end mb-8">
+                <button
+                  onClick={closeMobileMenu}
+                  className="p-2 rounded-full text-md-on-surface hover:bg-md-surface-variant transition-colors relative"
+                  aria-label="Close menu"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
 
-            <div className="flex flex-col space-y-6 text-center mt-8">
-              <a
-                href="#features"
-                onClick={() => scrollToSection("features")}
-                className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#how-it-works"
-                onClick={() => scrollToSection("how-it-works")}
-                className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-              >
-                How It Works
-              </a>
-              <a
-                href="#pricing"
-                onClick={() => scrollToSection("pricing")}
-                className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="#testimonials"
-                onClick={() => scrollToSection("testimonials")}
-                className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-              >
-                Testimonials
-              </a>
-            </div>
+              <div className="flex flex-col space-y-6 text-center mt-8">
+                <button
+                  onClick={() => scrollToSection("features")}
+                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => scrollToSection("how-it-works")}
+                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
+                >
+                  How It Works
+                </button>
+                <button
+                  onClick={() => scrollToSection("pricing")}
+                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
+                >
+                  Pricing
+                </button>
+                <button
+                  onClick={() => scrollToSection("testimonials")}
+                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
+                >
+                  Testimonials
+                </button>
+              </div>
 
-            <div className="mt-auto mb-10 flex flex-col space-y-4">
-              <Link
-                href="/auth/login"
-                onClick={closeMobileMenu}
-                className="w-full px-6 py-3 rounded-full border-2 border-md-outline text-md-on-surface hover:bg-md-surface-variant transition-colors text-center text-lg font-medium"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/auth/signup"
-                onClick={closeMobileMenu}
-                className="w-full px-6 py-3 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-center text-lg font-medium"
-              >
-                Sign Up
-              </Link>
+              <div className="mt-auto mb-10 flex flex-col space-y-4">
+                <Link
+                  href="/auth/login"
+                  onClick={closeMobileMenu}
+                  className="w-full px-6 py-3 rounded-full border-2 border-md-outline text-md-on-surface hover:bg-md-surface-variant transition-colors text-center text-lg font-medium"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  onClick={closeMobileMenu}
+                  className="w-full px-6 py-3 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-center text-lg font-medium"
+                >
+                  Sign Up
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </nav>
 
       {/* Hero Section with 3D Earth Animation */}
@@ -1479,36 +1488,36 @@ export default function Home() {
               </h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#features"
+                  <button
+                    onClick={() => scrollToSection("features")}
                     className="text-md-on-surface-variant hover:text-md-primary"
                   >
                     Features
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#how-it-works"
+                  <button
+                    onClick={() => scrollToSection("how-it-works")}
                     className="text-md-on-surface-variant hover:text-md-primary"
                   >
                     How It Works
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#pricing"
+                  <button
+                    onClick={() => scrollToSection("pricing")}
                     className="text-md-on-surface-variant hover:text-md-primary"
                   >
                     Pricing
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#testimonials"
+                  <button
+                    onClick={() => scrollToSection("testimonials")}
                     className="text-md-on-surface-variant hover:text-md-primary"
                   >
                     Testimonials
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

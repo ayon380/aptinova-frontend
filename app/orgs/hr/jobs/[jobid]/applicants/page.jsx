@@ -513,7 +513,7 @@ export default function ApplicantsPage() {
       <div className="md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container md:p-10 flex-grow overflow-auto flex flex-col">
         <div className="container mx-auto px-4 py-8 relative flex flex-col flex-grow">
           <Link
-            href={`/orgs/hrm/jobs/${params.jobid}`}
+            href={`/orgs/hr/jobs/${params.jobid}`}
             className="inline-flex items-center gap-2 mb-6 text-md-on-surface-variant hover:text-md-primary transition-colors p-2 rounded-lg hover:bg-md-surface-container-high"
           >
             <ArrowLeft className="w-4 h-4" />

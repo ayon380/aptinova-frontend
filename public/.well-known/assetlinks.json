@@ -1,8 +1,14 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "tech.aptinova.twa",
-        "sha256_cert_fingerprints": ["75:CB:3E:CB:DB:3C:17:E0:FA:F6:11:BA:AC:64:6A:9D:E0:92:12:85:2F:33:DB:20:78:22:34:2C:F1:A8:28:F0"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "tech.aptinova.twa",
+      "sha256_cert_fingerprints": [
+        "75:CB:3E:CB:DB:3C:17:E0:FA:F6:11:BA:AC:64:6A:9D:E0:92:12:85:2F:33:DB:20:78:22:34:2C:F1:A8:28:F0"
+      ]
+    }
+  }
+]

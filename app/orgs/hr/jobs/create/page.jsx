@@ -142,7 +142,7 @@ export default function CreateJobPage() {
 
       // Show success confirmation
       alert("Job posted successfully!");
-      router.push("/orgs/hrm/jobs");
+      router.push("/orgs/hr/jobs");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create job posting");
       // Scroll to top to show error
@@ -960,7 +960,7 @@ export default function CreateJobPage() {
           <div className="space-x-4">
             <button
               className="px-6 py-2 rounded-full text-md-on-surface-variant hover:bg-md-surface-variant transition-colors duration-200"
-              onClick={() => router.push("/orgs/hrm/jobs")}
+              onClick={() => router.push("/orgs/hr/jobs")}
             >
               Cancel
             </button>

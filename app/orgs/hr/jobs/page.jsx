@@ -30,16 +30,16 @@ export default function JobsPage() {
   };
 
   const handleViewJob = (jobId) => {
-    router.push(`/orgs/hrm/jobs/${jobId}`);
+    router.push(`/orgs/hr/jobs/${jobId}`);
     setShowMenu(false);
   };
 
   const handleCreateJob = () => {
-    router.push("/orgs/hrm/jobs/create");
+    router.push("/orgs/hr/jobs/create");
   };
 
   const viewjobapplicants = (jobId) => {
-    router.push(`/orgs/hrm/jobs/${jobId}/applicants`);
+    router.push(`/orgs/hr/jobs/${jobId}/applicants`);
   };
 
   const filteredJobs = (Array.isArray(jobs) ? jobs : []).filter(
@@ -172,7 +172,7 @@ export default function JobsPage() {
                   >
                     <td className="px-6 py-4">
                       <Link
-                        href={`/orgs/hrm/jobs/${job.id}`}
+                        href={`/orgs/hr/jobs/${job.id}`}
                         className="text-md-primary  font-medium"
                       >
                         {job.title}

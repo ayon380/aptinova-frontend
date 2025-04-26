@@ -25,10 +25,14 @@ const ShimmerLoading = ({ className }) => (
 );
 
 const Page = () => {
-  const { userdata, setTitle } = useStore();
+  const { userdata, setTitle, setCache, getCache } = useStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState(null);
+
+  // Cache key and expiration time (5 minutes)
+  const CACHE_KEY = "candidate_dashboard_data";
+  const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   useEffect(() => {
     setTitle("Home");
@@ -37,6 +41,23 @@ const Page = () => {
 
   const fetchDashboardData = async () => {
     try {
+      // Check if we have cached data
+      const cachedData = getCache(CACHE_KEY);
+
+      if (cachedData) {
+        const { data, timestamp } = cachedData;
+        const isCacheValid = Date.now() - timestamp < CACHE_EXPIRATION;
+
+        if (isCacheValid) {
+          console.log("Using cached dashboard data");
+          setDashboardData(data);
+          setLoading(false);
+          return;
+        } else {
+          console.log("Cache expired, fetching fresh data");
+        }
+      }
+
       setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/candidate/home`,
@@ -52,6 +73,13 @@ const Page = () => {
       }
 
       const data = await response.json();
+
+      // Cache the new data with a timestamp
+      setCache(CACHE_KEY, {
+        data,
+        timestamp: Date.now(),
+      });
+
       setDashboardData(data);
     } catch (error) {
       console.error("Error fetching home data:", error);
