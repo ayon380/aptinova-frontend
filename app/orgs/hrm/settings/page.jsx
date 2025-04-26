@@ -291,7 +291,7 @@ const OrganizationSettings = () => {
   ];
 
   return (
-    <div className="flex flex-col w-screen p-5 md:w-full bg-md-background ">
+    <div className="flex flex-col w-screen p-5 md:w-full  ">
       {refreshing && (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center items-start pt-2">
           <div className="bg-md-primary-container text-md-on-primary-container py-2 px-4 rounded-full shadow-md flex items-center">
@@ -302,7 +302,7 @@ const OrganizationSettings = () => {
       )}
 
       {/* Changed overflow-hidden to overflow-y-auto */}
-      <div className="flex flex-1 pt-2 md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container h-full overflow-y-auto">
+      <div className="flex flex-1 pt-2 md:pt-5 md:rounded-tl-3xl  h-full overflow-y-auto">
         {/* Added min-w-0 */}
         <div className="flex-1 flex flex-col h-full min-w-0">
           {/* Mobile TabView - Horizontal scrollable tabs */}

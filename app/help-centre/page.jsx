@@ -1,16 +1,63 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 const HelpCentre = () => {
   const [activeSection, setActiveSection] = useState("overview");
   const [activeCategory, setActiveCategory] = useState("general");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if we're on mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
+    
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
+
+  // Update active section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = document.querySelectorAll("section[id]");
+      const scrollPosition = window.scrollY + 100; // Add offset for header
+
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        if (
+          scrollPosition >= sectionTop &&
+          scrollPosition < sectionTop + sectionHeight
+        ) {
+          setActiveSection(section.id);
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      // Account for header height when scrolling
+      const headerHeight = 80; // Approximate header height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
       setActiveSection(sectionId);
     }
   };
@@ -18,13 +65,21 @@ const HelpCentre = () => {
   return (
     <div className="bg-md-background min-h-dvh">
       {/* Header */}
-      <header className="bg-md-surface-container py-6 px-4 md:px-8">
+      <header className="bg-md-surface-container sticky top-0 py-4 md:py-6 px-4 md:px-8 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center">
-              <span className="text-md-on-surface text-2xl font-bold">
-                AptInova
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-md-primary flex items-center justify-center relative overflow-hidden group">
+                  <span className="text-md-on-primary text-xl font-bold relative z-10">
+                    A
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-md-primary via-md-primary to-md-tertiary opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <span className="text-md-on-surface text-xl font-bold">
+                  Aptinova
+                </span>
+              </div>
             </Link>
             <Link
               href="/auth/login"
@@ -36,12 +91,42 @@ const HelpCentre = () => {
         </div>
       </header>
 
+      {/* Mobile Topics Navigation - Horizontal Scrollable */}
+      <div className="md:hidden sticky top-[72px] z-30 bg-md-background pt-4 pb-2 px-4">
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex space-x-2 pb-1 min-w-min">
+            {[
+              { id: "overview", label: "Overview" },
+              { id: "accounts", label: "Accounts" },
+              { id: "candidates", label: "Candidates" },
+              { id: "employers", label: "Employers" },
+              { id: "billing", label: "Billing" },
+              { id: "privacy", label: "Privacy" },
+              { id: "technical", label: "Technical" },
+              { id: "contact", label: "Contact" },
+            ].map((section) => (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm transition-colors ${
+                  activeSection === section.id
+                    ? "bg-md-primary-container text-md-on-primary-container font-medium"
+                    : "bg-md-surface-container text-md-on-surface-variant"
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar Navigation */}
-          <nav className="md:w-64 mb-8 md:mb-0">
-            <div className="bg-md-surface-container p-4 rounded-3xl sticky top-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-8">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+          {/* Sidebar Navigation - Desktop Only */}
+          <nav className="hidden md:block md:w-64 mb-8 md:mb-0">
+            <div className="bg-md-surface-container p-4 rounded-3xl sticky top-24">
               <h2 className="text-xl font-semibold mb-4 text-md-on-surface">
                 Help Topics
               </h2>
@@ -75,26 +160,26 @@ const HelpCentre = () => {
 
           {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-md-surface-container p-6 md:p-8 rounded-3xl">
+            <div className="bg-md-surface-container p-5 md:p-8 rounded-3xl">
               <motion.h1
-                className="text-3xl md:text-4xl font-bold mb-6 text-md-on-surface"
+                className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-md-on-surface"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
                 Help Centre
               </motion.h1>
-              <p className="text-md-on-surface-variant mb-8">
+              <p className="text-md-on-surface-variant mb-6 md:mb-8 text-sm md:text-base">
                 Find answers to common questions, learn how to use our platform,
                 and get in touch with our support team.
               </p>
 
-              <section id="overview" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="overview" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Overview
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8">
                   <div className="bg-md-surface-container-high p-6 rounded-2xl border border-md-outline hover:shadow-md transition-shadow">
                     <h3 className="text-xl font-medium mb-3 text-md-on-surface">
                       Getting Started
@@ -174,8 +259,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="accounts" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="accounts" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Account Management
                 </h2>
 
@@ -258,8 +343,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="candidates" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="candidates" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   For Candidates
                 </h2>
 
@@ -447,8 +532,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="employers" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="employers" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   For Employers
                 </h2>
 
@@ -545,8 +630,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="billing" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="billing" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Billing & Payments
                 </h2>
 
@@ -652,8 +737,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="privacy" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="privacy" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Privacy & Security
                 </h2>
 
@@ -729,8 +814,8 @@ const HelpCentre = () => {
                 </div>
               </section>
 
-              <section id="technical" className="mb-12">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+              <section id="technical" className="mb-8 md:mb-12">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Technical Issues
                 </h2>
 
@@ -815,7 +900,7 @@ const HelpCentre = () => {
               </section>
 
               <section id="contact" className="mb-8">
-                <h2 className="text-2xl font-semibold mb-6 text-md-on-surface">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-md-on-surface">
                   Contact Support
                 </h2>
 
@@ -1029,13 +1114,22 @@ const HelpCentre = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-md-surface-container py-8 px-4 md:px-8 mt-16">
+      <footer className="bg-md-surface-container py-6 md:py-8 px-4 md:px-8 mt-8 md:mt-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 text-md-on-surface">
-                AptInova
-              </h3>
+              <div className="flex mb-5 items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-md-primary flex items-center justify-center relative overflow-hidden group">
+                  <span className="text-md-on-primary text-xl font-bold relative z-10">
+                    A
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-md-primary via-md-primary to-md-tertiary opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <span className="text-md-on-surface text-xl font-bold">
+                  Aptinova
+                </span>
+              </div>
+              
               <p className="text-md-on-surface-variant">
                 Modern hiring solutions for candidates and companies.
               </p>
@@ -1117,7 +1211,7 @@ const HelpCentre = () => {
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-md-outline-variant text-center text-md-on-surface-variant">
+          <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-md-outline-variant text-center text-md-on-surface-variant text-sm md:text-base">
             <p>
               © {new Date().getFullYear()} AptInova, Inc. All rights reserved.
             </p>
@@ -1128,7 +1222,7 @@ const HelpCentre = () => {
       {/* Floating Action Button for mobile scroll to top */}
       <motion.button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed right-6 bottom-6 z-40 h-14 w-14 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center md:hidden"
+        className="fixed right-4 bottom-4 z-40 h-12 w-12 rounded-full bg-md-primary text-md-on-primary shadow-lg flex items-center justify-center md:hidden"
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.05 }}
         initial={{ opacity: 0 }}

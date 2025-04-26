@@ -1176,21 +1176,21 @@ export default function AnalyticsPage() {
               <table className="w-full min-w-[600px]"> 
                 <thead>
                   <tr className="text-left border-b border-md-outline">
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Stage</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Count</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Transition Rate</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Drop-off Rate</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Status</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Stage</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Count</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Transition Rate</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Drop-off Rate</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {predictiveData?.pipelineBottlenecks?.allStages?.map(
                     (stage, i) => (
-                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> {/* Removed last border */}
-                        <td className="py-3 text-sm text-md-on-surface">{stage.fromStage}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{stage.count}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{stage.transitionRate || "N/A"}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{stage.dropOffRate || "N/A"}</td> {/* Adjusted text style */}
+                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> 
+                        <td className="py-3 text-sm text-md-on-surface">{stage.fromStage}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{stage.count}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{stage.transitionRate || "N/A"}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{stage.dropOffRate || "N/A"}</td>
                         <td className="py-3">
                           {stage.isBottleneck ? (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-md-error-container text-md-on-error-container"> {/* Adjusted padding */}
@@ -1371,25 +1371,25 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto"> {/* Ensure this div wraps the table directly */}
-              <table className="w-full min-w-[700px]"> {/* Added min-width */}
+              <table className="w-full min-w-[700px]">
                 <thead>
                   <tr className="text-left border-b border-md-outline">
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviewer</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviews</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Avg Score</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Pass Rate</th> {/* Adjusted text style */}
-                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Effectiveness</th> {/* Adjusted text style */}
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviewer</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Interviews</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Avg Score</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Pass Rate</th>
+                    <th className="pb-2 text-sm font-medium text-md-on-surface-variant">Effectiveness</th>
                   </tr>
                 </thead>
                 <tbody>
                   {candidateQualityData?.interviewerAnalysis?.interviewers?.map(
                     (interviewer, i) => (
-                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> {/* Removed last border */}
-                        <td className="py-3 text-sm text-md-on-surface">{interviewer.name}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{interviewer.interviewCount}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{interviewer.avgScore}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface">{interviewer.passRate}</td> {/* Adjusted text style */}
-                        <td className="py-3 text-sm text-md-on-surface"> {/* Adjusted text style */}
+                      <tr key={i} className="border-b border-md-outline-variant last:border-b-0"> 
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.name}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.interviewCount}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.avgScore}</td>
+                        <td className="py-3 text-sm text-md-on-surface">{interviewer.passRate}</td>
+                        <td className="py-3 text-sm text-md-on-surface">
                           <div className="flex items-center gap-2"> {/* Added gap */}
                             <div className="w-full bg-md-surface-variant rounded-full h-2 flex-1"> {/* Added flex-1 */}
                               <div

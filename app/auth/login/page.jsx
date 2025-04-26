@@ -348,115 +348,127 @@ export default function Login() {
                 <label className="block text-md-on-surface-variant mb-2">
                   User Type
                 </label>
-                <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    showOrgOptions ? "opacity-0 hidden" : "opacity-100"
-                  }`}
-                >
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="relative">
+                  {/* User Type Tabs */}
+                  <div className="flex w-full rounded-full bg-md-surface-container-high mb-3 p-1 relative">
                     <button
                       type="button"
                       onClick={() => handleUserTypeSelect("candidate")}
-                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md transform hover:-translate-y-1 ${
-                        formData.userType === "candidate"
-                          ? "bg-md-primary-container text-md-on-primary-container border-2 border-md-primary shadow-md"
-                          : "bg-md-surface-container-high text-md-on-surface border border-md-outline hover:border-md-primary-container"
+                      className={`flex-1 relative py-2 rounded-full text-center transition-all duration-300 z-10 ${
+                        !showOrgOptions ? "text-md-on-primary" : "text-md-on-surface"
                       }`}
                     >
-                      <svg
-                        className="w-8 h-8 mb-2"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                      </svg>
-                      <span className="font-medium">Candidate</span>
+                      <span className="relative z-10">Candidate</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleUserTypeSelect("organization")}
-                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md transform hover:-translate-y-1 bg-md-surface-container-high text-md-on-surface border border-md-outline hover:border-md-primary-container`}
+                      onClick={() => setShowOrgOptions(true)}
+                      className={`flex-1 relative py-2 rounded-full text-center transition-all duration-300 z-10 ${
+                        showOrgOptions ? "text-md-on-primary" : "text-md-on-surface"
+                      }`}
                     >
-                      <svg
-                        className="w-8 h-8 mb-2"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-                      </svg>
-                      <span className="font-medium">Organization</span>
+                      <span className="relative z-10">Organization</span>
                     </button>
+                    
+                    {/* Slider background */}
+                    <div 
+                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-md-primary transition-all duration-300 ease-in-out ${
+                        showOrgOptions ? "left-[calc(50%+2px)]" : "left-1"
+                      }`}
+                    />
                   </div>
-                </div>
-
-                <div
-                  className={`transition-all duration-300 ease-in-out ${
-                    !showOrgOptions ? "opacity-0 hidden" : "opacity-100"
-                  } animate-fade-in`}
-                >
-                  <div className="mb-3 flex items-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowOrgOptions(false)}
-                      className="text-md-primary flex items-center transition-transform duration-200 hover:translate-x-[-4px]"
-                    >
-                      <svg
-                        className="w-5 h-5 mr-1"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                      </svg>
-                      Back
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({ ...prev, userType: "hr" }))
-                      }
-                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md transform hover:-translate-y-1 ${
-                        formData.userType === "hr"
-                          ? "bg-md-primary-container text-md-on-primary-container border-2 border-md-primary shadow-md"
-                          : "bg-md-surface-container-high text-md-on-surface border border-md-outline hover:border-md-primary-container"
+                  
+                  {/* Content Container with Sliding Animation */}
+                  <div className="relative overflow-hidden rounded-2xl h-[110px]">
+                    {/* Candidate Option */}
+                    <div 
+                      className={`absolute top-0 w-full h-full transition-all duration-300 ease-in-out ${
+                        showOrgOptions ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
                       }`}
                     >
-                      <svg
-                        className="w-8 h-8 mb-2"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" />
-                        <circle cx="9" cy="13" r="2" />
-                        <path d="M19 17.13v-2.13c0-1.25-.77-2.34-2-2.8l-2 2-2-2c-.63.23-1.12.67-1.45 1.21 1.4.72 2.45 2.12 2.45 3.72v1.87h5v-1.87z" />
-                      </svg>
-                      <span className="font-medium">HR</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          userType: "hrManager",
-                        }))
-                      }
-                      className={`p-4 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md transform hover:-translate-y-1 ${
-                        formData.userType === "hrManager"
-                          ? "bg-md-primary-container text-md-on-primary-container border-2 border-md-primary shadow-md"
-                          : "bg-md-surface-container-high text-md-on-surface border border-md-outline hover:border-md-primary-container"
+                      <div className="p-4 rounded-2xl bg-md-primary-container h-full flex items-center">
+                        <div className="flex items-center">
+                          <svg
+                            className="w-6 h-6 mr-3"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                          </svg>
+                          <div>
+                            <p className="font-medium text-md-on-primary-container">Candidate</p>
+                            <p className="text-sm text-md-on-primary-container/80">Looking for opportunities</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Organization Options */}
+                    <div 
+                      className={`absolute top-0 w-full h-full transition-all duration-300 ease-in-out ${
+                        showOrgOptions ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
                       }`}
                     >
-                      <svg
-                        className="w-8 h-8 mb-2"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        {/* Replaced SVG icon for HR Manager */}
-                        <path d="M16.5 12c1.38 0 2.5-1.12 2.5-2.5S17.88 7 16.5 7C15.12 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5zM9 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm7.5 3c-1.83 0-5.5.92-5.5 2.75V19h11v-2.25c0-1.83-3.67-2.75-5.5-2.75zM9 13c-2.33 0-7 1.17-7 3.5V19h7v-2.5c0-.85.33-2.34 2.37-3.49C10.48 13.06 9.75 13 9 13z" />
-                      </svg>
-                      <span className="font-medium">HR Manager</span>
-                    </button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, userType: "hr" }))}
+                          className={`p-3 rounded-2xl flex items-center transition-all duration-300 ${
+                            formData.userType === "hr"
+                              ? "bg-md-primary-container text-md-on-primary-container"
+                              : "bg-md-surface-container-high text-md-on-surface"
+                          }`}
+                        >
+                          <svg
+                            className="w-5 h-5 mr-2 flex-shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" />
+                            <circle cx="9" cy="13" r="2" />
+                            <path d="M19 17.13v-2.13c0-1.25-.77-2.34-2-2.8l-2 2-2-2c-.63.23-1.12.67-1.45 1.21 1.4.72 2.45 2.12 2.45 3.72v1.87h5v-1.87z" />
+                          </svg>
+                          <span className="font-medium text-sm">HR</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, userType: "hrManager" }))}
+                          className={`p-3 rounded-2xl flex items-center transition-all duration-300 ${
+                            formData.userType === "hrManager"
+                              ? "bg-md-primary-container text-md-on-primary-container"
+                              : "bg-md-surface-container-high text-md-on-surface"
+                          }`}
+                        >
+                          <svg
+                            className="w-5 h-5 mr-2 flex-shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M16.5 12c1.38 0 2.5-1.12 2.5-2.5S17.88 7 16.5 7C15.12 7 14 8.12 14 9.5s1.12 2.5 2.5 2.5zM9 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm7.5 3c-1.83 0-5.5.92-5.5 2.75V19h11v-2.25c0-1.83-3.67-2.75-5.5-2.75zM9 13c-2.33 0-7 1.17-7 3.5V19h7v-2.5c0-.85.33-2.34 2.37-3.49C10.48 13.06 9.75 13 9 13z" />
+                          </svg>
+                          <span className="font-medium text-sm">HR Manager</span>
+                        </button>
+                      </div>
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowOrgOptions(false);
+                            setFormData(prev => ({ ...prev, userType: "candidate" }));
+                          }}
+                          className="text-md-primary text-xs flex items-center hover:underline"
+                        >
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                          </svg>
+                          Back to Candidate
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <input

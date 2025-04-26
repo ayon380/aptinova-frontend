@@ -5,7 +5,10 @@
     "short_name": "Aptinova",
     "id": "Aptinova",
     "description": "Aptinova - Hiring Platform",
-    "display": "standalone",
+    "display": [
+        "windows-control-overlay",
+        "standalone"
+    ],
     "scope": "/",
     "shortcuts": [
         {
@@ -19,6 +22,17 @@
                     "type": "image/png"
                 }
             ]
+        }
+    ],
+    "handle_links": "preferred",
+    "scope_extensions": [
+        {
+            "origin": "*.aptinova.tech"
+        }
+    ],
+    "web_apps": [
+        {
+            "web_app_identity": "https://aptinova.tech/"
         }
     ],
     "start_url": "/home",

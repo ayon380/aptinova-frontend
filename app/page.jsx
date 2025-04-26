@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { useEffect, useState, useRef } from "react"
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
 
 const SUBSCRIPTION_PLANS = {
   CANDIDATE: {
@@ -14,8 +14,8 @@ const SUBSCRIPTION_PLANS = {
       features: [
         "Limited Profile Access",
         "Up to 3 tests per month",
-        "Basic Support"
-      ]
+        "Basic Support",
+      ],
     },
     PRO: {
       name: "Candidate Pro",
@@ -26,9 +26,9 @@ const SUBSCRIPTION_PLANS = {
         "Full Profile Access",
         "Unlimited tests",
         "Priority Matching",
-        "Priority Support"
-      ]
-    }
+        "Priority Support",
+      ],
+    },
   },
   HR_MANAGER: {
     FREE: {
@@ -36,7 +36,7 @@ const SUBSCRIPTION_PLANS = {
       amount: 0,
       period: "monthly",
       interval: 1,
-      features: ["Basic ATS", "Up to 3 job posts", "Limited Candidate Search"]
+      features: ["Basic ATS", "Up to 3 job posts", "Limited Candidate Search"],
     },
     STARTUP: {
       name: "HR Startup",
@@ -47,8 +47,8 @@ const SUBSCRIPTION_PLANS = {
         "Advanced ATS",
         "Up to 10 job posts",
         "Full AI Analysis",
-        "Email Support"
-      ]
+        "Email Support",
+      ],
     },
     ENTERPRISE: {
       name: "HR Enterprise",
@@ -60,8 +60,8 @@ const SUBSCRIPTION_PLANS = {
         "Unlimited job posts",
         "Full AI Analysis",
         "24/7 Support",
-        "Custom Branding"
-      ]
+        "Custom Branding",
+      ],
     },
     CUSTOM: {
       name: "HR Custom",
@@ -71,11 +71,11 @@ const SUBSCRIPTION_PLANS = {
         "Custom Features",
         "Custom Support Level",
         "White Labeling",
-        "API Access"
-      ]
-    }
-  }
-}
+        "API Access",
+      ],
+    },
+  },
+};
 
 // Features showcased on the landing page
 const features = [
@@ -83,39 +83,39 @@ const features = [
     title: "AI-Powered Assessments",
     description:
       "Accurately evaluate candidate skills and potential with our advanced AI testing engine.",
-    icon: "brain-circuit"
+    icon: "brain-circuit",
   },
   {
     title: "Bias-Free Hiring",
     description:
       "Eliminate unconscious bias with objective evaluation metrics that focus on skills and ability.",
-    icon: "balance-scale"
+    icon: "balance-scale",
   },
   {
     title: "Faster Time-to-Hire",
     description:
       "Reduce your hiring timeline by up to 70% with automated screening and intelligent matching.",
-    icon: "clock-fast"
+    icon: "clock-fast",
   },
   {
     title: "Smart Candidate Matching",
     description:
       "Our AI identifies the perfect candidates for your open positions based on skills, experience, and culture fit.",
-    icon: "puzzle-match"
+    icon: "puzzle-match",
   },
   {
     title: "Data-Driven Insights",
     description:
       "Gain valuable insights into your hiring process with comprehensive analytics and reporting.",
-    icon: "chart-insights"
+    icon: "chart-insights",
   },
   {
     title: "Seamless Integration",
     description:
       "Easily integrate with your existing HR systems to create a unified recruitment workflow.",
-    icon: "connect-systems"
-  }
-]
+    icon: "connect-systems",
+  },
+];
 
 // Testimonials showcased on the landing page
 const testimonials = [
@@ -125,7 +125,7 @@ const testimonials = [
     company: "TechGlobal Inc.",
     quote:
       "Aptinova has revolutionized our hiring process. We've reduced time-to-hire by 65% while significantly improving the quality of our hires.",
-    image: "/images/testimonial1.jpg"
+    image: "/images/testimonial1.jpg",
   },
   {
     name: "Michael Chen",
@@ -133,7 +133,7 @@ const testimonials = [
     company: "Hired via Aptinova",
     quote:
       "The assessment process was refreshingly relevant to the actual job. I felt evaluated on my real skills rather than arbitrary metrics.",
-    image: "/images/testimonial2.jpg"
+    image: "/images/testimonial2.jpg",
   },
   {
     name: "Priya Sharma",
@@ -141,107 +141,107 @@ const testimonials = [
     company: "FutureWorks Solutions",
     quote:
       "The AI-driven insights have helped us identify top talent we would have missed using traditional screening methods.",
-    image: "/images/testimonial3.jpg"
-  }
-]
+    image: "/images/testimonial3.jpg",
+  },
+];
 
 export default function Home() {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false);
   const [animatedStats, setAnimatedStats] = useState({
     hiring: 0,
     matching: 0,
-    costs: 0
-  })
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const earthRef = useRef(null)
+    costs: 0,
+  });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const earthRef = useRef(null);
   // const router = useRouter();
   useEffect(() => {
-    setIsLoaded(true)
+    setIsLoaded(true);
 
     // Initialize Earth animation
-    initEarthAnimation()
+    initEarthAnimation();
 
     // Animate stats on scroll
     const handleScroll = () => {
-      const statsSection = document.getElementById("stats-section")
+      const statsSection = document.getElementById("stats-section");
       if (
         statsSection &&
         window.scrollY > statsSection.offsetTop - window.innerHeight * 0.8
       ) {
-        animateStats()
-        window.removeEventListener("scroll", handleScroll)
+        animateStats();
+        window.removeEventListener("scroll", handleScroll);
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   // Function to initialize 3D Earth animation
   const initEarthAnimation = () => {
     if (typeof window !== "undefined") {
-      const earthContainer = earthRef.current
+      const earthContainer = earthRef.current;
       if (earthContainer) {
         // Add initialization for Earth animation
         // This is a placeholder for the animation setup
-        console.log("Earth animation initialized")
+        console.log("Earth animation initialized");
       }
     }
-  }
+  };
 
   // Function to animate stat counters
   const animateStats = () => {
-    const duration = 2000 // ms
-    const steps = 50
-    const stepTime = duration / steps
+    const duration = 2000; // ms
+    const steps = 50;
+    const stepTime = duration / steps;
 
-    let currentStep = 0
+    let currentStep = 0;
 
     const interval = setInterval(() => {
-      currentStep++
-      const progress = currentStep / steps
+      currentStep++;
+      const progress = currentStep / steps;
 
       setAnimatedStats({
         hiring: Math.floor(progress * 70),
         matching: Math.floor(progress * 85),
-        costs: Math.floor(progress * 50)
-      })
+        costs: Math.floor(progress * 50),
+      });
 
       if (currentStep === steps) {
-        clearInterval(interval)
+        clearInterval(interval);
       }
-    }, stepTime)
-  }
+    }, stepTime);
+  };
 
   // Toggle mobile menu
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
+    setMobileMenuOpen(!mobileMenuOpen);
     // Prevent body scroll when menu is open
-    document.body.style.overflow = !mobileMenuOpen ? "hidden" : "auto"
-  }
+    document.body.style.overflow = !mobileMenuOpen ? "hidden" : "auto";
+  };
 
   // Close mobile menu when clicking a link
   const closeMobileMenu = () => {
-    setMobileMenuOpen(false)
-    document.body.style.overflow = "auto"
-  }
+    setMobileMenuOpen(false);
+    document.body.style.overflow = "auto";
+  };
 
   // Function to scroll to section and close menu
-  const scrollToSection = sectionId => {
-    closeMobileMenu()
-    const section = document.getElementById(sectionId)
+  const scrollToSection = (sectionId) => {
+    closeMobileMenu();
+    const section = document.getElementById(sectionId);
     if (section) {
       window.scrollTo({
         top: section.offsetTop - 80, // Adjust for header height
-        behavior: "smooth"
-      })
+        behavior: "smooth",
+      });
     }
-  }
+  };
 
   // Function to render the appropriate icon for each feature
-  const renderFeatureIcon = iconName => {
+  const renderFeatureIcon = (iconName) => {
     switch (iconName) {
       case "brain-circuit":
         return (
@@ -261,7 +261,7 @@ export default function Home() {
             <circle cx="7" cy="9" r="1" />
             <circle cx="17" cy="9" r="1" />
           </svg>
-        )
+        );
       case "balance-scale":
         return (
           <svg
@@ -281,7 +281,7 @@ export default function Home() {
             <path d="M8 16a2 2 0 0 0 4 0" />
             <path d="M16 16a2 2 0 0 0 4 0" />
           </svg>
-        )
+        );
       case "clock-fast":
         return (
           <svg
@@ -299,7 +299,7 @@ export default function Home() {
             <path d="M19 3l1 1" />
             <path d="M21 6h-1" />
           </svg>
-        )
+        );
       case "puzzle-match":
         return (
           <svg
@@ -317,7 +317,7 @@ export default function Home() {
             <path d="M10 4l2 3 2-3" />
             <path d="M10 20l2-3 2 3" />
           </svg>
-        )
+        );
       case "chart-insights":
         return (
           <svg
@@ -334,7 +334,7 @@ export default function Home() {
             <path d="M8 15l3-3 2 2 4-4" />
             <circle cx="19" cy="5" r="2" />
           </svg>
-        )
+        );
       case "connect-systems":
         return (
           <svg
@@ -353,9 +353,9 @@ export default function Home() {
             <path d="M8 7h6" />
             <path d="M11 7v7" />
           </svg>
-        )
+        );
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-md-background overflow-hidden">
@@ -1148,7 +1148,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-4xl font-bold text-md-on-primary-container">
-                    ₹{SUBSCRIPTION_PLANS.CANDIDATE.PRO.amount }
+                    ₹{SUBSCRIPTION_PLANS.CANDIDATE.PRO.amount}
                   </span>
                   <span className="text-md-on-primary-container opacity-70 ml-2">
                     /month
@@ -1241,7 +1241,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-3xl font-bold text-md-on-surface">
-                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.STARTUP.amount }
+                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.STARTUP.amount}
                   </span>
                   <span className="text-md-on-surface-variant ml-2">
                     /month
@@ -1289,7 +1289,7 @@ export default function Home() {
                 </h4>
                 <div className="flex items-baseline mb-6">
                   <span className="text-3xl font-bold text-md-on-primary-container">
-                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.ENTERPRISE.amount }
+                    ₹{SUBSCRIPTION_PLANS.HR_MANAGER.ENTERPRISE.amount}
                   </span>
                   <span className="text-md-on-primary-container opacity-70 ml-2">
                     /month
@@ -1564,17 +1564,25 @@ export default function Home() {
             <div>
               <h4 className="text-md-on-surface font-semibold mb-4">Contact</h4>
               <ul className="space-y-2">
-                <li className="text-md-on-surface-variant">
-                  connectonmuse@gmail.com
-                </li>
-                <li className="text-md-on-surface-variant">+91 8100211809</li>
+                <a
+                  className="text-md-on-surface-variant"
+                  href="mailto:aptinovacare@gmail.com"
+                >
+                  aptinovacare@gmail.com
+                </a>
+                <a
+                  className="text-md-on-surface-variant"
+                  href="tel:+91-8100211809"
+                >
+                  +91 8100211809
+                </a>
                 <li className="text-md-on-surface-variant">
                   Kolkata - 700081, NSCBI, IND
                 </li>
               </ul>
               <div className="flex space-x-4 mt-4">
-                <a
-                  href="#"
+                {/* <a
+                  href="https://www.linkedin.com/company/aptinova"
                   className="text-md-on-surface-variant hover:text-md-primary transition-colors duration-300 transform hover:scale-110"
                   aria-label="Twitter"
                 >
@@ -1586,9 +1594,9 @@ export default function Home() {
                   >
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
                   </svg>
-                </a>
+                </a> */}
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/in/ayon380/"
                   className="text-md-on-surface-variant hover:text-md-primary transition-colors duration-300 transform hover:scale-110"
                   aria-label="LinkedIn"
                 >
@@ -1602,7 +1610,8 @@ export default function Home() {
                   </svg>
                 </a>
                 <a
-                  href="#"
+                  href="https://github.com/ayon380/aptinova-frontend"
+                  target="_blank"
                   className="text-md-on-surface-variant hover:text-md-primary transition-colors duration-300 transform hover:scale-110"
                   aria-label="GitHub"
                 >
@@ -1616,7 +1625,8 @@ export default function Home() {
                   </svg>
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/ayon380/"
+                   target="_blank"
                   className="text-md-on-surface-variant hover:text-md-primary transition-colors duration-300 transform hover:scale-110"
                   aria-label="Instagram"
                 >
@@ -2294,5 +2304,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }

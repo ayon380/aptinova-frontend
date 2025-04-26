@@ -105,9 +105,9 @@ const Page = () => {
           if (data.userType === "candidate") {
             router.push("/candidate/home");
           } else if (data.userType === "hr") {
-            router.push("/orgs/hr/profile");
+            router.push("/orgs/hr/dashboard");
           } else if (data.userType === "hrManager") {
-            router.push("/orgs/hrm/profile");
+            router.push("/orgs/hrm/dashboard");
           }
           return;
         } else {
@@ -124,9 +124,9 @@ const Page = () => {
       if (data.userType === "candidate") {
         router.push("/candidate/home");
       } else if (data.userType === "hr") {
-        router.push("/orgs/hr/profile");
+        router.push("/orgs/hr/dashboard");
       } else if (data.userType === "hrManager") {
-        router.push("/orgs/hrm/profile");
+        router.push("/orgs/hrm/dashboard");
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
@@ -153,9 +153,9 @@ const Page = () => {
       if (userType === "candidate") {
         router.push("/candidate/home");
       } else if (userType === "hr") {
-        router.push("/orgs/hr/profile");
+        router.push("/orgs/hr/dashboard");
       } else if (userType === "hrManager") {
-        router.push("/orgs/hrm/profile");
+        router.push("/orgs/hrm/dashboard");
       }
     }
   }, []);
