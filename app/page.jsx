@@ -423,6 +423,13 @@ export default function Home() {
               Testimonials
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
             </button>
+            <Link
+              href="/downloads"
+              className="text-md-on-surface hover:text-md-primary transition-colors relative group"
+            >
+              Downloads
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
           </div>
 
           <div className="hidden md:flex space-x-4 items-center">
@@ -441,9 +448,9 @@ export default function Home() {
               <span className="absolute inset-0 bg-md-primary-container scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
           </div>
-          
+
           {/* Mobile menu button - properly positioned */}
-          <button 
+          <button
             onClick={() => setMobileMenuOpen(true)}
             className="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-md-surface-variant transition-colors"
             aria-label="Open menu"
@@ -452,10 +459,10 @@ export default function Home() {
           </button>
         </div>
       </nav>
-      
+
       {/* Add spacing to account for fixed navbar */}
       <div className="pt-16"></div>
-      
+
       {/* Mobile Menu Overlay with improved animations */}
       <div
         className={`fixed inset-0 bg-md-scrim/60 z-50 transition-opacity duration-300 md:hidden ${
@@ -463,7 +470,7 @@ export default function Home() {
         }`}
         onClick={closeMobileMenu}
       >
-        <div 
+        <div
           className={`absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-md-surface-bright shadow-2xl transition-transform duration-300 ease-in-out ${
             mobileMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
@@ -476,7 +483,7 @@ export default function Home() {
               </div>
               <span className="text-md-on-surface font-medium">Aptinova</span>
             </div>
-            <button 
+            <button
               onClick={closeMobileMenu}
               className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-md-surface-variant transition-colors"
               aria-label="Close menu"
@@ -510,6 +517,13 @@ export default function Home() {
             >
               Testimonials
             </button>
+            <Link
+              href="/downloads"
+              onClick={closeMobileMenu}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden block"
+            >
+              Downloads
+            </Link>
           </div>
 
           <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-md-outline-variant">
@@ -1358,6 +1372,175 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Add the Mobile App Download Section before the CTA Section */}
+      <section className="py-16 md:py-24 bg-md-surface-container overflow-hidden relative">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-md-primary opacity-5 animate-pulse"></div>
+          <div className="absolute bottom-20 left-10 w-40 h-40 rounded-full bg-md-tertiary opacity-5 animate-float-delay"></div>
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-10 md:mb-0">
+              <div className="relative mx-auto md:ml-auto md:mr-0 w-[240px] h-[480px] transform rotate-[-5deg] transition-all duration-500 hover:rotate-0 hover:scale-105">
+                {/* Phone frame */}
+                <div className="absolute inset-0 bg-gray-900 rounded-[2.5rem] shadow-2xl"></div>
+
+                {/* Screen bezel */}
+                <div className="absolute inset-[3px] bg-gray-800 rounded-[2.4rem]"></div>
+
+                {/* Screen */}
+                <div className="absolute inset-[8px] rounded-[2.2rem] overflow-hidden bg-gradient-to-br from-md-primary to-md-tertiary flex items-center justify-center">
+                  <div className="absolute inset-0 flex flex-col">
+                    {/* Status bar */}
+                    <div className="h-6 w-full bg-black/30 flex items-center justify-between px-4">
+                      <div className="text-white text-xs">9:41</div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      </div>
+                    </div>
+
+                    {/* App content */}
+                    <div className="flex-1 p-4 flex flex-col items-center justify-center">
+                      <div className="h-16 w-16 rounded-xl bg-white flex items-center justify-center mb-4">
+                        <span className="text-md-primary text-3xl font-bold">
+                          A
+                        </span>
+                      </div>
+                      <h3 className="text-white text-xl font-bold mb-1">
+                        Aptinova
+                      </h3>
+                      <p className="text-white/80 text-sm text-center mb-6">
+                        Your hiring companion on the go
+                      </p>
+
+                      <div className="w-full h-1 bg-white/20 my-4 rounded-full"></div>
+
+                      <div className="w-full bg-white/10 rounded-lg p-3 mb-3">
+                        <div className="h-2 w-1/2 bg-white/30 rounded-full mb-2"></div>
+                        <div className="h-8 w-full bg-white/20 rounded-md"></div>
+                      </div>
+
+                      <div className="w-full bg-white/10 rounded-lg p-3">
+                        <div className="h-2 w-1/3 bg-white/30 rounded-full mb-2"></div>
+                        <div className="h-8 w-full bg-white/20 rounded-md"></div>
+                      </div>
+                    </div>
+
+                    {/* Navigation bar */}
+                    <div className="h-12 bg-black/30 flex justify-around items-center">
+                      <div className="w-6 h-6 rounded-full bg-white/80"></div>
+                      <div className="w-6 h-6 rounded-full bg-white/30"></div>
+                      <div className="w-6 h-6 rounded-full bg-white/30"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notch */}
+                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-24 h-5 bg-gray-900 rounded-b-xl z-10"></div>
+
+                {/* Animated glowing effect */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-md-primary/20 via-transparent to-md-tertiary/20 rounded-[4rem] filter blur-xl opacity-70 animate-pulse-slow -z-10"></div>
+              </div>
+            </div>
+
+            <div className="md:w-1/2 md:pl-12">
+              <div className="inline-block bg-md-tertiary/10 text-md-tertiary px-4 py-1 rounded-full text-sm font-medium mb-4">
+                New Release
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-md-on-surface mb-6">
+                Aptinova for Android
+              </h2>
+              <p className="text-xl text-md-on-surface-variant mb-6">
+                Take your recruitment on the go with our powerful mobile app.
+                Access candidates, manage interviews, and stay updated with
+                real-time notifications.
+              </p>
+
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start">
+                  <svg
+                    className="h-6 w-6 text-md-primary mr-2 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span className="text-md-on-surface-variant">
+                    Stay connected with candidates anywhere
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <svg
+                    className="h-6 w-6 text-md-primary mr-2 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span className="text-md-on-surface-variant">
+                    Receive instant notifications on applications
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <svg
+                    className="h-6 w-6 text-md-primary mr-2 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span className="text-md-on-surface-variant">
+                    Review resumes and profiles offline
+                  </span>
+                </li>
+              </ul>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/downloads"
+                  className="px-8 py-3 rounded-full bg-md-primary text-md-on-primary text-center hover:bg-md-primary-container hover:text-md-on-primary-container transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group"
+                >
+                  <span className="relative z-10">Download Now</span>
+                  <span className="absolute inset-0 bg-md-primary-container scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
+                </Link>
+
+                <div className="text-md sm:pt-3 text-md-on-surface-variant">
+                  Version 1.0.2 | 15.4 MB
+                </div>
+              </div>
+
+              <div className="mt-6 text-sm text-md-on-surface-variant">
+                <span className="font-medium">Coming soon: </span>
+                iOS app, Windows & macOS versions
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       {/* Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 bg-md-surface">
         <div className="container mx-auto px-6">
@@ -1411,7 +1594,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 md:py-24 bg-md-primary-container">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-md-on-primary-container mb-6">
