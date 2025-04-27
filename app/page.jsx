@@ -3,6 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
+import {
+  Menu,
+  MenuIcon,
+  PanelTopClose,
+  SidebarClose,
+  SidebarCloseIcon,
+} from "lucide-react";
 
 const SUBSCRIPTION_PLANS = {
   CANDIDATE: {
@@ -372,7 +379,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-md-background overflow-x-hidden">
       {/* Navbar with working mobile responsiveness */}
-      <nav className="bg-md-surface/90 backdrop-blur-md px-4 sm:px-6 py-4 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-md-surface/90 backdrop-blur-md px-4 sm:px-6 py-4 fixed top-0 left-0 right-0 w-full z-50 shadow-sm">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-md-primary flex items-center justify-center relative overflow-hidden group">
@@ -384,48 +391,6 @@ export default function Home() {
             <span className="text-md-on-surface text-xl font-bold">
               Aptinova
             </span>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              className="p-2 rounded-full text-md-on-surface focus:outline-none focus:ring-2 focus:ring-md-primary relative"
-              onClick={toggleMobileMenu}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -476,89 +441,101 @@ export default function Home() {
               <span className="absolute inset-0 bg-md-primary-container scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
           </div>
-        </div>
-
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div
-            className={`fixed inset-0 bg-md-background/95 backdrop-blur-md z-40 transition-transform duration-300 md:hidden ${
-              mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-            }`}
-            role="dialog"
-            aria-modal="true"
+          
+          {/* Mobile menu button - properly positioned */}
+          <button 
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-md-surface-variant transition-colors"
+            aria-label="Open menu"
           >
-            <div className="container mx-auto px-4 py-8 h-full flex flex-col">
-              <div className="flex justify-end mb-8">
-                <button
-                  onClick={closeMobileMenu}
-                  className="p-2 rounded-full text-md-on-surface hover:bg-md-surface-variant transition-colors relative"
-                  aria-label="Close menu"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+            <MenuIcon className="text-md-on-surface" />
+          </button>
+        </div>
+      </nav>
+      
+      {/* Add spacing to account for fixed navbar */}
+      <div className="pt-16"></div>
+      
+      {/* Mobile Menu Overlay with improved animations */}
+      <div
+        className={`fixed inset-0 bg-md-scrim/60 z-50 transition-opacity duration-300 md:hidden ${
+          mobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={closeMobileMenu}
+      >
+        <div 
+          className={`absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-md-surface-bright shadow-2xl transition-transform duration-300 ease-in-out ${
+            mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-4 flex justify-between items-center border-b border-md-outline-variant">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-md-primary flex items-center justify-center">
+                <span className="text-md-on-primary text-lg font-bold">A</span>
               </div>
+              <span className="text-md-on-surface font-medium">Aptinova</span>
+            </div>
+            <button 
+              onClick={closeMobileMenu}
+              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-md-surface-variant transition-colors"
+              aria-label="Close menu"
+            >
+              <SidebarClose className="text-md-on-surface" />
+            </button>
+          </div>
 
-              <div className="flex flex-col space-y-6 text-center mt-8">
-                <button
-                  onClick={() => scrollToSection("features")}
-                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-                >
-                  Features
-                </button>
-                <button
-                  onClick={() => scrollToSection("how-it-works")}
-                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-                >
-                  How It Works
-                </button>
-                <button
-                  onClick={() => scrollToSection("pricing")}
-                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-                >
-                  Pricing
-                </button>
-                <button
-                  onClick={() => scrollToSection("testimonials")}
-                  className="text-md-on-surface text-2xl font-medium py-2 border-b border-md-outline-variant hover:text-md-primary transition-colors"
-                >
-                  Testimonials
-                </button>
-              </div>
+          <div className="p-4 flex flex-col space-y-2">
+            <button
+              onClick={() => scrollToSection("features")}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => scrollToSection("how-it-works")}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => scrollToSection("pricing")}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden"
+            >
+              Pricing
+            </button>
+            <button
+              onClick={() => scrollToSection("testimonials")}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden"
+            >
+              Testimonials
+            </button>
+          </div>
 
-              <div className="mt-auto mb-10 flex flex-col space-y-4">
-                <Link
-                  href="/auth/login"
-                  onClick={closeMobileMenu}
-                  className="w-full px-6 py-3 rounded-full border-2 border-md-outline text-md-on-surface hover:bg-md-surface-variant transition-colors text-center text-lg font-medium"
-                >
-                  Log In
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  onClick={closeMobileMenu}
-                  className="w-full px-6 py-3 rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors text-center text-lg font-medium"
-                >
-                  Sign Up
-                </Link>
-              </div>
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-md-outline-variant">
+            <div className="flex flex-col space-y-3">
+              <Link
+                href="/auth/login"
+                onClick={closeMobileMenu}
+                className="w-full px-4 py-3 rounded-3xl border border-md-outline text-md-primary text-center font-medium hover:bg-md-primary-container/10 transition-colors"
+              >
+                Log In
+              </Link>
+              <Link
+                href="/auth/signup"
+                onClick={closeMobileMenu}
+                className="w-full px-4 py-3 rounded-3xl bg-md-primary text-md-on-primary text-center font-medium hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors"
+              >
+                Sign Up
+              </Link>
             </div>
           </div>
-        )}
-      </nav>
+        </div>
+      </div>
 
+      {/* Remove the old mobile menu */}
+
+      {/* Rest of the page content */}
       {/* Hero Section with 3D Earth Animation */}
       <section
         className={`relative bg-gradient-to-r from-md-primary-container to-md-tertiary-container overflow-hidden transition-opacity duration-1000 min-h-[90vh] flex items-center ${
@@ -1635,7 +1612,7 @@ export default function Home() {
                 </a>
                 <a
                   href="https://www.instagram.com/ayon380/"
-                   target="_blank"
+                  target="_blank"
                   className="text-md-on-surface-variant hover:text-md-primary transition-colors duration-300 transform hover:scale-110"
                   aria-label="Instagram"
                 >

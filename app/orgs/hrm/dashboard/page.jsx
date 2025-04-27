@@ -161,7 +161,7 @@ export default function HRMDashboard() {
   }
 
   return (
-    <div className=" overflow-y-scroll min-h-screen p-4 md:p-6"> {/* Keep padding as is, seems reasonable */}
+    <div className=" overflow-y-scroll overflow-x-hidden w-screen md:w-full p-4 md:p-6"> {/* Keep padding as is, seems reasonable */}
       {dashboardData && (
         <div className="max-w-screen-2xl mx-auto">
           {/* Summary Cards Row */}

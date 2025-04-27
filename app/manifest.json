@@ -5,10 +5,11 @@
     "short_name": "Aptinova",
     "id": "Aptinova",
     "description": "Aptinova - Hiring Platform",
-    "display": [
+    "display_override": [
         "windows-control-overlay",
         "standalone"
     ],
+    "display": "standalone",
     "scope": "/",
     "shortcuts": [
         {
