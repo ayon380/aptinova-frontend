@@ -100,7 +100,7 @@ export default function JobDetailsPage() {
   const hiringProcess = job?.hiringProcess ? JSON.parse(job.hiringProcess) : [];
 
   return (
-    <div className="container mx-auto md:bg-md-surface-container min-h-screen w-full px-3 py-4 md:p-6 lg:p-10 md:py-8 rounded-tl-3xl">
+    <div className="container overflow-y-scroll  h-full mx-auto md:bg-md-surface-container w-full px-3 py-4 md:p-6 lg:p-10 md:py-8 rounded-tl-3xl">
       {/* Back Button and Refresh Button */}
       <div className="flex justify-between items-center mb-3 md:mb-6">
         <button

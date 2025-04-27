@@ -679,9 +679,9 @@ export default function ApplicantsPage() {
   }, []); // Dependencies: setSelectedApplicants, setShowHiringTestModal (usually stable)
 
   return (
-    <div className="flex  flex-col h-full overflow-y-scroll w-full">
-      <div className="md:pt-5 md:rounded-tl-3xl md:bg-md-surface-container md:p-10 flex-grow overflow-auto flex flex-col">
-        <div className="container  h-full overflow-y-scroll mx-auto px-4 py-8 relative flex flex-col flex-grow">
+    <div className="flex flex-col h-full w-full"> {/* Removed overflow-y-scroll */}
+      <div className="md:pt-5  w-full h-full  md:p-10 flex-grow overflow-auto flex flex-col"> {/* Keep overflow-auto */}
+        <div className="container h-full w-full mx-auto px-4 py-8 relative flex flex-col flex-grow"> {/* Removed overflow-y-scroll */}
           <Link
             href={`/orgs/hrm/jobs/${params.jobid}`}
             className="inline-flex items-center gap-2 mb-6 text-md-on-surface-variant hover:text-md-primary transition-colors p-2 rounded-lg hover:bg-md-surface-container-high"

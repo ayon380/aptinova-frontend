@@ -1,8 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react"; // Import useRef
-import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion"; // Ensure framer-motion is imported
 import useStore from "../store"; // Assuming this path is correct for your project
 
@@ -141,7 +140,7 @@ const ThemeToggle = ({ activeTheme, onThemeChange }) => {
         >
           {/* AnimatePresence allows smooth transition between icons */}
           <AnimatePresence initial={false} mode="wait">
-             {indicators[activeTheme]}
+            {indicators[activeTheme]}
           </AnimatePresence>
         </motion.div>
       </div>
@@ -154,6 +153,7 @@ export default function AppHeader() {
   // State for controlling the profile menu visibility
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const router = useRouter(); // Next.js router hook
+  const pathname = usePathname(); // Get current path
   // Zustand store hook for global state (userdata, title, theme)
   const { userdata, title, theme, setTheme } = useStore();
   // Ref for the mobile bottom sheet element to get its height if needed
@@ -162,8 +162,25 @@ export default function AppHeader() {
   // Color mapping for different subscription tiers
   const tierColors = {
     free: "bg-md-tertiary-container", // Example color class
-    pro: "bg-md-primary-container",   // Example color class
+    pro: "bg-md-primary-container", // Example color class
     enterprise: "bg-md-secondary-container", // Example color class
+  };
+
+  // Function to determine the dynamic profile path based on current URL
+  const getProfilePath = () => {
+    if (pathname.includes('/orgs/hrm')) {
+      return '/orgs/hrm/profile';
+    } else if (pathname.includes('/orgs/hr')) {
+      return '/orgs/hr/profile';
+    } else {
+      return '/candidate/profile';
+    }
+  };
+
+  // Function to navigate to profile page
+  const handleProfileNavigation = () => {
+    setShowProfileMenu(false);
+    router.push(getProfilePath());
   };
 
   // Function to handle user logout
@@ -186,7 +203,7 @@ export default function AppHeader() {
       localStorage.removeItem("aptinova-storage"); // Clear Zustand persisted state if applicable
       // Redirect to the login page
       router.push("/auth/login");
-       // Optionally reset Zustand state if needed
+      // Optionally reset Zustand state if needed
       // useStore.setState({ userdata: null, /* other relevant state resets */ });
     }
   };
@@ -245,16 +262,18 @@ export default function AppHeader() {
     // and because the `showProfileMenu` state remains true.
   };
 
-
   return (
     <>
       {/* Header Bar */}
-      <header className="bg-md-surface top-0 z-30 h-16 flex items-center px-4 sticky"> {/* Made header sticky */}
+      <header className="bg-md-surface top-0 z-30 h-16 flex items-center px-4 sticky">
+        {" "}
+        {/* Made header sticky */}
         {/* Page Title */}
-        <h1 className="text-2xl md:text-2xl lg:text-3xl font-medium text-md-on-surface mr-auto truncate"> {/* Adjusted text size and added truncate */}
+        <h1 className="text-2xl md:text-2xl lg:text-3xl font-medium text-md-on-surface mr-auto truncate">
+          {" "}
+          {/* Adjusted text size and added truncate */}
           {title || "Dashboard"} {/* Fallback title */}
         </h1>
-
         {/* Profile Picture Button */}
         <motion.button
           onClick={() => setShowProfileMenu(true)}
@@ -272,21 +291,29 @@ export default function AppHeader() {
           >
             {/* User Profile Image or Initials */}
             {userdata?.profilePicture ? (
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-md-surface"> {/* Added background for consistency */}
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-md-surface">
+                {" "}
+                {/* Added background for consistency */}
                 <Image
                   src={userdata.profilePicture}
-                  alt={`${userdata.firstName || 'User'}'s profile`} // Added fallback alt text
+                  alt={`${userdata.firstName || "User"}'s profile`} // Added fallback alt text
                   width={40}
                   height={40}
                   className="object-cover w-full h-full"
-                  onError={(e) => e.currentTarget.style.display = 'none'} // Hide image on error
+                  onError={(e) => (e.currentTarget.style.display = "none")} // Hide image on error
                 />
-                 {/* Fallback initials if image fails to load */}
-                 <div className={`w-10 h-10 rounded-full ${tierColors[userdata.tier] || 'bg-md-surface-variant'} flex items-center justify-center absolute top-0 left-0 -z-10`}>
-                    <span className="text-md-on-surface text-lg font-medium">
-                       {userdata?.firstName?.charAt(0) || userdata?.email?.charAt(0)?.toUpperCase() || "?"}
-                    </span>
-                 </div>
+                {/* Fallback initials if image fails to load */}
+                <div
+                  className={`w-10 h-10 rounded-full ${
+                    tierColors[userdata.tier] || "bg-md-surface-variant"
+                  } flex items-center justify-center absolute top-0 left-0 -z-10`}
+                >
+                  <span className="text-md-on-surface text-lg font-medium">
+                    {userdata?.firstName?.charAt(0) ||
+                      userdata?.email?.charAt(0)?.toUpperCase() ||
+                      "?"}
+                  </span>
+                </div>
               </div>
             ) : (
               // Fallback initials display
@@ -302,7 +329,9 @@ export default function AppHeader() {
 
           {/* Subscription Badge (Pro/Enterprise) */}
           {userdata?.tier && userdata.tier !== "free" && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-md-primary flex items-center justify-center text-[10px] text-md-on-primary font-bold ring-2 ring-md-surface"> {/* Adjusted size, added ring */}
+            <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-md-primary flex items-center justify-center text-[10px] text-md-on-primary font-bold ring-2 ring-md-surface">
+              {" "}
+              {/* Adjusted size, added ring */}
               {userdata.tier === "pro" ? "P" : "E"}
             </div>
           )}
@@ -333,7 +362,8 @@ export default function AppHeader() {
               initial={{ y: "100%" }} // Start position (off-screen bottom)
               animate={{ y: 0 }} // End position (at the bottom edge)
               exit={{ y: "100%" }} // Exit position (off-screen bottom)
-              transition={{ // Spring animation for smooth opening/closing
+              transition={{
+                // Spring animation for smooth opening/closing
                 type: "spring",
                 damping: 25,
                 stiffness: 300,
@@ -349,55 +379,77 @@ export default function AppHeader() {
               aria-labelledby="profile-menu-title-mobile"
             >
               {/* Drag Handle Indicator */}
-              <div className="flex justify-center py-2 cursor-grab active:cursor-grabbing" aria-hidden="true"> {/* Added cursor styles */}
+              <div
+                className="flex justify-center py-2 cursor-grab active:cursor-grabbing"
+                aria-hidden="true"
+              >
+                {" "}
+                {/* Added cursor styles */}
                 <div className="w-12 h-1.5 rounded-full bg-md-outline-variant"></div>
               </div>
 
               {/* Content inside the bottom sheet */}
-              <div className="p-4 pt-0"> {/* Adjusted padding */}
+              <div className="p-4 pt-0">
+                {" "}
+                {/* Adjusted padding */}
                 {/* User Info Section */}
                 <div className="flex items-center space-x-4 p-2 mb-4">
-                   {/* Profile Picture or Initials */}
-                   {userdata?.profilePicture ? (
-                     <div className="w-14 h-14 rounded-full overflow-hidden relative bg-md-surface-container-high">
-                       <Image
-                         src={userdata.profilePicture}
-                         alt="Profile" // Alt text should be descriptive
-                         width={56}
-                         height={56}
-                         className="object-cover w-full h-full"
-                         onError={(e) => e.currentTarget.style.display = 'none'} // Hide on error
-                       />
-                        {/* Fallback initials if image fails */}
-                        <div className={`w-14 h-14 rounded-full ${tierColors[userdata.tier] || 'bg-md-surface-container-high'} flex items-center justify-center absolute top-0 left-0 -z-10`}>
-                          <span className="text-md-on-surface text-xl font-medium">
-                            {userdata?.firstName?.charAt(0) || userdata?.email?.charAt(0)?.toUpperCase() || "?"}
-                          </span>
-                        </div>
-                     </div>
-                   ) : (
-                     <div className="w-14 h-14 rounded-full bg-md-surface-container-high flex items-center justify-center">
-                       <span className="text-md-on-surface text-xl font-medium">
-                         {userdata?.firstName?.charAt(0) ||
-                           userdata?.email?.charAt(0)?.toUpperCase() ||
-                           "?"}
-                       </span>
-                     </div>
-                   )}
-                   {/* Name and Email */}
-                   <div className="flex-1 truncate"> {/* Allow text truncation */}
-                     <h3 id="profile-menu-title-mobile" className="font-medium text-md-on-surface truncate">
-                       {userdata?.firstName
-                         ? `${userdata.firstName} ${userdata.lastName || ""}`
-                         : userdata?.email || "User Profile"} {/* Fallback title */}
-                     </h3>
-                     <p className="text-sm text-md-on-surface-variant truncate">
-                       {userdata?.email}
-                     </p>
-                     {/* Subscription Tier Badge */}
-                     {userdata?.tier && (
-                       <div
-                         className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium
+                  {/* Profile Picture or Initials */}
+                  {userdata?.profilePicture ? (
+                    <div className="w-14 h-14 rounded-full overflow-hidden relative bg-md-surface-container-high">
+                      <Image
+                        src={userdata.profilePicture}
+                        alt="Profile" // Alt text should be descriptive
+                        width={56}
+                        height={56}
+                        className="object-cover w-full h-full"
+                        onError={(e) =>
+                          (e.currentTarget.style.display = "none")
+                        } // Hide on error
+                      />
+                      {/* Fallback initials if image fails */}
+                      <div
+                        className={`w-14 h-14 rounded-full ${
+                          tierColors[userdata.tier] ||
+                          "bg-md-surface-container-high"
+                        } flex items-center justify-center absolute top-0 left-0 -z-10`}
+                      >
+                        <span className="text-md-on-surface text-xl font-medium">
+                          {userdata?.firstName?.charAt(0) ||
+                            userdata?.email?.charAt(0)?.toUpperCase() ||
+                            "?"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-md-surface-container-high flex items-center justify-center">
+                      <span className="text-md-on-surface text-xl font-medium">
+                        {userdata?.firstName?.charAt(0) ||
+                          userdata?.email?.charAt(0)?.toUpperCase() ||
+                          "?"}
+                      </span>
+                    </div>
+                  )}
+                  {/* Name and Email */}
+                  <div className="flex-1 truncate">
+                    {" "}
+                    {/* Allow text truncation */}
+                    <h3
+                      id="profile-menu-title-mobile"
+                      className="font-medium text-md-on-surface truncate"
+                    >
+                      {userdata?.firstName
+                        ? `${userdata.firstName} ${userdata.lastName || ""}`
+                        : userdata?.email || "User Profile"}{" "}
+                      {/* Fallback title */}
+                    </h3>
+                    <p className="text-sm text-md-on-surface-variant truncate">
+                      {userdata?.email}
+                    </p>
+                    {/* Subscription Tier Badge */}
+                    {userdata?.tier && (
+                      <div
+                        className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium
                            ${
                              userdata.tier === "pro"
                                ? "bg-md-primary-container text-md-on-primary-container"
@@ -405,18 +457,19 @@ export default function AppHeader() {
                                ? "bg-md-secondary-container text-md-on-secondary-container"
                                : "bg-md-tertiary-container text-md-on-tertiary-container"
                            }`}
-                       >
-                         {userdata.tier.charAt(0).toUpperCase() +
-                           userdata.tier.slice(1)}{" "}
-                         Plan
-                       </div>
-                     )}
-                   </div>
+                      >
+                        {userdata.tier.charAt(0).toUpperCase() +
+                          userdata.tier.slice(1)}{" "}
+                        Plan
+                      </div>
+                    )}
+                  </div>
                 </div>
-
                 {/* Divider */}
                 <div className="border-t border-md-outline-variant">
-                  <nav className="py-2 space-y-1"> {/* Adjusted padding and spacing */}
+                  <nav className="py-2 space-y-5">
+                    {" "}
+                    {/* Adjusted padding and spacing */}
                     {/* Theme Selector Section */}
                     <div className="px-4 py-3">
                       <div className="flex items-center mb-3">
@@ -441,7 +494,11 @@ export default function AppHeader() {
                       <motion.div
                         initial={{ y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
+                        transition={{
+                          delay: 0.15,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
                       >
                         <ThemeToggle
                           activeTheme={theme}
@@ -456,69 +513,88 @@ export default function AppHeader() {
                         className="mt-2 grid grid-cols-3 gap-2"
                         aria-hidden="true" // Hide decorative labels
                       >
-                        <div className="text-center text-xs text-md-on-surface-variant">Light</div>
-                        <div className="text-center text-xs text-md-on-surface-variant">Dark</div>
-                        <div className="text-center text-xs text-md-on-surface-variant">System</div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Light
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Dark
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          System
+                        </div>
                       </motion.div>
                     </div>
-
-                    {/* Navigation Links */}
-                    {/* My Profile Link */}
-                    <Link
-                      href="/candidate/profile" // Ensure this path is correct
-                      className="flex items-center space-x-3 px-4 py-3 rounded-full hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm" // Added active state, adjusted padding/text size
-                      onClick={() => setShowProfileMenu(false)} // Close menu on click
+                    {/* Navigation Buttons - Updated for Mobile */}
+                    <motion.button
+                      onClick={handleProfileNavigation}
+                      className="flex items-center justify-center gap-4 px-5 py-4 rounded-3xl text-white bg-md-primary hover:bg-md-primary/90 active:bg-md-primary/80 w-full text-base font-medium shadow-sm transition-colors mb-10"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
                     >
-                      {/* Profile Icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
+                      {/* Modern Profile Icon */}
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className="w-5 h-5"
+                      >
+                        <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                      </svg>
                       <span>My Profile</span>
-                    </Link>
-
-                    {/* Settings Link */}
-                    <Link
-                      href="/settings" // Ensure this path is correct
-                      className="flex items-center space-x-3 px-4 py-3 rounded-full hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm"
-                      onClick={() => setShowProfileMenu(false)}
-                    >
-                      {/* Settings Icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>
-                      <span>Settings</span>
-                    </Link>
-
+                    </motion.button>
+                    
                     {/* Logout Button */}
-                    <button
+                    <motion.button
                       onClick={handleLogout}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-full hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm"
+                      className="flex items-center justify-center gap-4 mt-10 px-5 py-4 rounded-3xl text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-container active:bg-md-surface-container-low w-full text-base font-medium transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
                     >
-                      {/* Logout Icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-2-2V15H4V5h8.586l-2-2H3z" clipRule="evenodd" /><path fillRule="evenodd" d="M14.707 3.293a1 1 0 010 1.414L10.414 9H13a1 1 0 110 2h-5a1 1 0 01-1-1V5a1 1 0 112 0v2.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                      {/* Modern Logout Icon */}
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className="w-5 h-5"
+                      >
+                        <path fillRule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z" clipRule="evenodd" />
+                      </svg>
                       <span>Logout</span>
-                    </button>
+                    </motion.button>
                   </nav>
                 </div>
               </div>
             </motion.div>
 
             {/* --- Desktop Dropdown Menu --- */}
-            {/* Appears as a dropdown from the top-right on medium screens and up */}
             <motion.div
               className="hidden md:block absolute z-50 bg-md-surface rounded-2xl shadow-lg top-16 right-4 w-80 origin-top-right" // Added origin, adjusted radius
-              initial={{ // Start state (invisible, slightly scaled down and moved up)
+              initial={{
+                // Start state (invisible, slightly scaled down and moved up)
                 opacity: 0,
                 y: -10, // Start slightly above
                 scale: 0.95,
               }}
-              animate={{ // End state (fully visible, at correct position and scale)
+              animate={{
+                // End state (fully visible, at correct position and scale)
                 opacity: 1,
                 y: 0,
                 scale: 1,
               }}
-              exit={{ // Exit state (same as initial for smooth fade out)
+              exit={{
+                // Exit state (same as initial for smooth fade out)
                 opacity: 0,
                 y: -10,
                 scale: 0.95,
               }}
-              transition={{ // Animation timing and easing
+              transition={{
+                // Animation timing and easing
                 duration: 0.15, // Faster animation
                 ease: "easeOut", // Standard easing
               }}
@@ -527,49 +603,67 @@ export default function AppHeader() {
               aria-labelledby="profile-menu-title-desktop"
             >
               {/* Content inside the dropdown */}
-              <div className="p-2"> {/* Reduced padding */}
+              <div className="p-2">
+                {" "}
+                {/* Reduced padding */}
                 {/* User Info Section */}
-                 <div className="flex items-center space-x-4 p-3 mb-2 rounded-lg bg-md-surface-container-lowest"> {/* Added background, padding, margin */}
-                   {/* Profile Picture or Initials */}
-                   {userdata?.profilePicture ? (
-                     <div className="w-12 h-12 rounded-full overflow-hidden relative bg-md-surface-container-high"> {/* Adjusted size */}
-                       <Image
-                         src={userdata.profilePicture}
-                         alt="Profile"
-                         width={48} // Match container size
-                         height={48} // Match container size
-                         className="object-cover w-full h-full"
-                         onError={(e) => e.currentTarget.style.display = 'none'}
-                       />
-                        <div className={`w-12 h-12 rounded-full ${tierColors[userdata.tier] || 'bg-md-surface-container-high'} flex items-center justify-center absolute top-0 left-0 -z-10`}>
-                          <span className="text-md-on-surface text-lg font-medium">
-                            {userdata?.firstName?.charAt(0) || userdata?.email?.charAt(0)?.toUpperCase() || "?"}
-                          </span>
-                        </div>
-                     </div>
-                   ) : (
-                     <div className="w-12 h-12 rounded-full bg-md-surface-container-high flex items-center justify-center">
-                       <span className="text-md-on-surface text-lg font-medium">
-                         {userdata?.firstName?.charAt(0) ||
-                           userdata?.email?.charAt(0)?.toUpperCase() ||
-                           "?"}
-                       </span>
-                     </div>
-                   )}
-                   {/* Name and Email */}
-                   <div className="flex-1 truncate">
-                     <h3 id="profile-menu-title-desktop" className="font-medium text-md-on-surface truncate">
-                       {userdata?.firstName
-                         ? `${userdata.firstName} ${userdata.lastName || ""}`
-                         : userdata?.email || "User Profile"}
-                     </h3>
-                     <p className="text-sm text-md-on-surface-variant truncate">
-                       {userdata?.email}
-                     </p>
-                     {/* Subscription Tier Badge */}
-                     {userdata?.tier && (
-                       <div
-                         className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium
+                <div className="flex items-center space-x-4 p-3 mb-2 rounded-lg bg-md-surface-container-lowest">
+                  {" "}
+                  {/* Added background, padding, margin */}
+                  {/* Profile Picture or Initials */}
+                  {userdata?.profilePicture ? (
+                    <div className="w-12 h-12 rounded-full overflow-hidden relative bg-md-surface-container-high">
+                      {" "}
+                      {/* Adjusted size */}
+                      <Image
+                        src={userdata.profilePicture}
+                        alt="Profile"
+                        width={48} // Match container size
+                        height={48} // Match container size
+                        className="object-cover w-full h-full"
+                        onError={(e) =>
+                          (e.currentTarget.style.display = "none")
+                        }
+                      />
+                      <div
+                        className={`w-12 h-12 rounded-full ${
+                          tierColors[userdata.tier] ||
+                          "bg-md-surface-container-high"
+                        } flex items-center justify-center absolute top-0 left-0 -z-10`}
+                      >
+                        <span className="text-md-on-surface text-lg font-medium">
+                          {userdata?.firstName?.charAt(0) ||
+                            userdata?.email?.charAt(0)?.toUpperCase() ||
+                            "?"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-md-surface-container-high flex items-center justify-center">
+                      <span className="text-md-on-surface text-lg font-medium">
+                        {userdata?.firstName?.charAt(0) ||
+                          userdata?.email?.charAt(0)?.toUpperCase() ||
+                          "?"}
+                      </span>
+                    </div>
+                  )}
+                  {/* Name and Email */}
+                  <div className="flex-1 truncate">
+                    <h3
+                      id="profile-menu-title-desktop"
+                      className="font-medium text-md-on-surface truncate"
+                    >
+                      {userdata?.firstName
+                        ? `${userdata.firstName} ${userdata.lastName || ""}`
+                        : userdata?.email || "User Profile"}
+                    </h3>
+                    <p className="text-sm text-md-on-surface-variant truncate">
+                      {userdata?.email}
+                    </p>
+                    {/* Subscription Tier Badge */}
+                    {userdata?.tier && (
+                      <div
+                        className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium
                            ${
                              userdata.tier === "pro"
                                ? "bg-md-primary-container text-md-on-primary-container"
@@ -577,20 +671,23 @@ export default function AppHeader() {
                                ? "bg-md-secondary-container text-md-on-secondary-container"
                                : "bg-md-tertiary-container text-md-on-tertiary-container"
                            }`}
-                       >
-                         {userdata.tier.charAt(0).toUpperCase() +
-                           userdata.tier.slice(1)}{" "}
-                         Plan
-                       </div>
-                     )}
-                   </div>
+                      >
+                        {userdata.tier.charAt(0).toUpperCase() +
+                          userdata.tier.slice(1)}{" "}
+                        Plan
+                      </div>
+                    )}
+                  </div>
                 </div>
-
                 {/* Divider */}
-                <div className="my-1 border-t border-md-outline-variant"> {/* Adjusted margin */}
+                <div className="my-1 border-t border-md-outline-variant">
+                  {" "}
+                  {/* Adjusted margin */}
                   <nav className="py-1 space-y-1">
                     {/* Theme Selector Section - Desktop */}
-                    <div className="px-3 py-3"> {/* Adjusted padding */}
+                    <div className="px-3 py-3">
+                      {" "}
+                      {/* Adjusted padding */}
                       <div className="flex items-center mb-3">
                         <motion.div
                           initial={{ scale: 0.9, opacity: 0 }}
@@ -612,7 +709,11 @@ export default function AppHeader() {
                       <motion.div
                         initial={{ y: 10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
+                        transition={{
+                          delay: 0.15,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
                       >
                         <ThemeToggle
                           activeTheme={theme}
@@ -624,40 +725,60 @@ export default function AppHeader() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.25 }}
                         className="mt-2 grid grid-cols-3 gap-2"
-                         aria-hidden="true"
+                        aria-hidden="true"
                       >
-                        <div className="text-center text-xs text-md-on-surface-variant">Light</div>
-                        <div className="text-center text-xs text-md-on-surface-variant">Dark</div>
-                        <div className="text-center text-xs text-md-on-surface-variant">System</div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Light
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          Dark
+                        </div>
+                        <div className="text-center text-xs text-md-on-surface-variant">
+                          System
+                        </div>
                       </motion.div>
                     </div>
 
-                    {/* Navigation Links - Desktop */}
-                    <Link
-                      href="/candidate/profile"
-                      className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm" // Adjusted padding/radius
-                      onClick={() => setShowProfileMenu(false)}
+                    {/* Navigation Buttons - Updated for Desktop */}
+                    <motion.button
+                      onClick={handleProfileNavigation}
+                      className="flex items-center justify-center gap-4 px-5 py-3.5 rounded-xl text-white bg-md-primary hover:bg-md-primary/90 active:bg-md-primary/80 w-full text-sm font-medium shadow-sm transition-colors mb-3"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className="w-5 h-5"
+                      >
+                        <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                      </svg>
                       <span>My Profile</span>
-                    </Link>
+                    </motion.button>
 
-                    <Link
-                      href="/settings"
-                      className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm"
-                      onClick={() => setShowProfileMenu(false)}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" /></svg>
-                      <span>Settings</span>
-                    </Link>
-
-                    <button
+                    <motion.button
                       onClick={handleLogout}
-                      className="flex items-center space-x-3 px-3 py-2.5 rounded-lg hover:bg-md-surface-container-low active:bg-md-surface-container text-md-on-surface w-full text-left text-sm"
+                      className="flex items-center justify-center gap-4 px-5 py-3.5 rounded-xl text-md-on-surface bg-md-surface-container-high hover:bg-md-surface-container active:bg-md-surface-container-low w-full text-sm font-medium transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-80" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-2-2V15H4V5h8.586l-2-2H3z" clipRule="evenodd" /><path fillRule="evenodd" d="M14.707 3.293a1 1 0 010 1.414L10.414 9H13a1 1 0 110 2h-5a1 1 0 01-1-1V5a1 1 0 112 0v2.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 24 24" 
+                        fill="currentColor" 
+                        className="w-5 h-5"
+                      >
+                        <path fillRule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z" clipRule="evenodd" />
+                      </svg>
                       <span>Logout</span>
-                    </button>
+                    </motion.button>
                   </nav>
                 </div>
               </div>
