@@ -137,7 +137,7 @@ const Validator = () => {
     router.push("/auth/login");
   };
 
-  if (!showOverlay) return null;
+  if (!showOverlay || loading) return null;
 
   return (
     <motion.div
@@ -169,69 +169,10 @@ const Validator = () => {
       </div>
 
       <AnimatePresence mode="wait">
-        {loading ? (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-md-surface elevation-3 p-8 rounded-[28px] max-w-md w-full mx-4"
-          >
-            <div className="flex flex-col items-center p-4">
-              <div className="mb-8">
-                <motion.div
-                  className="w-20 h-20 rounded-full bg-md-primary-container flex items-center justify-center"
-                  animate={{
-                    boxShadow: [
-                      "0 0 0 rgba(var(--md-primary-rgb), 0)",
-                      "0 0 24px rgba(var(--md-primary-rgb), 0.25)",
-                      "0 0 0 rgba(var(--md-primary-rgb), 0)",
-                    ],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <div className="relative w-16 mb-3 h-16">
-                    {[...Array(12)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute w-1.5 h-1.5 rounded-full bg-md-on-primary-container"
-                        initial={{ opacity: 0.1 }}
-                        animate={{ opacity: [0.1, 1, 0.1] }}
-                        transition={{
-                          duration: 1.2,
-                          repeat: Infinity,
-                          delay: i * 0.1,
-                          ease: "easeInOut",
-                        }}
-                        style={{
-                          left: "50%",
-                          top: "50%",
-                          transform: `rotate(${
-                            i * 30
-                          }deg) translateY(-7px) translateX(-50%)`,
-                          transformOrigin: "0 7px",
-                        }}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-              <h3 className="text-md-on-surface text-xl font-medium tracking-tight mb-2">
-                Verifying Session
-              </h3>
-              <p className="text-md-on-surface-variant text-center">
-                Please wait while we authenticate your session...
-              </p>
-            </div>
-          </motion.div>
-        ) : error ? (
+        {error && (
           <motion.div
             key="error"
-            initial={{ opacity: 0, scale: 9 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             className="bg-md-surface elevation-3 p-8 rounded-[28px] max-w-md w-full mx-4"
@@ -298,7 +239,7 @@ const Validator = () => {
               </motion.p>
             </div>
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </motion.div>
   );

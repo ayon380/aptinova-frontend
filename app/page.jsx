@@ -424,6 +424,13 @@ export default function Home() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
             </button>
             <Link
+              href="/about"
+              className="text-md-on-surface hover:text-md-primary transition-colors relative group"
+            >
+              About
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-md-primary transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+            <Link
               href="/downloads"
               className="text-md-on-surface hover:text-md-primary transition-colors relative group"
             >
@@ -517,6 +524,13 @@ export default function Home() {
             >
               Testimonials
             </button>
+            <Link
+              href="/about"
+              onClick={closeMobileMenu}
+              className="text-md-on-surface w-full text-left px-4 py-3 rounded-lg hover:bg-md-surface-variant active:bg-md-surface-variant/80 transition-colors relative overflow-hidden block"
+            >
+              About
+            </Link>
             <Link
               href="/downloads"
               onClick={closeMobileMenu}

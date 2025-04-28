@@ -162,7 +162,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="overflow-y-auto md:bg-md-surface-container min-h-screen p-4 md:p-6 rounded-tl-3xl pb-28 md:pb-12">
+    <div className="overflow-y-scroll h-full  md:bg-md-surface-container min-h-screen p-4 md:p-6 rounded-tl-3xl pb-44 md:pb-12">
       <div className="max-w-screen-xl mx-auto">
         {/* Floating Action Button for Refresh */}
         <div className="fixed right-4 top-4 z-10">  

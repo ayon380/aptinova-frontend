@@ -11,6 +11,24 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [elementPositions, setElementPositions] = useState([]);
+  const [isExiting, setIsExiting] = useState(false); // State for exit animation
+  const [targetRoute, setTargetRoute] = useState(null); // State for navigation target
+
+  // Function to handle navigation with exit animation
+  const handleNavigation = (path) => {
+    setTargetRoute(path);
+    setIsExiting(true);
+  };
+
+  // Effect to perform navigation after exit animation
+  useEffect(() => {
+    if (isExiting && targetRoute) {
+      const timer = setTimeout(() => {
+        router.push(targetRoute);
+      }, 500); // Match exit animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isExiting, targetRoute, router]);
 
   // Token refresh function
   const refreshToken = async () => {
@@ -59,10 +77,8 @@ const Page = () => {
     setUserdata(null);
     setuserType(null);
 
-    // Add a small animation delay before redirecting
-    setTimeout(() => {
-      router.push("/auth/login");
-    }, 500);
+    // Trigger exit animation and redirect
+    handleNavigation("/auth/login");
   };
 
   const fetchUserProfile = async () => {
@@ -103,11 +119,11 @@ const Page = () => {
 
           // Route based on user type
           if (data.userType === "candidate") {
-            router.push("/candidate/home");
+            handleNavigation("/candidate/home"); // Uncomment when candidate route is ready
           } else if (data.userType === "hr") {
-            router.push("/orgs/hr/dashboard");
+            handleNavigation("/orgs/hr/dashboard");
           } else if (data.userType === "hrManager") {
-            router.push("/orgs/hrm/dashboard");
+            handleNavigation("/orgs/hrm/dashboard");
           }
           return;
         } else {
@@ -122,11 +138,11 @@ const Page = () => {
 
       // Route based on user type
       if (data.userType === "candidate") {
-        router.push("/candidate/home");
-      } else if (data.userType === "hr") {
-        router.push("/orgs/hr/dashboard");
-      } else if (data.userType === "hrManager") {
-        router.push("/orgs/hrm/dashboard");
+        handleNavigation("/candidate/home"); // Uncomment when candidate route is ready
+      } else if (userType === "hr") {
+        handleNavigation("/orgs/hr/dashboard");
+      } else if (userType === "hrManager") {
+        handleNavigation("/orgs/hrm/dashboard");
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
@@ -136,9 +152,8 @@ const Page = () => {
       if (err.message === "Session expired. Please login again.") {
         // Clear auth data
         localStorage.removeItem("authToken");
-        setTimeout(() => {
-          router.push("/auth/login");
-        }, 2000);
+        // No need for setTimeout here, error message is shown
+        // The user can click Logout which triggers handleNavigation
       }
     } finally {
       setLoading(false);
@@ -151,14 +166,19 @@ const Page = () => {
     } else {
       // If we already have the data, route accordingly
       if (userType === "candidate") {
-        router.push("/candidate/home");
+        handleNavigation("/candidate/home"); // Uncomment when candidate route is ready
       } else if (userType === "hr") {
-        router.push("/orgs/hr/dashboard");
+        handleNavigation("/orgs/hr/dashboard");
       } else if (userType === "hrManager") {
-        router.push("/orgs/hrm/dashboard");
+        handleNavigation("/orgs/hrm/dashboard");
+      } else {
+        // Fallback if userType is somehow invalid but data exists
+        setLoading(false); // Ensure loading stops
+        setError("Invalid user type detected.");
       }
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Keep dependencies minimal for initial load logic
 
   // Floating SVG elements configurations
   const floatingElements = [
@@ -220,142 +240,166 @@ const Page = () => {
         </motion.div>
       ))}
 
-      <motion.div
-        className="relative z-10 flex flex-col items-center text-center max-w-md mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Logo placeholder - replace with your actual logo */}
-        <div className="w-32 h-32 mb-6 rounded-3xl bg-md-primary-container flex items-center justify-center text-md-on-primary-container">
+      {/* AnimatePresence for the main content exit */}
+      <AnimatePresence>
+        {!isExiting && (
           <motion.div
-            animate={{
-              rotate: 360,
-              scale: [1, 1.05, 1],
-            }}
-            transition={{
-              rotate: { duration: 60, repeat: Infinity, ease: "linear" },
-              scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-            }}
-            className="w-20 h-20 flex items-center justify-center text-5xl"
+            key="main-content"
+            className="relative z-10 flex flex-col items-center text-center max-w-md mx-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.15 }} // Changed: Zoom in effect
+            transition={{ duration: 0.4, ease: "easeInOut" }} // Kept the faster duration
           >
-            🚀
-          </motion.div>
-        </div>
-
-        <h1 className="text-3xl font-bold mb-2 text-md-on-background">
-          Welcome to AptInova
-        </h1>
-
-        <p className="text-md-on-surface-variant mb-8">
-          Your comprehensive talent acquisition platform
-        </p>
-
-        <AnimatePresence mode="wait">
-          {loading ? (
+            {/* Logo with entry animation */}
             <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center"
+              className="w-32 h-32 mb-6 rounded-3xl bg-md-primary-container flex items-center justify-center text-md-on-primary-container"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
             >
-              {/* Android-style loading animation */}
-              <div className="mb-6">
-                <div className="relative w-16 h-16">
-                  {[...Array(12)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full bg-md-primary"
-                      initial={{
-                        opacity: 0.1,
-                      }}
-                      animate={{
-                        opacity: [0.1, 1, 0.1],
-                      }}
-                      transition={{
-                        duration: 1.2,
-                        repeat: Infinity,
-                        delay: i * 0.1,
-                        ease: "easeInOut",
-                      }}
-                      style={{
-                        left: "50%",
-                        top: "50%",
-                        transform: `rotate(${
-                          i * 30
-                        }deg) translateY(-8px) translateX(-50%)`,
-                        transformOrigin: "0 8px",
-                      }}
-                    />
-                  ))}
-                </div>
+              <div className="h-24 w-24 rounded-2xl bg-md-primary flex items-center justify-center relative overflow-hidden group">
+                <span className="text-md-on-primary text-7xl font-bold relative z-10">
+                  A
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-tr from-md-primary via-md-primary to-md-tertiary opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
-              <p className="text-md-on-surface-variant text-lg">
-                Getting things ready for you...
-              </p>
             </motion.div>
-          ) : error ? (
-            <motion.div
-              key="error"
+
+            {/* Title with entry animation */}
+            <motion.h1
+              className="text-3xl font-bold mb-2 text-md-on-background"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center bg-md-surface p-6 rounded-xl shadow-lg"
+              transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <div className="mb-4 text-6xl text-md-error">
+              Welcome to Aptinova
+            </motion.h1>
+
+            {/* Description with entry animation */}
+            <motion.p
+              className="text-md-on-surface-variant mb-8"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              Your comprehensive talent acquisition platform
+            </motion.p>
+
+            {/* AnimatePresence for loading/error states */}
+            <AnimatePresence mode="wait">
+              {loading ? (
                 <motion.div
-                  initial={{ scale: 0.8, rotate: -10 }}
-                  animate={{
-                    scale: 1,
-                    rotate: [0, -10, 0, 10, 0],
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 15,
-                    rotate: {
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 1,
-                    },
-                  }}
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center"
                 >
-                  ⚠️
+                  {/* Android-style loading animation */}
+                  <div className="mb-6">
+                    <div className="relative w-16 h-16">
+                      {[...Array(12)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className="absolute w-2 h-2 rounded-full bg-md-primary"
+                          initial={{
+                            opacity: 0.1,
+                          }}
+                          animate={{
+                            opacity: [0.1, 1, 0.1],
+                          }}
+                          transition={{
+                            duration: 1.2,
+                            repeat: Infinity,
+                            delay: i * 0.1,
+                            ease: "easeInOut",
+                          }}
+                          style={{
+                            left: "50%",
+                            top: "50%",
+                            transform: `rotate(${
+                              i * 30
+                            }deg) translateY(-8px) translateX(-50%)`,
+                            transformOrigin: "0 8px",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-md-on-surface-variant text-lg">
+                    Getting things ready for you...
+                  </p>
                 </motion.div>
-              </div>
-              <motion.p
-                className="text-md-error mb-6 text-center font-medium text-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                {error}
-              </motion.p>
-
-              <div className="flex gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={fetchUserProfile}
-                  className="px-6 py-3 bg-md-primary text-md-on-primary rounded-full shadow-md hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center gap-2"
+              ) : error ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center bg-md-surface p-6 rounded-xl shadow-lg"
                 >
-                  <span className="text-lg">🔄</span> Try Again
-                </motion.button>
+                  <div className="mb-4 text-6xl text-md-error">
+                    <motion.div
+                      initial={{ scale: 0.8, rotate: -10 }}
+                      animate={{
+                        scale: 1,
+                        rotate: [0, -10, 0, 10, 0],
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 15,
+                        rotate: {
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 1,
+                        },
+                      }}
+                    >
+                      ⚠️
+                    </motion.div>
+                  </div>
+                  <motion.p
+                    className="text-md-error mb-6 text-center font-medium text-lg"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    {error}
+                  </motion.p>
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleLogout}
-                  className="px-6 py-3 bg-md-error text-md-on-error rounded-full shadow-md hover:bg-md-error-container hover:text-md-on-error-container transition-colors flex items-center gap-2"
-                >
-                  <span className="text-lg">🚪</span> Logout
-                </motion.button>
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </motion.div>
+                  <div className="flex gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        // Reset state before retrying
+                        setError(null);
+                        setLoading(true);
+                        setIsExiting(false); // Ensure not exiting if retrying
+                        fetchUserProfile();
+                      }}
+                      className="px-6 py-3 bg-md-primary text-md-on-primary rounded-full shadow-md hover:bg-md-primary-container hover:text-md-on-primary-container transition-colors flex items-center gap-2"
+                    >
+                      <span className="text-lg">🔄</span> Try Again
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleLogout} // Already uses handleNavigation
+                      className="px-6 py-3 bg-md-error text-md-on-error rounded-full shadow-md hover:bg-md-error-container hover:text-md-on-error-container transition-colors flex items-center gap-2"
+                    >
+                      <span className="text-lg">🚪</span> Logout
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <motion.div

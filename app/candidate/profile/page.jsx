@@ -574,7 +574,7 @@ export default function CandidateProfile() {
   ];
 
   return (
-    <div className="text-xl h-full w-full">
+    <div className="text-xl  pb-24 md:pb-0 overflow-y-scroll h-full w-full">
       {/* Main content with sidebar for larger screens */}
 
       <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -583,7 +583,7 @@ export default function CandidateProfile() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-md-primary"></div>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-y-scroll">
             {/* Mobile TabView */}
             <div className="md:hidden">
               <TabView
