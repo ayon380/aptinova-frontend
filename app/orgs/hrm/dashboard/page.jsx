@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import useStore from "@/app/store";
 import Image from "next/image";
-
+import { useRouter } from "next/navigation";
 // Chart components
 import {
   BarChart,
@@ -28,7 +28,7 @@ export default function HRMDashboard() {
   const { setTitle, getCache, setCache } = useStore(); // Get cache functions
 
   const hrmDashboardCacheKey = "hrmDashboardData"; // Define cache key
-
+  const Router = useRouter(); // Initialize router
   useEffect(() => {
     setTitle("Dashboard");
     fetchDashboardData();
@@ -60,7 +60,8 @@ export default function HRMDashboard() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({})); // Try to parse error response
         throw new Error(
-          errorData.message || `Failed to fetch dashboard data (${response.status})`
+          errorData.message ||
+            `Failed to fetch dashboard data (${response.status})`
         );
       }
 
@@ -161,7 +162,9 @@ export default function HRMDashboard() {
   }
 
   return (
-    <div className=" overflow-y-scroll overflow-x-hidden w-screen md:w-full p-4 md:p-6"> {/* Keep padding as is, seems reasonable */}
+    <div className=" overflow-y-scroll h-full overflow-x-hidden w-screen md:w-full p-4 md:p-6">
+      {" "}
+      {/* Keep padding as is, seems reasonable */}
       {dashboardData && (
         <div className="max-w-screen-2xl mx-auto">
           {/* Summary Cards Row */}
@@ -177,7 +180,9 @@ export default function HRMDashboard() {
                   <h3 className="text-md-on-surface-variant text-sm font-medium">
                     Active Jobs
                   </h3>
-                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold"> {/* Adjusted font size */}
+                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold">
+                    {" "}
+                    {/* Adjusted font size */}
                     {dashboardData.summary.activeJobs}
                   </p>
                 </div>
@@ -224,7 +229,9 @@ export default function HRMDashboard() {
                   <h3 className="text-md-on-surface-variant text-sm font-medium">
                     Total Applicants
                   </h3>
-                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold"> {/* Adjusted font size */}
+                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold">
+                    {" "}
+                    {/* Adjusted font size */}
                     {dashboardData.summary.totalApplicants}
                   </p>
                 </div>
@@ -271,7 +278,9 @@ export default function HRMDashboard() {
                   <h3 className="text-md-on-surface-variant text-sm font-medium">
                     Recent Applicants
                   </h3>
-                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold"> {/* Adjusted font size */}
+                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold">
+                    {" "}
+                    {/* Adjusted font size */}
                     {dashboardData.applicantStats.recent30Days}
                   </p>
                 </div>
@@ -309,7 +318,9 @@ export default function HRMDashboard() {
                   <h3 className="text-md-on-surface-variant text-sm font-medium">
                     Avg. Time to Hire
                   </h3>
-                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold"> {/* Adjusted font size */}
+                  <p className="text-md-on-surface text-2xl sm:text-3xl font-bold">
+                    {" "}
+                    {/* Adjusted font size */}
                     {dashboardData.timeToHire.average}
                   </p>
                 </div>
@@ -346,10 +357,14 @@ export default function HRMDashboard() {
               transition={{ duration: 0.4, delay: 0.3 }}
               className="bg-md-surface-container md:bg-md-surface-container-highest p-4 sm:p-5 rounded-3xl shadow-sm" // Adjusted padding
             >
-              <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4"> {/* Adjusted font size */}
+              <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4">
+                {" "}
+                {/* Adjusted font size */}
                 Hiring Funnel
               </h2>
-              <div className="h-64 sm:h-80"> {/* Adjusted height */}
+              <div className="h-64 sm:h-80">
+                {" "}
+                {/* Adjusted height */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={transformFunnelData(dashboardData.hiringFunnel)}
@@ -358,7 +373,13 @@ export default function HRMDashboard() {
                   >
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                     <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 10 }} /> {/* Adjusted width and font size */}
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      width={80}
+                      tick={{ fontSize: 10 }}
+                    />{" "}
+                    {/* Adjusted width and font size */}
                     <Tooltip
                       formatter={(value, name, props) => [
                         value,
@@ -414,10 +435,14 @@ export default function HRMDashboard() {
               transition={{ duration: 0.4, delay: 0.35 }}
               className="bg-md-surface-container md:bg-md-surface-container-highest p-4 sm:p-5 rounded-3xl shadow-sm" // Adjusted padding
             >
-              <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4"> {/* Adjusted font size */}
+              <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4">
+                {" "}
+                {/* Adjusted font size */}
                 Upcoming Interviews
               </h2>
-              <div className="overflow-hidden h-64 sm:h-80"> {/* Adjusted height */}
+              <div className="overflow-hidden h-64 sm:h-80">
+                {" "}
+                {/* Adjusted height */}
                 {dashboardData.upcomingInterviews.length > 0 ? (
                   <div className="space-y-3 overflow-y-auto h-full pr-2 pb-4">
                     {dashboardData.upcomingInterviews.map(
@@ -430,7 +455,9 @@ export default function HRMDashboard() {
                           className="p-3 sm:p-4 bg-md-surface-variant rounded-2xl" // Adjusted padding
                         >
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center overflow-hidden"> {/* Added overflow-hidden */}
+                            <div className="flex items-center overflow-hidden">
+                              {" "}
+                              {/* Added overflow-hidden */}
                               <div className="bg-md-primary-container p-2 rounded-full mr-3">
                                 <svg
                                   className="w-5 h-5 text-md-on-primary-container"
@@ -446,11 +473,17 @@ export default function HRMDashboard() {
                                   />
                                 </svg>
                               </div>
-                              <div className="overflow-hidden"> {/* Added overflow-hidden */}
-                                <h3 className="text-sm sm:text-base text-md-on-surface font-medium truncate max-w-[150px] sm:max-w-[200px]"> {/* Adjusted max-width */}
+                              <div className="overflow-hidden">
+                                {" "}
+                                {/* Added overflow-hidden */}
+                                <h3 className="text-sm sm:text-base text-md-on-surface font-medium truncate max-w-[150px] sm:max-w-[200px]">
+                                  {" "}
+                                  {/* Adjusted max-width */}
                                   {interview.Candidate?.name || "Candidate"}
                                 </h3>
-                                <p className="text-md-on-surface-variant text-xs truncate"> {/* Added truncate */}
+                                <p className="text-md-on-surface-variant text-xs truncate">
+                                  {" "}
+                                  {/* Added truncate */}
                                   {interview.Job?.title || "Interview"}
                                 </p>
                               </div>
@@ -507,26 +540,38 @@ export default function HRMDashboard() {
             transition={{ duration: 0.4, delay: 0.4 }}
             className="bg-md-surface-container md:bg-md-surface-container-highest p-4 sm:p-5 rounded-3xl shadow-sm mb-6" // Adjusted padding
           >
-            <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4"> {/* Adjusted font size */}
+            <h2 className="text-lg sm:text-xl font-semibold text-md-on-surface mb-4">
+              {" "}
+              {/* Adjusted font size */}
               Recent Applicants
             </h2>
             <div className="overflow-x-auto">
               <table className="min-w-full">
                 <thead>
                   <tr>
-                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider"> {/* Adjusted padding */}
+                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                      {" "}
+                      {/* Adjusted padding */}
                       Candidate
                     </th>
-                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider hidden sm:table-cell"> {/* Hide on small screens */}
+                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider hidden sm:table-cell">
+                      {" "}
+                      {/* Hide on small screens */}
                       Position
                     </th>
-                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider hidden md:table-cell"> {/* Hide on medium screens */}
+                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider hidden md:table-cell">
+                      {" "}
+                      {/* Hide on medium screens */}
                       Contact
                     </th>
-                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider"> {/* Adjusted padding */}
+                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                      {" "}
+                      {/* Adjusted padding */}
                       Status
                     </th>
-                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider"> {/* Adjusted padding */}
+                    <th className="py-3 px-2 sm:px-4 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                      {" "}
+                      {/* Adjusted padding */}
                       Resume
                     </th>
                   </tr>
@@ -539,41 +584,59 @@ export default function HRMDashboard() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: 0.4 + index * 0.05 }}
                     >
-                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap"> {/* Adjusted padding */}
+                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
+                        {" "}
+                        {/* Adjusted padding */}
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-md-primary-container rounded-full flex items-center justify-center text-md-on-primary-container font-medium text-sm sm:text-base"> {/* Adjusted size */}
-                            {applicant.Candidate?.name?.charAt(0) || "?"}
+                          <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-md-primary-container rounded-full flex items-center justify-center text-md-on-primary-container font-medium text-sm sm:text-base">
+                            {" "}
+                            {/* Adjusted size */}
+                            {applicant.candidate?.name?.charAt(0) || "?"}
                           </div>
-                          <div className="ml-2 sm:ml-4"> {/* Adjusted margin */}
-                            <div className="text-xs sm:text-sm font-medium text-md-on-surface"> {/* Adjusted font size */}
-                              {applicant.Candidate?.name || "Unknown"}
+                          <div className="ml-2 sm:ml-4">
+                            {" "}
+                            {/* Adjusted margin */}
+                            <div className="text-xs sm:text-sm font-medium text-md-on-surface">
+                              {" "}
+                              {/* Adjusted font size */}
+                              {applicant.candidate?.name || "Unknown"}
                             </div>
-                            <div className="text-xs text-md-on-surface-variant">
+                            {/* <div className="text-xs text-md-on-surface-variant">
                               Applied{" "}
                               {new Date(
                                 applicant.createdAt
                               ).toLocaleDateString()}
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap hidden sm:table-cell"> {/* Hide on small screens */}
-                        <div className="text-xs sm:text-sm text-md-on-surface"> {/* Adjusted font size */}
-                          {applicant.Job?.title || "Unknown"}
+                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap hidden sm:table-cell">
+                        {" "}
+                        {/* Hide on small screens */}
+                        <div className="text-xs sm:text-sm text-md-on-surface">
+                          {" "}
+                          {/* Adjusted font size */}
+                          {applicant.job?.title || "Unknown"}
                         </div>
                         <div className="text-xs text-md-on-surface-variant">
-                          {applicant.Job?.location || "Remote"}
+                          {applicant.job?.location || "Remote"}
                         </div>
                       </td>
-                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap hidden md:table-cell"> {/* Hide on medium screens */}
-                        <div className="text-xs sm:text-sm text-md-on-surface"> {/* Adjusted font size */}
-                          {applicant.Candidate?.email || "No email"}
+                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap hidden md:table-cell">
+                        {" "}
+                        {/* Hide on medium screens */}
+                        <div className="text-xs sm:text-sm text-md-on-surface">
+                          {" "}
+                          {/* Adjusted font size */}
+                          {applicant.candidate?.email || "No email"}
                         </div>
                         <div className="text-xs text-md-on-surface-variant">
-                          {applicant.Candidate?.phone || "No phone"}
+                          {applicant.candidate?.phone || "No phone"}
                         </div>
                       </td>
-                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap"> {/* Adjusted padding */}
+                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap">
+                        {" "}
+                        {/* Adjusted padding */}
                         <span
                           className="px-2 sm:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" // Adjusted padding
                           style={{
@@ -586,10 +649,12 @@ export default function HRMDashboard() {
                           {applicant.status || "New"}
                         </span>
                       </td>
-                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap text-xs sm:text-sm text-md-on-surface"> {/* Adjusted padding and font size */}
-                        {applicant.Candidate?.resume ? (
+                      <td className="py-3 sm:py-4 px-2 sm:px-4 whitespace-nowrap text-xs sm:text-sm text-md-on-surface">
+                        {" "}
+                        {/* Adjusted padding and font size */}
+                        {applicant.candidate?.resume ? (
                           <a
-                            href={applicant.Candidate.resume}
+                            href={applicant.candidate.resume}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-md-primary hover:text-md-on-primary-container transition-colors"
@@ -629,15 +694,21 @@ export default function HRMDashboard() {
               className="bg-md-primary-container p-4 sm:p-5 rounded-3xl shadow-sm flex flex-col justify-between mb-4 md:mb-10" // Adjusted padding and margin
             >
               <div>
-                <h3 className="text-md-on-primary-container text-base sm:text-lg font-semibold"> {/* Adjusted font size */}
+                <h3 className="text-md-on-primary-container text-base sm:text-lg font-semibold">
+                  {" "}
+                  {/* Adjusted font size */}
                   Post a New Job
                 </h3>
-                <p className="text-md-on-primary-container/80 mt-2 text-sm sm:text-base"> {/* Adjusted font size */}
+                <p className="text-md-on-primary-container/80 mt-2 text-sm sm:text-base">
+                  {" "}
+                  {/* Adjusted font size */}
                   Create a new job listing to attract qualified candidates.
                 </p>
               </div>
-              <a
-                href="/orgs/hrm/jobs/create"
+              <button
+                onClick={() => {
+                  Router.push("/orgs/hrm/jobs/create");
+                }}
                 className="mt-4 text-md-on-primary-container font-medium inline-flex items-center group"
               >
                 Get Started
@@ -654,7 +725,7 @@ export default function HRMDashboard() {
                     d="M13 7l5 5m0 0l-5 5m5-5H6"
                   />
                 </svg>
-              </a>
+              </button>
             </motion.div>
 
             <motion.div
@@ -664,10 +735,14 @@ export default function HRMDashboard() {
               className="bg-md-secondary-container p-4 sm:p-5 rounded-3xl shadow-sm flex flex-col justify-between min-h-[160px] sm:min-h-[180px] mb-4 md:mb-0" // Adjusted padding, min-height and margin
             >
               <div>
-                <h3 className="text-md-on-secondary-container text-base sm:text-lg font-semibold"> {/* Adjusted font size */}
+                <h3 className="text-md-on-secondary-container text-base sm:text-lg font-semibold">
+                  {" "}
+                  {/* Adjusted font size */}
                   Schedule Interviews
                 </h3>
-                <p className="text-md-on-secondary-container/80 mt-2 text-sm sm:text-base"> {/* Adjusted font size */}
+                <p className="text-md-on-secondary-container/80 mt-2 text-sm sm:text-base">
+                  {" "}
+                  {/* Adjusted font size */}
                   Set up interviews with candidates for open positions.
                 </p>
               </div>
@@ -699,10 +774,14 @@ export default function HRMDashboard() {
               className="bg-md-tertiary-container p-4 sm:p-5 rounded-3xl shadow-sm flex flex-col justify-between min-h-[160px] sm:min-h-[180px] mb-4 md:mb-0" // Adjusted padding, min-height and margin
             >
               <div>
-                <h3 className="text-md-on-tertiary-container text-base sm:text-lg font-semibold"> {/* Adjusted font size */}
+                <h3 className="text-md-on-tertiary-container text-base sm:text-lg font-semibold">
+                  {" "}
+                  {/* Adjusted font size */}
                   Review Applications
                 </h3>
-                <p className="text-md-on-tertiary-container/80 mt-2 text-sm sm:text-base"> {/* Adjusted font size */}
+                <p className="text-md-on-tertiary-container/80 mt-2 text-sm sm:text-base">
+                  {" "}
+                  {/* Adjusted font size */}
                   Browse through applicants for your open positions.
                 </p>
               </div>

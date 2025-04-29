@@ -139,9 +139,11 @@ const Page = () => {
       // Route based on user type
       if (data.userType === "candidate") {
         handleNavigation("/candidate/home"); // Uncomment when candidate route is ready
-      } else if (userType === "hr") {
+      } else if (data.userType === "hr") {
         handleNavigation("/orgs/hr/dashboard");
-      } else if (userType === "hrManager") {
+      } else if (data.userType == "hrManager") {
+        console.log("HR Manager detected, navigating to HRM dashboard.");
+
         handleNavigation("/orgs/hrm/dashboard");
       }
     } catch (err) {
@@ -178,7 +180,7 @@ const Page = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Keep dependencies minimal for initial load logic
+  }, [userdata, userType]); // Keep dependencies minimal for initial load logic
 
   // Floating SVG elements configurations
   const floatingElements = [

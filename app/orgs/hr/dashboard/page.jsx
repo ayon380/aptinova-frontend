@@ -188,7 +188,7 @@ const Page = () => {
   }
 
   return (
-    <div className="overflow-y-scroll min-h-screen p-4 md:p-6">
+    <div className="overflow-y-scroll h-full p-4 md:p-6">
       {dashboardData && (
         <div className="max-w-screen-2xl mx-auto">
          
