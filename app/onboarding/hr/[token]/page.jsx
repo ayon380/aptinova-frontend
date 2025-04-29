@@ -597,7 +597,9 @@ export default function HROnboarding() {
                     transition={{ delay: 0.5 }}
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => (window.location.href = "/auth/login")}
+                    onClick={() =>
+                      (window.location.href = "/auth/login?userType=hr")
+                    }
                     className="mt-6 w-full py-3 px-6 border border-transparent rounded-full text-md font-medium text-md-on-primary bg-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-md-primary transition-all duration-200 shadow-md hover:shadow-lg"
                   >
                     Go to Login

@@ -446,7 +446,7 @@ const JobBoard = () => {
 
   return (
     // Responsive padding for mobile and desktop
-    <div className="h-full w-screen p-4 md:w-full overflow-x-hidden  sm:px-4 md:px-0 md:bg-md-surface-container rounded-tl-3xl md:p-6 lg:p-10 text-md-on-background">
+    <div className="h-full w-screen p-4 md:w-full overflow-x-hidden overflow-y-scroll sm:px-4 md:px-0 md:bg-md-surface-container rounded-tl-3xl md:p-6 lg:p-10 text-md-on-background">
       {/* Search and Filter Header */}
       <div className="sticky top-0 z-30 bg-md-surface md:bg-transparent pt-4  w-full pb-3  md:shadow-none px-2 sm:px-4 md:px-2">
         <div className="relative w-full max-w-full">

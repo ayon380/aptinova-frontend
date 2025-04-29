@@ -117,7 +117,7 @@ export default function TeamPage() {
 
   return (
     // Add more bottom padding to accommodate FAB and pagination
-    <div className="p-4 sm:p-6 h-full pb-28">
+    <div className="p-4  overflow-y-scroll sm:p-6 h-full pb-28">
       {/* Removed the top Add HR button section */}
 
       <div className="mb-6">

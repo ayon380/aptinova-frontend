@@ -24,17 +24,17 @@ export default function JobDetailsPage() {
     const fetchJobDetails = async () => {
       setLoadingJob(true);
       setError(null);
-      
+
       // Try to get cached data first
       const cacheKey = `job_details_${jobid}`;
       const cachedJob = getCache(cacheKey);
-      
+
       if (cachedJob) {
         setJob(cachedJob);
         setLoadingJob(false);
         return;
       }
-      
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/jobs/candidate/${jobid}`,
@@ -47,7 +47,7 @@ export default function JobDetailsPage() {
         if (!response.ok) throw new Error("Failed to fetch job details");
         const jobData = await response.json();
         setJob(jobData);
-        
+
         // Cache the job data
         setCache(cacheKey, jobData);
       } catch (error) {
@@ -86,18 +86,19 @@ export default function JobDetailsPage() {
       if (!response.ok) throw new Error("Application failed");
       const result = await response.json();
       setSuccessMessage("Application submitted successfully!");
-      
+
       // Update the job state to reflect the applied status
-      const updatedJob = {...job, isApplied: true};
+      const updatedJob = { ...job, isApplied: true };
       setJob(updatedJob);
-      
+
       // Update cache with new applied status
       const cacheKey = `job_details_${jobid}`;
       setCache(cacheKey, updatedJob);
-      
     } catch (error) {
       console.error("Error applying:", error);
-      setError(error.message || "Failed to submit application. Please try again.");
+      setError(
+        error.message || "Failed to submit application. Please try again."
+      );
     } finally {
       setIsApplying(false);
     }
@@ -119,15 +120,18 @@ export default function JobDetailsPage() {
           <div className="h-10 bg-md-surface-variant rounded-full w-32"></div>
         </div>
       </div>
-      
+
       <div className="border-b border-md-outline-variant mb-6">
         <div className="flex gap-4 pb-1">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-8 bg-md-surface-variant rounded-full w-24"></div>
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-8 bg-md-surface-variant rounded-full w-24"
+            ></div>
           ))}
         </div>
       </div>
-      
+
       <div className="bg-md-surface-container p-6 rounded-3xl animate-pulse">
         <div className="h-6 bg-md-surface-variant rounded-lg w-1/3 mb-4"></div>
         <div className="h-4 bg-md-surface-variant rounded-lg w-full mb-3"></div>
@@ -144,17 +148,26 @@ export default function JobDetailsPage() {
   if (error && !job) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-md-error-container p-6 rounded-3xl shadow-md flex flex-col items-center gap-4 w-full max-w-sm mx-auto"
         >
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z" fill="currentColor" />
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z"
+              fill="currentColor"
+            />
           </svg>
           <div className="text-md-on-error-container text-center">
             <p className="font-medium mb-4 text-lg">{error}</p>
-            <button 
+            <button
               onClick={() => router.back()}
               className="px-6 py-2 bg-md-error text-md-on-error rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
@@ -167,40 +180,75 @@ export default function JobDetailsPage() {
   }
 
   if (!job) return null;
-  
+
   // Message notifications for success/error
   const NotificationMessage = () => {
     if (!successMessage && !error) return null;
-    
+
     return (
       <AnimatePresence>
         {(successMessage || error) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-4 left-0 right-0 mx-auto w-full max-w-sm px-4 z-50"
           >
-            <div className={`p-4 rounded-2xl shadow-lg flex items-center gap-3 ${successMessage ? 'bg-md-success-container text-md-on-success-container' : 'bg-md-error-container text-md-on-error-container'}`}>
+            <div
+              className={`p-4 rounded-2xl shadow-lg flex items-center gap-3 ${
+                successMessage
+                  ? "bg-md-success-container text-md-on-success-container"
+                  : "bg-md-error-container text-md-on-error-container"
+              }`}
+            >
               {successMessage ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"
+                    fill="currentColor"
+                  />
                 </svg>
               ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z" fill="currentColor"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z"
+                    fill="currentColor"
+                  />
                 </svg>
               )}
-              <span className="flex-1 font-medium">{successMessage || error}</span>
-              <button 
+              <span className="flex-1 font-medium">
+                {successMessage || error}
+              </span>
+              <button
                 onClick={() => {
                   setSuccessMessage(null);
                   setError(null);
                 }}
                 className="text-current p-1 rounded-full hover:bg-black hover:bg-opacity-10 transition-colors"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+                    fill="currentColor"
+                  />
                 </svg>
               </button>
             </div>
@@ -213,10 +261,10 @@ export default function JobDetailsPage() {
   const hiringProcess = job.hiringProcess ? JSON.parse(job.hiringProcess) : [];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="md:bg-md-surface-container min-h-full rounded-tl-3xl w-full px-4 md:p-10 py-8"
+      className="md:bg-md-surface-container pb-44 md:pb-0 h-full overflow-y-scroll rounded-tl-3xl w-full px-4 md:p-10 py-8"
     >
       {/* Back Button */}
       <motion.button
@@ -241,7 +289,7 @@ export default function JobDetailsPage() {
       </motion.button>
 
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
@@ -285,11 +333,14 @@ export default function JobDetailsPage() {
                 isApplying ? "opacity-75 cursor-not-allowed" : ""
               }`}
             >
-              {isApplying ? 
+              {isApplying ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="animate-spin h-4 w-4 border-2 border-b-0 border-r-0 rounded-full"></span>
                   Applying...
-                </span> : "Apply Now"}
+                </span>
+              ) : (
+                "Apply Now"
+              )}
             </motion.button>
           )}
         </div>
@@ -350,7 +401,9 @@ export default function JobDetailsPage() {
                       />
                     </svg>
                   </span>
-                  <span className="text-lg font-medium">{job.salaryCurrency} {job.salary.toLocaleString()} per year</span>
+                  <span className="text-lg font-medium">
+                    {job.salaryCurrency} {job.salary.toLocaleString()} per year
+                  </span>
                 </p>
               </div>
               <div className="bg-md-surface-container text-md-on-surface p-6 rounded-2xl shadow-sm markdown-body">
@@ -482,8 +535,8 @@ export default function JobDetailsPage() {
                   <div className="relative">
                     <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-md-outline-variant"></div>
                     {hiringProcess.map((step, index) => (
-                      <motion.div 
-                        key={index} 
+                      <motion.div
+                        key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
@@ -611,7 +664,7 @@ export default function JobDetailsPage() {
               </div>
 
               {!job.isApplied && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -636,7 +689,9 @@ export default function JobDetailsPage() {
                         <span className="animate-spin h-4 w-4 border-2 border-b-0 border-r-0 rounded-full"></span>
                         Applying...
                       </span>
-                    ) : "Apply Now"}
+                    ) : (
+                      "Apply Now"
+                    )}
                   </motion.button>
                 </motion.div>
               )}
@@ -644,9 +699,9 @@ export default function JobDetailsPage() {
           )}
         </motion.div>
       </AnimatePresence>
-      
+
       {/* Footer Info */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}

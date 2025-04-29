@@ -35,6 +35,20 @@ export default function Login() {
       }
     };
     checkPasskeySupport();
+    
+    // Check for userType in URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const userTypeParam = urlParams.get('userType');
+    
+    if (userTypeParam) {
+      if (userTypeParam === 'hr' || userTypeParam === 'hrManager') {
+        setShowOrgOptions(true);
+        setFormData(prev => ({ ...prev, userType: userTypeParam }));
+      } else if (userTypeParam === 'candidate') {
+        setShowOrgOptions(false);
+        setFormData(prev => ({ ...prev, userType: userTypeParam }));
+      }
+    }
   }, []);
 
   const handleChange = (e) => {
