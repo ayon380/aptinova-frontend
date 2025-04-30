@@ -299,7 +299,7 @@ export default function TeamPage() {
 
                   <div className="mt-4 flex justify-end">
                     <button
-                      onClick={() => handleDelete(member._id)}
+                      onClick={() => handleDelete(member.id)}
                       className="rounded-full p-3 text-md-on-surface-variant hover:bg-md-error-container hover:text-md-on-error-container transition-colors"
                       aria-label="Delete HR"
                     >
