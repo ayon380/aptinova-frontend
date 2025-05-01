@@ -226,7 +226,7 @@ const Page = () => {
     dashboardData && dashboardData.applications.stats.total === 0;
 
   return (
-    <div className="p-3 sm:p-6 pb-44 md:pb-0 h-full overflow-y-scroll md:overflow-hidden w-full">
+    <div className="p-3 sm:p-6 pb-44 md:pb-0 h-full overflow-y-scroll w-full">
       {dashboardData && (
         <>
           {/* Greeting Section */}
