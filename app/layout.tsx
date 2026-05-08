@@ -36,7 +36,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aptinova.tech"),
+  metadataBase: new URL("https://aptinovallc.vercel.app"),
   title: "Aptinova | AI-Powered HR Software & Recruitment Platform",
   description:
     "Aptinova is an AI-powered hiring platform that streamlines recruitment, automates candidate screening, and finds the best talent faster. Save time and resources with our advanced HR software solution.",
@@ -60,13 +60,13 @@ export const metadata: Metadata = {
     title: "Aptinova | AI-Powered HR Software & Recruitment Platform",
     description:
       "Revolutionize your hiring process with AI-powered recruitment technology. Find better candidates faster.",
-    url: "https://aptinova.tech",
+    url: "https://aptinovallc.vercel.app",
     siteName: "Aptinova",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "https://aptinova.tech/screenshots/desktop1.png",
+        url: "https://aptinovallc.vercel.app/screenshots/desktop1.png",
         width: 1200,
         height: 630,
         alt: "Aptinova HR Software Platform",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     title: "Aptinova | AI-Powered HR Software & Recruitment Platform",
     description:
       "Revolutionize your hiring process with AI-powered recruitment technology. Find better candidates faster.",
-    images: ["https://aptinova.tech/screenshots/desktop1.png"],
+    images: ["https://aptinovallc.vercel.app/screenshots/desktop1.png"],
     creator: "@aptinova",
   },
   verification: {

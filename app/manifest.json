@@ -28,12 +28,12 @@
     "handle_links": "preferred",
     "scope_extensions": [
         {
-            "origin": "*.aptinova.tech"
+            "origin": "*.aptinovallc.vercel.app"
         }
     ],
     "web_apps": [
         {
-            "web_app_identity": "https://aptinova.tech/"
+            "web_app_identity": "https://aptinovallc.vercel.app/"
         }
     ],
     "start_url": "/home",
