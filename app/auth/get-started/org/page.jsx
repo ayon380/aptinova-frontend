@@ -1375,6 +1375,7 @@ function OrganizationSignup() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            withCredentials: true,
           }
         );
         if (response.data) {

@@ -52,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: "include",
           }
         );
 
@@ -139,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           headers: {
             Authorization: `Bearer ${data.token}`,
           },
+          credentials: "include",
         }
       );
 
@@ -181,6 +183,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(userData),
+          credentials: "include",
         }
       );
 

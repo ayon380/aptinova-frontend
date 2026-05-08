@@ -106,6 +106,7 @@ const Page = () => {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
               },
+              credentials: "include",
             }
           );
 

@@ -50,6 +50,7 @@ function AuthCallbackContent() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: "include",
           }
         );
 

@@ -55,6 +55,7 @@ const Validator = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          credentials: "include",
         }
       );
 
@@ -69,6 +70,7 @@ const Validator = () => {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("authToken")}`,
               },
+              credentials: "include",
             }
           );
 

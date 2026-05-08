@@ -34,6 +34,7 @@ export default function Profile() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            credentials: "include",
           }
         );
 
@@ -87,6 +88,8 @@ export default function Profile() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
+          credentials: "include",
+        }
         }
       );
 

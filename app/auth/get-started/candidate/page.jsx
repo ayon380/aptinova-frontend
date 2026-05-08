@@ -115,6 +115,7 @@ function CandidateSignupContent() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            withCredentials: true,
           }
         );
         if (response.data) {
