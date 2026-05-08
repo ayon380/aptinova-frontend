@@ -124,7 +124,7 @@ const HiringWorkflow = ({
 
   // Initialize columns based on process stages and applicants
   useEffect(() => {
-    if (processStages.length > 0 && applicants.length > 0) {
+    if (processStages.length > 0 && Array.isArray(applicants) && applicants.length > 0) {
       const initialColumns = processStages.reduce(
         (acc, stage) => ({
           ...acc,
@@ -184,13 +184,13 @@ const HiringWorkflow = ({
     }
   }, [processStages, applicants]);
 
-  const applicantsById = applicants.reduce(
+  const applicantsById = Array.isArray(applicants) ? applicants.reduce(
     (acc, applicant) => ({
       ...acc,
       [applicant.id]: applicant,
     }),
     {}
-  );
+  ) : {};
 
   // Sort columns by their order property
   const getSortedStages = () => {

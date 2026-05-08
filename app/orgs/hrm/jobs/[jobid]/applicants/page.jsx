@@ -173,8 +173,9 @@ export default function ApplicantsPage() {
       );
       const data = await response.json();
 
-      setApplicants(data.applicants || data);
-      setFilteredApplicants(data.applicants || data);
+      const applicantsData = Array.isArray(data.applicants) ? data.applicants : Array.isArray(data) ? data : [];
+      setApplicants(applicantsData);
+      setFilteredApplicants(applicantsData);
 
       if (data.pagination) {
         setTotalPages(data.pagination.totalPages);
