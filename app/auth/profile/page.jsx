@@ -90,7 +90,7 @@ export default function Profile() {
           body: JSON.stringify(formData),
           credentials: "include",
         }
-        }
+        
       );
 
       if (!response.ok) {
